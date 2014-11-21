@@ -241,6 +241,14 @@ module csComp.Services {
                         else {
 
                             this.prepareGeoJson(layer, data);
+
+                            // init all features
+                            if (data.features) {
+                                data.features.forEach((feature: csComp.Services.Feature) => {
+                                    this.initFeature(feature, layer);
+                                });
+                            }
+
                             
                             layer.updateFilter = ((filtered: Feature[]) => {
                                 //console.log("Filtered items : " + filtered.length);
