@@ -239,7 +239,8 @@ module csComp.Services {
                             }
 
                             layer.updateFilter = ((filtered: Feature[]) => {
-                                console.log("Filtered items : " + filtered.length);
+                                //console.log("Filtered items : " + filtered.length);
+                                webGl.handleFiltered(filtered);
                             });
 
 
