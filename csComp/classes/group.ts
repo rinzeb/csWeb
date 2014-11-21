@@ -16,7 +16,8 @@
     export class ProjectGroup {
         id              : string;
         title           : string;
-        description     : string;
+        description: string;
+        
         layers          : Array<ProjectLayer>;
         filters         : Array<GroupFilter>;
         styles          : Array<GroupStyle>;

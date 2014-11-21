@@ -79,6 +79,7 @@
         opacity                     : number;
         isLoading                   : boolean;
         isSublayer                  : boolean;
+        updateFilter                : Function;
         mapLayer                    : L.LayerGroup<L.ILayer>;
         group: ProjectGroup;
         timestamps : any[];

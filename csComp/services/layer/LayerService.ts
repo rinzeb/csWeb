@@ -231,7 +231,33 @@ module csComp.Services {
                             // parse timestamps
                             this.parseTimestamps(layer, data.timeStamps);
 
-                            var webGl = new WebGlLayer(this.$mapService.map, data);
+                            // init all features
+                            if (data.features) {
+                                data.features.forEach((feature: csComp.Services.Feature) => {
+                                    this.initFeature(feature, layer);
+                                });
+                            }
+
+                            layer.updateFilter = ((filtered: Feature[]) => {
+                                console.log("Filtered items : " + filtered.length);
+                            });
+
+
+                            var webGl = new WebGlLayer(this.$mapService.map, data, {
+                                click: (index, feature) => {
+                                                //var feature = layer.group
+                                    feature.isSelected = !feature.isSelected;
+                                    if (!feature.isSelected) {
+                                        this.$messageBusService.publish("sidebar", "hide");
+                                        this.$messageBusService.publish("feature", "onFeatureDeselect");
+                                    } else {
+                                        this.$messageBusService.publish("sidebar", "show");
+                                        this.$messageBusService.publish("feature", "onFeatureSelect", feature);
+                                    }
+
+                                    
+                                }
+                            });
                             webGl.updateDraw();
                             console.log("webgl drawn");
 
@@ -1452,6 +1478,11 @@ module csComp.Services {
          * Update map markers in cluster after changing filter
          */
         private updateMapFilter(group: ProjectGroup) {
+            group.layers.forEach((layer: ProjectLayer) => {
+                if (layer.updateFilter) {                    
+                    layer.updateFilter(group.filterResult.filter((f:IFeature)=>f.layerId == layer.id));
+                }
+            });
             $.each(group.markers, (key, marker) => {
                 var included = group.filterResult.filter((f: IFeature) => f.id == key).length > 0;
                 if (group.clustering) {

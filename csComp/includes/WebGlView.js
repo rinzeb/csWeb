@@ -1,7 +1,7 @@
 ﻿var webGlObj = null;
 
 var WebGlLayer = (function () {
-    function WebGlLayer(lmap, jsonObj) {
+    function WebGlLayer(lmap, jsonObj, options) {
             //this.webGLData = 
             this.leafletMap = lmap;
             this.data = {
@@ -49,9 +49,10 @@ var WebGlLayer = (function () {
                         }
                     }
                 }
-                if (closestIndex != -1)
+                if (closestIndex != -1) {
                     webGlObj.closestIndex = closestIndex;
-                else
+                    options.click(closestIndex,webGlObj.data.features[closestIndex]);
+                } else
                     webGlObj.closestIndex = -1;
             });
 
