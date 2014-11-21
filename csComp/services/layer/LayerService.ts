@@ -47,6 +47,7 @@ module csComp.Services {
     
 
     declare var String;
+    declare var WebGlLayer;
 
 
     export interface ILayerService {
@@ -68,7 +69,8 @@ module csComp.Services {
     }
 
 
-    declare var jsonld;
+    declare var WebGlView;
+    
 
     export class LayerService implements ILayerService {
         public maxBounds: IBoundingBox;
@@ -169,17 +171,80 @@ module csComp.Services {
             
         }
 
+        private parseEvents(layer: ProjectLayer, events : any) {
+            if (events && this.timeline) {
+                layer.events = events;
+                var devents = [];
+                layer.events.forEach((e: Event) => {
+                    if (!e.id) e.id = csComp.Helpers.getGuid();
+                    devents.push({
+                        'start': new Date(e.start),
+
+                        'content': e.title
+                    });
+                });
+                this.timeline.draw(devents);
+            }
+        }
+
+        private parseTypes(layer: ProjectLayer, featureTypes: any) {
+            for (var featureTypeName in featureTypes) {
+                var featureType: IFeatureType = featureTypes[featureTypeName];
+                featureTypeName = layer.id + '_' + featureTypeName;
+                this.featureTypes[featureTypeName] = featureType;
+                var pt = "." + featureTypeName;
+                var icon = featureType.style.iconUri;
+                var t = "{\".style" + featureTypeName + "\":";
+                if (featureType.style.iconUri != null) {
+                    t += " { \"background\": \"url(" + featureType.style.iconUri + ") no-repeat right center\",";
+                };
+                t += " \"background-size\": \"100% 100%\",\"border-style\": \"none\"} }";
+                var json = $.parseJSON(t);
+                (<any>$).injectCSS(json);
+
+                //console.log(JSON.stringify(poiType, null, 2));
+            }
+        }
+
+        private parseTimestamps(layer: ProjectLayer, timestamps: any) {
+            if (timestamps) layer.timestamps = timestamps;
+        }
+
         /** 
          * Add a layer
          */
         public addLayer(layer: ProjectLayer) {
             var disableLayers = [];
             switch (layer.type) {
-            case "GeoJson":
-                async.series([
-                    (callback) => {
+                case "GeoJsonWebGL":
+                    d3.json(layer.url, (error, data) => {
+                        if (error)
+                            this.$messageBusService.notify('ERROR loading' + layer.title, error);
+                        else {
+
+                            // parse events
+                            this.parseEvents(layer, data.events);
+
+                            // parse feature types
+                            this.parseTypes(layer, data.featureTypes);
+
+                            // parse timestamps
+                            this.parseTimestamps(layer, data.timeStamps);
+
+                            var webGl = new WebGlLayer(this.$mapService.map, data);
+                            webGl.updateDraw();
+                            console.log("webgl drawn");
+
+                        }
+                    });
+                        
+
+                    break;
+                case "GeoJson":
+                    async.series([
+                        (callback) => {
                         // If oneLayerActive: close other group layer
-                       if (layer.group.oneLayerActive) {
+                        if (layer.group.oneLayerActive) {
                            layer.group.layers.forEach((l: ProjectLayer) => {
                                if (l != layer && l.enabled) {                                   
                                    disableLayers.push(l);
@@ -188,68 +253,53 @@ module csComp.Services {
                        }
                         callback(null,null);
                     } ,
+                        //(callback) => {
+                            // load styling from seperate url disabled
+                        //if (layer.styleurl) {
+                        //    d3.json(layer.styleurl, (err, dta) => {
+                        //        if (err)
+                        //            this.$messageBusService.notify('ERROR loading' + layer.title, err);
+                        //        else {
+                        //            if (dta.featureTypes)
+                        //                for (var featureTypeName in dta.featureTypes) {
+                        //                    var featureType: IFeatureType = dta.featureTypes[featureTypeName];
+                        //                    featureTypeName = layer.id + '_' + featureTypeName;
+                        //                    this.featureTypes[featureTypeName] = featureType;
+                        //                }
+                        //        }
+                        //        callback(null, null);
+                        //    });      
+                        //} else
+                        //    callback(null, null);
+                    //},
                     (callback) => {
-                        if (layer.styleurl) {
-                            d3.json(layer.styleurl, (err, dta) => {
-                                if (err)
-                                    this.$messageBusService.notify('ERROR loading' + layer.title, err);
-                                else {
-                                    if (dta.featureTypes)
-                                        for (var featureTypeName in dta.featureTypes) {
-                                            var featureType: IFeatureType = dta.featureTypes[featureTypeName];
-                                            featureTypeName = layer.id + '_' + featureTypeName;
-                                            this.featureTypes[featureTypeName] = featureType;
-                                        }
-                                }
-                                callback(null, null);
-                            });      
-                        } else
-                            callback(null, null);
-                    }, (callback) => {
                         d3.json(layer.url, (error, data) => {
                             if (error)
                                 this.$messageBusService.notify('ERROR loading' + layer.title, error);
                             else {
 
-                                if (data.events && this.timeline) {
-                                    layer.events = data.events;
-                                    var devents = [];
-                                    layer.events.forEach((e: Event) => {
-                                        if (!e.id) e.id = csComp.Helpers.getGuid();
-                                        devents.push({
-                                            'start': new Date(e.start), 
-                                            
-                                            'content': e.title
-                                        });
-                                    });
-                                    this.timeline.draw(devents);
-                                }
+                                // parse events
+                                this.parseEvents(layer, data.events);
 
-                                for (var featureTypeName in data.featureTypes) {
-                                    var featureType: IFeatureType = data.featureTypes[featureTypeName];
-                                    featureTypeName = layer.id + '_' + featureTypeName;
-                                    this.featureTypes[featureTypeName] = featureType;
-                                    var pt = "." + featureTypeName;
-                                    var icon = featureType.style.iconUri;
-                                    var t = "{\".style" + featureTypeName + "\":";
-                                    if (featureType.style.iconUri != null) {
-                                        t += " { \"background\": \"url(" + featureType.style.iconUri + ") no-repeat right center\",";
-                                    };
-                                    t += " \"background-size\": \"100% 100%\",\"border-style\": \"none\"} }";
-                                    var json = $.parseJSON(t);
-                                    (<any>$).injectCSS(json);
+                                // parse feature types
+                                this.parseTypes(layer, data.featureTypes);
 
-                                    //console.log(JSON.stringify(poiType, null, 2));
-                                }
-                            if (data.timestamps) layer.timestamps = data.timestamps;
+                                // parse timestamps
+                                this.parseTimestamps(layer, data.timeStamps);
 
-
+                                // set name labels
+                                this.project.features.forEach((f: IFeature) => {
+                                    if (f.layerId != layer.id) return;
+                                    var ft = this.getFeatureType(f);
+                                    f.properties['Name'] = f.properties[ft.style.nameLabel];
+                                }); 
+                                                               
+                                // if clustering enabled for group, make a cluster layer
                                 if (layer.group.clustering) {
                                     var markers = L.geoJson(data, {
                                         pointToLayer: (feature, latlng) => this.addFeature(feature, latlng, layer),
                                         onEachFeature: (feature: IFeature, lay) => {
-                                            //We do not need to init the feature here: already done in style.
-                                            //this.initFeature(feature, layer);
+                                                   
                                             layer.group.markers[feature.id] = lay;
                                             lay.on({
                                                 mouseover: (a) => this.showFeatureTooltip(a,layer.group),
@@ -258,7 +308,9 @@ module csComp.Services {
                                         }
                                     });
                                     layer.group.cluster.addLayer(markers);
-                                } else {
+                                }
+                                // one map layer foreach layer
+                                else {
                                     layer.mapLayer = new L.LayerGroup<L.ILayer>();
                                     this.map.map.addLayer(layer.mapLayer);
 
@@ -281,18 +333,16 @@ module csComp.Services {
                                         },
                                         pointToLayer : (feature, latlng) => this.addFeature(feature, latlng, layer)
                                     });
-                                    this.project.features.forEach((f: IFeature) => {
-                                        if (f.layerId != layer.id) return;
-                                        var ft = this.getFeatureType(f);
-                                        f.properties['Name'] = f.properties[ft.style.nameLabel];
-                                    });
+
+                                    
                                     layer.mapLayer.addLayer(v);
                                 }
                             }
                             this.$messageBusService.publish("layer", "activated", layer);
+                            this.updateFilters();
 
                             callback(null, null);
-                            this.updateFilters();
+                            
                         });
                     },
                     (callback) => {

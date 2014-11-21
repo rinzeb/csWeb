@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="directives\Timeline\Timeline.tpl.html" />
+    <Content Include="includes\WebGlView.js" />
     <Content Include="includes\csStyles.css" />
     <Content Include="includes\images\bar-chart-5-32.png" />
     <Content Include="includes\images\bordercolor.png" />
