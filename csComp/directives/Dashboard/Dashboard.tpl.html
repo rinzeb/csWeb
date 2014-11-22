@@ -1,0 +1,25 @@
+﻿<div style="width: 100%; height: 100%">
+    his
+    <div gridster="gridsterOptions" style="position:absolute; width: 355px; height:100%">        
+        <ul>
+            <li gridster-item="widget" ng-repeat="widget in dashboard.widgets" class="widget-parent" >
+                <div class="widget-title">{{widget.title}}</div>
+                <div class="widget-edit">
+                    <div ng-show="$parent.editMode" ng-click="vm.editWidget(widget)" class="fa fa-pencil widget-button"></div>
+                    <div ng-click="vm.popup(widget)"  class="fa fa-square-o widget-button"></div>                    
+                    
+                </div>
+                    
+                <div class="box" >
+                    <div id="{{widget.elementId}}" class="box-content">
+                        
+                    </div>
+                    
+                    
+                </div>
+                    
+                
+            </li>
+        </ul>
+    </div>
+</div>

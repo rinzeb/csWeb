@@ -22,6 +22,11 @@
     <TypeScriptCompile Include="classes\feature.ts" />
     <TypeScriptCompile Include="classes\group.ts" />
     <TypeScriptCompile Include="classes\project.ts" />
+    <TypeScriptCompile Include="directives\Dashboard\Dashboard.tpl.ts" />
+    <TypeScriptCompile Include="directives\Dashboard\Dashboard.ts" />
+    <TypeScriptCompile Include="directives\Dashboard\DashboardCtrl.ts" />
+    <TypeScriptCompile Include="directives\Dashboard\file1.ts" />
+    <TypeScriptCompile Include="directives\Dashboard\Widgets\BasicWidgets.ts" />
     <TypeScriptCompile Include="directives\Timeline\Timeline.tpl.ts" />
     <TypeScriptCompile Include="directives\Timeline\Timeline.ts" />
     <TypeScriptCompile Include="directives\Timeline\TimelineCtrl.ts" />
@@ -75,7 +80,10 @@
     <TypeScriptCompile Include="services\time\TimeService.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="directives\Dashboard\Dashboard.tpl.html" />
     <Content Include="directives\Timeline\Timeline.tpl.html" />
+    <Content Include="includes\timeline.css" />
+    <Content Include="includes\timeline.js" />
     <Content Include="includes\WebGlView.js" />
     <Content Include="includes\csStyles.css" />
     <Content Include="includes\images\bar-chart-5-32.png" />

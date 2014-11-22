@@ -10,6 +10,8 @@
         
     }
 
+    
+
     export class TimelineCtrl {
         private scope: ITimelineScope;
         
@@ -26,7 +28,9 @@
 
         public focusDate: Date;
         public startDate: Date;
-        public endDate : Date;
+        public endDate: Date;
+
+
 
         // dependencies are injected via AngularJS $injector 
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
