@@ -20,7 +20,8 @@
         properties: {};
         dataSets: DataSet[];
         range: csComp.Services.DateRange;
-        updateDateRange : Function;
+        updateDateRange: Function;
+        collapse : boolean;
     }
 
    
@@ -39,6 +40,7 @@
         public properties: {};
         public dataSets: DataSet[];
         public range: csComp.Services.DateRange;
+        public collapse : boolean;
 
         constructor(title?: string, type?: string) {
             if (title) this.title = title;
@@ -84,10 +86,19 @@
         }
     }
 
+    export class Timeline {
+        public id : string;
+        public timestamps : number[];
+    }
 
-
+    export class TimedDataSet {
+        public timeline: Timeline;
+        public timedata : number[];        
+    }
+    
     export class DataSet {
-        public color : string;
+        public color: string;
+        
         public data: { [key: number]: number };
 
         constructor(public id?: string, public title?: string) {

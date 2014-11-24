@@ -65,7 +65,6 @@ module csComp.Services {
         propertyTypeData: { [key: string]: Services.IPropertyType; };
         timeline : any;
 
-
     }
 
 
@@ -1131,8 +1130,7 @@ module csComp.Services {
                 if (!this.project.dashboards) {
                     this.project.dashboards = {};
                     var d = new csComp.Services.Dashboard("1", this.project.title);
-                    d.widgets = [];
-                    this.project.dashboards[this.project.title] = d;
+                    d.widgets = [];                    
                 }
 
                 if (!this.project.dataSets)

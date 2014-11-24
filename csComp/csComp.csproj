@@ -22,9 +22,12 @@
     <TypeScriptCompile Include="classes\feature.ts" />
     <TypeScriptCompile Include="classes\group.ts" />
     <TypeScriptCompile Include="classes\project.ts" />
+    <TypeScriptCompile Include="directives\DashboardSelection\DashboardSelection.tpl.ts" />
     <TypeScriptCompile Include="directives\Dashboard\Dashboard.tpl.ts" />
     <TypeScriptCompile Include="directives\Dashboard\Dashboard.ts" />
     <TypeScriptCompile Include="directives\Dashboard\DashboardCtrl.ts" />
+    <TypeScriptCompile Include="directives\DashboardSelection\DashboardSelection.ts" />
+    <TypeScriptCompile Include="directives\DashboardSelection\DashboardSelectionCtrl.ts" />
     <TypeScriptCompile Include="directives\Dashboard\file1.ts" />
     <TypeScriptCompile Include="directives\Dashboard\Widgets\BasicWidgets.ts" />
     <TypeScriptCompile Include="directives\Timeline\Timeline.tpl.ts" />
@@ -47,6 +50,7 @@
     <TypeScriptCompile Include="directives\LayersList\LayersDirective.ts" />
     <TypeScriptCompile Include="directives\LayersList\LayersDirectiveCtrl.ts" />
     <TypeScriptCompile Include="Scripts\typings\underscore\underscore.d.ts" />
+    <TypeScriptCompile Include="services\dashboard\DashboardService.ts" />
     <TypeScriptCompile Include="services\layer\LayerService.ts" />
     <TypeScriptCompile Include="directives\BaseMapList\BaseMapList.tpl.ts" />
     <TypeScriptCompile Include="directives\BaseMapList\BaseMapList.ts" />
@@ -81,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="directives\Dashboard\Dashboard.tpl.html" />
+    <Content Include="directives\DashboardSelection\DashboardSelection.tpl.html" />
     <Content Include="directives\Timeline\Timeline.tpl.html" />
     <Content Include="includes\timeline.css" />
     <Content Include="includes\timeline.js" />
@@ -114,6 +119,12 @@
     <Content Include="directives\StyleList\StyleList.tpl.html" />
     <Content Include="directives\BaseMapList\BaseMapList.tpl.html" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-cookies.d.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>

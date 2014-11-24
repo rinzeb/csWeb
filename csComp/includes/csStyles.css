@@ -160,7 +160,7 @@ margin-right: 10px;
 
 .widget-title {
     font-size: 18px;
-position: absolute;
+position: relative;
 font-weight: bold;
 margin: 4px;
 }
