@@ -79,7 +79,9 @@
     export class Dashboard {        
         widgets: IWidget[];
         editMode: boolean;
-        showMap : boolean;
+        showMap: boolean;
+        draggable: boolean = false;
+        resizable : boolean = true;
         background : string;
         constructor(public id: string, public name: string) {
             this.widgets = [];

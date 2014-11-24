@@ -15,9 +15,9 @@
                 <style>
                     
                 </style>
-                <ul style="padding:0" data-ng-repeat="(key, value) in dashboards">
+                <ul style="padding:0" data-ng-repeat="(key, value) in vm.$dashboardService.dashboards">
                     <li >
-                        <div ng-class="{dashboard-selected : value == mainDashboard}" class="dashboard-item" >
+                        <div ng-class="{\'dashboard-selected\' : value == vm.$dashboardService.mainDashboard}" class="dashboard-item" >
                             <span ng-click="vm.selectDashboard(key)" class="dashboard-name">{{value.name}}</span>
                             <div ng-show="$parent.editMode" class="leftpanel-header-button-container" >
                             <button ng-click="vm.removeDashboard(key)" class="button fa fa-trash leftpanel-header-button" />

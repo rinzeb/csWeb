@@ -2,8 +2,6 @@
 
     import Dashboard = csComp.Services.Dashboard;
 
-    
-
     declare var c3;
 
     export interface IDashboardScope extends ng.IScope {
@@ -13,7 +11,8 @@
         dashboard: csComp.Services.Dashboard;
         param: any;
         initDashboard: Function;
-        minus : Function;
+        minus: Function;
+        
         
     }
 
@@ -28,65 +27,81 @@
         // See http://docs.angularjs.org/guide/di
         public static $inject = [
             '$scope',
-            'layerService'
+            'layerService',
+            'dashboardService',
+            'messageBusService'
         ];
 
-       
 
-        // dependencies are injected via AngularJS $injector
+// dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         constructor(
             private $scope: IDashboardScope,
-            private $layerService: csComp.Services.LayerService
-            ) {
+            private $layerService: csComp.Services.LayerService,
+            private $dashboardService: csComp.Services.DashboardService,
+            private $messageBusService: csComp.Services.MessageBusService
+        ) {
             $scope.vm = this;
-           
-            
+
             var project = $layerService.project;
 
-            
-            //this.dashboard = this.$layerService.project.dashboards[project.title];
-          
-
+            //$messageBusService.subscribe("dashboard", (action: string, dashboard: csComp.Services.Dashboard) => {
+            //    switch (action) {
+            //        case "onDashboardSelected":
+            //            alert('dashboard selected');
+            //            this.updateDashboard();
+            //        break;
+            //    }
+            //});
             $scope.initDashboard = () => {
+
+                $scope.$watch('dashboard', () => {
+                    this.updateDashboard();
+                });
                 //alert($scope.param.name);
-                                
-            if ($scope.dashboard && $scope.dashboard.widgets && $scope.dashboard.widgets.length > 0) {
-                setTimeout(() => {
 
-                    $scope.gridsterOptions = {
-                        margins: [10, 10],
-                        columns: 20,
-                        rows: 20,
-                        draggable: {
-                            enabled: true
-                        },
-                        resizable: {
-                            enabled: true,
-                            start: (event, uiWidget, $element: csComp.Services.IWidget) => {
-                                $element.resize("start");
+                if ($scope.dashboard && $scope.dashboard.widgets && $scope.dashboard.widgets.length > 0) {
+                    setTimeout(() => {
+
+                        $scope.gridsterOptions = {
+                            margins: [10, 10],
+                            columns: 20,
+                            rows: 20,
+                            draggable: {
+                                enabled: $scope.dashboard.draggable
                             },
-                            stop: (event, uiWidget, $element: csComp.Services.IWidget) => {
-                                $element.resize("stop");
-                            },
-                            resize: (event, uiWidget, $element: csComp.Services.IWidget) => {
-                                $element.resize("change");
+                            resizable: {
+                                enabled: $scope.dashboard.resizable,
+                                start: (event, uiWidget, $element: csComp.Services.IWidget) => {
+                                    $element.resize("start");
+                                },
+                                stop: (event, uiWidget, $element: csComp.Services.IWidget) => {
+                                    $element.resize("stop");
+                                },
+                                resize: (event, uiWidget, $element: csComp.Services.IWidget) => {
+                                    $element.resize("change");
+                                }
                             }
-                        }
-                    };
+                        };
 
 
-                    $scope.dashboard.widgets.forEach((w: csComp.Services.IWidget) => {
-                        w.renderer();
-                    });
-                },100);
+                    }, 100);
                 }
+                this.updateDashboard();
                 //alert($scope.dashboard.name);
             };
 
-           
-            
+
         }
 
+        public updateDashboard() {
+            setTimeout(() => {
+                if (this.$scope.dashboard)
+                    this.$scope.dashboard.widgets.forEach((w: csComp.Services.IWidget) => {
+                        w.renderer();
+                    });
+            }, 100);
+
+        }
     }
 } 

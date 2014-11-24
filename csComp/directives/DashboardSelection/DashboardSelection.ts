@@ -52,7 +52,7 @@
                     });
                 },
                 replace: true,    // Remove the directive from the DOM
-                transclude: true,    // Add elements and attributes to the template
+                transclude: true,    // Add elements and attributes to the template     
                 controller: DashboardSelectionCtrl
             }              
         }

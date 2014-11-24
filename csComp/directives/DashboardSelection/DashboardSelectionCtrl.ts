@@ -17,7 +17,8 @@
         public static $inject = [
             '$scope',
             'layerService',
-            'dashboardService'
+            'dashboardService',
+            'messageBusService'
         ];
 
         // dependencies are injected via AngularJS $injector
@@ -25,7 +26,8 @@
         constructor(
             private $scope: IDashboardSelectionScope,
             private $layerService: csComp.Services.LayerService,
-            private $dashboardService : csComp.Services.DashboardService
+            private $dashboardService: csComp.Services.DashboardService,
+            private $messageBusService : csComp.Services.MessageBusService
             ) {
             
             $scope.vm = this;
@@ -68,6 +70,22 @@
             if (this.$layerService.project.dashboards.hasOwnProperty(key)) {
                 delete this.$layerService.project.dashboards[key];
 
+            }
+        }
+
+        /** Select an active dashboard */
+        public selectDashboard(key: string) {
+            for (var property in this.$dashboardService.dashboards) {
+                this.$dashboardService.dashboards[property].editMode = false;
+            }
+            if (this.$dashboardService.dashboards.hasOwnProperty(key)) {
+                this.$dashboardService.mainDashboard = this.$dashboardService.dashboards[key];
+                if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') { this.$scope.$apply(); }
+
+                this.$messageBusService.publish('dashboard', 'onDashboardSelected', this.$dashboardService.mainDashboard);
+                
+                // render all widgets
+                //this.refreshDashboard();
             }
         }
 
