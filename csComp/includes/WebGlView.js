@@ -6,7 +6,10 @@ var WebGlLayer = (function () {
             this.leafletMap = lmap;            
             this.data = jsonObj;
             this.measIdx = 0;
-            this.maxMeasIdx = jsonObj.features[0].measurements.length;
+            if (jsonObj.features[0].measurements != null)
+                this.maxMeasIdx = jsonObj.features[0].measurements.length;
+            else
+                this.maxMeasIdx = 0;
 
             webGlObj = this;
 
@@ -344,7 +347,7 @@ var WebGlLayer = (function () {
 
         var graphicsData = {
             points: verts,
-            lineWidth: 0.00015,
+            lineWidth: 0.0001,
             lineColor: 0xFF0000, //Math.random() * 0xFFFFFF << 0, // 0xFF0000
             lineAlpha: 1.0
         };
