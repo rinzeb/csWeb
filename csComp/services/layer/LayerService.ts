@@ -272,7 +272,7 @@ module csComp.Services {
                             });
                             webGl.updateDraw();
                             console.log("webgl drawn");
-
+                            setInterval(function () { webGl.updateColors() }, 300);
                         }
                     });
                         
