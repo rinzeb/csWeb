@@ -210,6 +210,24 @@ module csComp.Services {
             if (timestamps) layer.timestamps = timestamps;
         }
 
+        /** Make sure a freshly loaded geojson file is correctly initialized */
+        private prepareGeoJson(layer: ProjectLayer, geojson) {
+            // parse events
+            this.parseEvents(layer, geojson.events);
+
+            // parse feature types
+            this.parseTypes(layer, geojson.featureTypes);
+
+            // parse timestamps
+            this.parseTimestamps(layer, geojson.timestamps);
+
+            // set name labels
+            this.project.features.forEach((f: IFeature) => {
+                if (f.layerId != layer.id) return;
+                var ft = this.getFeatureType(f);
+                f.properties['Name'] = f.properties[ft.style.nameLabel];
+            }); 
+        }
         /** 
          * Add a layer
          */
@@ -222,14 +240,7 @@ module csComp.Services {
                             this.$messageBusService.notify('ERROR loading' + layer.title, error);
                         else {
 
-                            // parse events
-                            this.parseEvents(layer, data.events);
-
-                            // parse feature types
-                            this.parseTypes(layer, data.featureTypes);
-
-                            // parse timestamps
-                            this.parseTimestamps(layer, data.timeStamps);
+                            this.prepareGeoJson(layer, data);
 
                             // init all features
                             if (data.features) {
@@ -238,6 +249,7 @@ module csComp.Services {
                                 });
                             }
 
+                            
                             layer.updateFilter = ((filtered: Feature[]) => {
                                 //console.log("Filtered items : " + filtered.length);
                                 webGl.handleFiltered(filtered);
@@ -305,21 +317,8 @@ module csComp.Services {
                                 this.$messageBusService.notify('ERROR loading' + layer.title, error);
                             else {
 
-                                // parse events
-                                this.parseEvents(layer, data.events);
-
-                                // parse feature types
-                                this.parseTypes(layer, data.featureTypes);
-
-                                // parse timestamps
-                                this.parseTimestamps(layer, data.timeStamps);
-
-                                // set name labels
-                                this.project.features.forEach((f: IFeature) => {
-                                    if (f.layerId != layer.id) return;
-                                    var ft = this.getFeatureType(f);
-                                    f.properties['Name'] = f.properties[ft.style.nameLabel];
-                                }); 
+                                this.prepareGeoJson(layer, data);
+                                
                                                                
                                 // if clustering enabled for group, make a cluster layer
                                 if (layer.group.clustering) {
