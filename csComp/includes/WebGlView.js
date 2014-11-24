@@ -242,9 +242,10 @@ var WebGlLayer = (function () {
         var maxMeas = 100;
 
         for (var idxL in this.verticesIndex)
-        {   
-            var idx = idxObj[idxL].index;
-            var idxObj = this.verticesIndex[idx];
+        {
+            var idxObj = this.verticesIndex[idxL];
+            var idx = idxObj.index;
+            
             
             //var meanNodeVal = Math.average.apply(null, this.data.features[idx].measurements);
             var length = this.data.features[idx].properties["LENGTH"];
@@ -270,7 +271,11 @@ var WebGlLayer = (function () {
                     rgLev = maxMeas;*/
 
                 rB = 0.0;
-                rR = (maxNodeVal - measVal) / ( maxNodeVal - minNodeVal );
+                rR = (maxNodeVal - measVal) / (maxNodeVal - minNodeVal);
+                if (rR < 0)
+                    rR = 0;
+                if (rR > 1)
+                    rR = 1;
                 rG = 1 - rR;
             }
 
