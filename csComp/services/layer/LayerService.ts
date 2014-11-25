@@ -1131,6 +1131,18 @@ module csComp.Services {
                     this.project.dashboards = {};
                     var d = new csComp.Services.Dashboard("1", this.project.title);
                     d.widgets = [];                    
+                } else {
+                    for (var das in this.project.dashboards) {
+                        if (!this.project.dashboards[das].widgets)
+                            this.project.dashboards[das].widgets = [];
+                        if (!this.project.dashboards[das].showMap)
+                            this.project.dashboards[das].showMap = true;
+
+                    }
+                    
+
+
+                    
                 }
 
                 if (!this.project.dataSets)

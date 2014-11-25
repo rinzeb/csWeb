@@ -55,7 +55,7 @@
 
                     //scope.dashboard = attrs.param;
                     //var s = jQuery.parseJSON(attrs.param);                    
-                    scope.initDashboard();
+                    scope.initDashboard(); 
                                
                 },
                 replace:false,      

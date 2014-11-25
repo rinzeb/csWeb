@@ -70,9 +70,10 @@
            
             $scope.initDashboard = () => {
 
-                $scope.$watch('dashboard', () => {
+                $scope.$watch('dashboard', () => {                    
                     this.updateDashboard();
                 });
+                
                 //alert($scope.param.name);
                 
 
@@ -81,14 +82,25 @@
                 //alert($scope.dashboard.name);
             };
 
+            $messageBusService.subscribe("dashboard", (s: string, d: csComp.Services.Dashboard) => {
+                switch (s) {
+                    case "triggerUpdate":
+                        if (d == $scope.dashboard) {
+                            this.updateDashboard();
+                             
+                        }
+                    break;
+                }
+            });
+
 
         }
 
         public updateDashboard() {
-        if (this.$scope.dashboard && this.$scope.dashboard.widgets && this.$scope.dashboard.widgets.length > 0) {
-            setTimeout(() => {
-                if (this.$scope.dashboard)
-                    this.$scope.dashboard.widgets.forEach((w: csComp.Services.IWidget) => {
+            var dashboard = this.$scope.dashboard;
+            if (dashboard && dashboard.widgets && dashboard.widgets.length > 0) {
+            setTimeout(() => {                
+                dashboard.widgets.forEach((w: csComp.Services.IWidget) => {
                         w.renderer();
                     });
             }, 100);
