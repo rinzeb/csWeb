@@ -43,50 +43,40 @@
         ) {
             $scope.vm = this;
 
+            $scope.gridsterOptions = {
+                margins: [10, 10],
+                columns: 20,
+                rows: 20,
+                draggable: {
+                    enabled:true
+                },
+                resizable: {
+                    enabled: true,
+                    start: (event, uiWidget, $element: csComp.Services.IWidget) => {
+                        $element.resize("start", uiWidget.width(), uiWidget.height());
+                    },
+                    stop: (event, uiWidget, $element: csComp.Services.IWidget) => {
+                        $element.resize("stop", uiWidget.width(), uiWidget.height());
+                    },
+                    resize: (event, uiWidget, $element: csComp.Services.IWidget) => {
+                        
+                        $element.resize("change", uiWidget.width(),uiWidget.height());
+                    }
+                }
+            };
+
             var project = $layerService.project;
 
-            //$messageBusService.subscribe("dashboard", (action: string, dashboard: csComp.Services.Dashboard) => {
-            //    switch (action) {
-            //        case "onDashboardSelected":
-            //            alert('dashboard selected');
-            //            this.updateDashboard();
-            //        break;
-            //    }
-            //});
+           
             $scope.initDashboard = () => {
 
                 $scope.$watch('dashboard', () => {
                     this.updateDashboard();
                 });
                 //alert($scope.param.name);
+                
 
-                if ($scope.dashboard && $scope.dashboard.widgets && $scope.dashboard.widgets.length > 0) {
-                    setTimeout(() => {
-
-                        $scope.gridsterOptions = {
-                            margins: [10, 10],
-                            columns: 20,
-                            rows: 20,
-                            draggable: {
-                                enabled: $scope.dashboard.draggable
-                            },
-                            resizable: {
-                                enabled: $scope.dashboard.resizable,
-                                start: (event, uiWidget, $element: csComp.Services.IWidget) => {
-                                    $element.resize("start");
-                                },
-                                stop: (event, uiWidget, $element: csComp.Services.IWidget) => {
-                                    $element.resize("stop");
-                                },
-                                resize: (event, uiWidget, $element: csComp.Services.IWidget) => {
-                                    $element.resize("change");
-                                }
-                            }
-                        };
-
-
-                    }, 100);
-                }
+                
                 this.updateDashboard();
                 //alert($scope.dashboard.name);
             };
@@ -95,13 +85,15 @@
         }
 
         public updateDashboard() {
+        if (this.$scope.dashboard && this.$scope.dashboard.widgets && this.$scope.dashboard.widgets.length > 0) {
             setTimeout(() => {
                 if (this.$scope.dashboard)
                     this.$scope.dashboard.widgets.forEach((w: csComp.Services.IWidget) => {
                         w.renderer();
                     });
             }, 100);
-
         }
+
+    }
     }
 } 

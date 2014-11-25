@@ -21,7 +21,9 @@
         dataSets: DataSet[];
         range: csComp.Services.DateRange;
         updateDateRange: Function;
-        collapse : boolean;
+        collapse: boolean;
+        width: number;
+        height:number;
     }
 
    
@@ -40,7 +42,9 @@
         public properties: {};
         public dataSets: DataSet[];
         public range: csComp.Services.DateRange;
-        public collapse : boolean;
+        public collapse: boolean;
+        public width: number;
+        public height: number;
 
         constructor(title?: string, type?: string) {
             if (title) this.title = title;
@@ -52,13 +56,15 @@
 
         }
 
-        public init(sX: number, sY: number, c: number, r: number, id? : string) {
+        public init(sX: number, sY: number, c: number, r: number, id? : string, width? : number, height? : number) {
             this.sizeX = sX;
             this.sizeY = sY;
             this.col = c;
             this.row = r;
             this.background = "red";
             if (!id) id = "widget" + csComp.Helpers.getGuid().replace('-', '');
+            this.width = (width) ? width : 300;
+            this.height = (height) ? height : 150;            
             this.id = id;
             this.elementId = id;
 
@@ -69,7 +75,7 @@
             this.range = r;
         }
 
-        public resize = (status: string) => {};
+        public resize = (status: string, width : number, height : number) => {};
     }
 
 
@@ -78,8 +84,8 @@
 
     export class Dashboard {        
         widgets: IWidget[];
-        editMode: boolean;
-        showMap: boolean;
+        editMode: boolean;        
+        showMap: boolean = true;
         draggable: boolean = false;
         resizable : boolean = true;
         background : string;

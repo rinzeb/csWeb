@@ -14,6 +14,7 @@
         public map: L.Map;
 
         public baseLayers: any;
+        public isVisible : boolean = true;
         private activeBaseLayer: L.ILayer;
 
         constructor(private $messageBusService: csComp.Services.MessageBusService) {
@@ -31,6 +32,14 @@
                 zoomControl: false,
                 attributionControl: true
             });
+        }
+
+        public hide() {
+            this.isVisible = false;
+        }
+
+        public show() {
+            this.isVisible = true;
         }
 
         public changeBaseLayer(layerObj: L.ILayer) {
