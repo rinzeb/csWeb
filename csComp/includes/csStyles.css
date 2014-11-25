@@ -146,12 +146,13 @@ margin-right: 10px;
 
 .widget-edit {
     float: right;
-    position: absolute;
-    top: 10px;
-     display: none;
-    right: 10px;
-    opacity: 0.75;
-    cursor: pointer;
+position: initial;
+/* top: 20px; */
+/* display: none; */
+right: 10px;
+opacity: 0.75;
+cursor: pointer;
+margin-top: -30px;
 }
 
 .widget-button {

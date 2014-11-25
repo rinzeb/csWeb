@@ -22,6 +22,7 @@
         range: csComp.Services.DateRange;
         updateDateRange: Function;
         collapse: boolean;
+        canCollapse : boolean;
         width: number;
         height:number;
     }
@@ -43,6 +44,7 @@
         public dataSets: DataSet[];
         public range: csComp.Services.DateRange;
         public collapse: boolean;
+        public canCollapse : boolean;
         public width: number;
         public height: number;
 
