@@ -14,7 +14,8 @@
         public map: L.Map;
 
         public baseLayers: any;
-        public isVisible : boolean = true;
+        public isVisible: boolean = true;
+        public timelineVisible : boolean = true;
         private activeBaseLayer: L.ILayer;
 
         constructor(private $messageBusService: csComp.Services.MessageBusService) {
@@ -40,6 +41,14 @@
 
         public show() {
             this.isVisible = true;
+        }
+
+        public hideTimeline() {
+            this.timelineVisible = false;
+        }
+
+        public showTimeline() {
+            this.timelineVisible = true;
         }
 
         public changeBaseLayer(layerObj: L.ILayer) {

@@ -1425,11 +1425,13 @@ module csComp.Services {
                         dc.events.trigger(() => {
                             group.filterResult = dcDim.top(Infinity);
                             this.updateFilterGroupCount(group);
+
+                            //this.$messageBusService.publish()
                             this.updateMapFilter(group);
                         });
                                       
                     });
-
+            //scale.filters.addListener(scale.filters, 'filtered', _.throttle((prop) => alert('filtered'), 200));
             (<any>dcChart).xUnits(() => { return 13; });
             
             filterFrom.on('change', () => {

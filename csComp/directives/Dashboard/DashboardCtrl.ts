@@ -96,6 +96,13 @@
 
         }
 
+        public toggleWidget(widget: csComp.Services.IWidget) {
+            if (widget.canCollapse) {
+                widget.collapse = !widget.collapse;
+            }
+            
+        }
+
         public updateDashboard() {
             var dashboard = this.$scope.dashboard;
             if (!dashboard) return;

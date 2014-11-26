@@ -24,12 +24,7 @@
             this.featureDashboard = new csComp.Services.Dashboard("feature", "feature");
             
 
-            if (Object.keys(this.dashboards).length == 0) {
-                this.dashboards["map"] = new csComp.Services.Dashboard("map", "map");
-                this.dashboards["main"] = new csComp.Services.Dashboard("main", "main");
-                this.mainDashboard = this.dashboards["main"];                
-
-            }
+           
 
         }
 

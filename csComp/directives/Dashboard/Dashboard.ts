@@ -4,7 +4,7 @@
       */
     var moduleName = 'csWeb.dashboardirective';                   
 
-    /**                           
+    /**                             
       * Module                 
       */
     export var myModule;

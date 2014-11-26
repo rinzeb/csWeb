@@ -35,7 +35,15 @@
             $scope.vm = this;
 
             $scope.editMode = true;
-            
+
+            $messageBusService.subscribe("dashboardSelect", ((s: string, key: string) => {
+                switch (s) {
+                    case "selectRequest":
+                        this.selectDashboard(key);
+                    break;
+                }
+            }));
+
 
         }
 
@@ -76,6 +84,10 @@
             }
         }
 
+        public toggleTimeline() {
+            this.$dashboardService.mainDashboard.showTimeline = !this.$dashboardService.mainDashboard.showTimeline;
+            this.checkTimeline();
+        }
         
 
         public toggleMap() {
@@ -85,6 +97,17 @@
             
         }
 
+        public checkTimeline() {
+
+            if (this.$dashboardService.mainDashboard.showTimeline != this.$mapService.timelineVisible) {
+                if (this.$dashboardService.mainDashboard.showTimeline) {
+                    this.$mapService.showTimeline();
+                } else {
+                    this.$mapService.hideTimeline();
+                }
+                this.$scope.$apply();
+            }
+        }
 
         public checkMap() {
             
@@ -105,7 +128,7 @@
 
         /** Select an active dashboard */
         public selectDashboard(key: string) {
-            
+            //var res = JSON.stringify(this.$dashboardService.dashboards);
             for (var property in this.$dashboardService.dashboards) {
                 this.$dashboardService.dashboards[property].editMode = false;
             }
@@ -115,6 +138,7 @@
 
 
                 this.checkMap();
+                this.checkTimeline();
                 this.publishDashboardUpdate();
 
                 // render all widgets

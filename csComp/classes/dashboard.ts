@@ -88,6 +88,7 @@
         widgets: IWidget[];
         editMode: boolean;        
         showMap: boolean = true;
+        showTimeline : boolean = true;
         draggable: boolean = false;
         resizable : boolean = true;
         background : string;
