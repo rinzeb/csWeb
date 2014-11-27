@@ -102,6 +102,8 @@ module csComp.Services {
         public selectedLayerId: string;
         public timeline: any;
 
+        public sensorData: any;
+
         constructor(
             private $location          : ng.ILocationService,
             private $translate         : ng.translate.ITranslateService,
@@ -134,19 +136,54 @@ module csComp.Services {
             if (this.project == null || this.project.timeLine==null) return;
             var date = this.project.timeLine.focus;
             var timepos = {};
+            var curEpoch = 1398060000; // Temp time stamp
+            // 1417078638473
+            // 1417353060000
+            curEpoch = Math.floor(date / 60000) * 60;
+            
+            if (curEpoch > 1398038400 && curEpoch < 1398121200) {                
+                this.project.groups.forEach(g => {
+                    g.layers.forEach(l => {     
+                        if (l.type == "GeoJsonWebGL") {
+                            if (l.timestamps.indexOf(curEpoch) == -1) {
+                                l.timestamps.push(curEpoch);
+                                d3.json("/data?type=time&interval=hour&epoch=" + curEpoch, (error, data) => {
+                                    if (error) {
+                                        l.timestamps.splice(l.timestamps.indexOf(curEpoch), 1);
+                                    }
+                                    else {
+                                        // Do something with the data
+                                        l.timestamps = data.Epochs;
+                                        // Go through the data and add sensor data to the feature
+                                        this.project.features.forEach((f: IFeature) => {
+                                            // Find this feature
+                                            var id = f.id;
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    });
+                });
+            }
+            
             this.project.features.forEach((f: IFeature) => {
                 var l = this.findLayer(f.layerId);
 
                 if (l != null)
-                    {
-                    if (!timepos.hasOwnProperty(f.layerId)) {
-                        for (var i = 1; i < l.timestamps.length; i++) {                            
-                            if (l.timestamps[i] > date) {
-                                timepos[f.layerId] = i;
-                                break;
+                {
+                        if (!l.timestamps)
+                            l.timestamps = [];
+                        if (!timepos.hasOwnProperty(f.layerId) && l.timestamps != null) {
+                            for (var i = 1; i < l.timestamps.length; i++) {                            
+                                if (l.timestamps[i] > date) {
+                                    timepos[f.layerId] = i;
+                                    break;
+                                }
                             }
                         }
-                    }
+
+                        
 
                         if (f.sensors != null) {
                             
@@ -234,11 +271,14 @@ module csComp.Services {
             var disableLayers = [];
             switch (layer.type) {
                 case "GeoJsonWebGL":
+                    this.sensorData = new Array();
                     d3.json(layer.url, (error, data) => {
+                        
                         if (error)
                             this.$messageBusService.notify('ERROR loading' + layer.title, error);
                         else {
 
+                            
                             this.prepareGeoJson(layer, data);
 
                             // init all features
