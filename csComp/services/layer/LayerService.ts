@@ -75,6 +75,7 @@ module csComp.Services {
         public maxBounds: IBoundingBox;
 
         public static $inject = [
+            '$rootScope',
             '$location',
             '$translate',
             'messageBusService',
@@ -103,6 +104,7 @@ module csComp.Services {
         public timeline: any;
 
         constructor(
+            private $rootScope,
             private $location          : ng.ILocationService,
             private $translate         : ng.translate.ITranslateService,
             private $messageBusService : Services.MessageBusService,
@@ -139,7 +141,7 @@ module csComp.Services {
 
                 if (l != null)
                     {
-                    if (!timepos.hasOwnProperty(f.layerId)) {
+                    if (!timepos.hasOwnProperty(f.layerId) && l.timestamps) {
                         for (var i = 1; i < l.timestamps.length; i++) {                            
                             if (l.timestamps[i] > date) {
                                 timepos[f.layerId] = i;
@@ -158,8 +160,6 @@ module csComp.Services {
                                         }
                                         this.updateFeatureIcon(f, l);
                              
-                                    
-
                         }
                     }
                 }
@@ -234,7 +234,10 @@ module csComp.Services {
             var disableLayers = [];
             switch (layer.type) {
                 case "GeoJsonWebGL":
+                    layer.isLoading = true;
                     d3.json(layer.url, (error, data) => {
+                        layer.isLoading = false;
+                        this.$rootScope.$apply();
                         if (error)
                             this.$messageBusService.notify('ERROR loading' + layer.title, error);
                         else {
@@ -273,6 +276,9 @@ module csComp.Services {
                             webGl.updateDraw();
                             console.log("webgl drawn");
                             setInterval(function () { webGl.updateColors() }, 300);
+
+                            this.$messageBusService.publish("layer", "activated", layer);
+                            this.updateFilters();
                         }
                     });
                         
@@ -897,8 +903,8 @@ module csComp.Services {
 
         /** 
          * Return the feature style for a specific feature.
-         * First, look for a layer specific feature type, otherwise, look for a project-specific feature type.
-         * In case both fail, create a default feature type at the layer level.
+         * First, look for a layer specific feature type, otherwise, look for a project-specific feature type.        
+         * In case both fail, check if there is a default type, otherwise create a default feature type at the layer level.
          */
         public getFeatureType(feature: IFeature): IFeatureType {
             var projectFeatureTypeName = feature.properties['FeatureTypeId'] || "Default";
@@ -906,8 +912,9 @@ module csComp.Services {
             if (!(featureTypeName in this.featureTypes)) {
                 if (projectFeatureTypeName in this.featureTypes)
                     featureTypeName = projectFeatureTypeName;
-                else
-                    this.featureTypes[featureTypeName] = this.createDefaultType(feature);
+                else if ('default' in this.featureTypes) {
+                    featureTypeName = 'default';
+                }  else this.featureTypes[featureTypeName] = this.createDefaultType(feature);
             }
             feature.featureTypeName = featureTypeName;
             return this.featureTypes[featureTypeName];

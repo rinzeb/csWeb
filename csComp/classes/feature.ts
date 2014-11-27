@@ -103,6 +103,8 @@
         text
     }
 
+ 
+
     export interface IPropertyType {
         label?: string;
         title?: string;
@@ -116,7 +118,7 @@
         isSearchable?: boolean;
         minValue?: number;
         maxValue?: number;
-        defaultValue?: number;
+        defaultValue?: number;        
     }
 
     export interface IFeatureTypeStyle {
