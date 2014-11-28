@@ -104,6 +104,9 @@ module csComp.Services {
 
         public sensorData: any;
 
+        private sensorIndices: Array<any>;
+        private lastUpdate: number;
+
         constructor(
             private $location          : ng.ILocationService,
             private $translate         : ng.translate.ITranslateService,
@@ -121,6 +124,7 @@ module csComp.Services {
             this.map.map.addLayer(this.layerGroup);
             this.noStyles = true;
 
+            this.lastUpdate = 0;
             this.$messageBusService.subscribe("timeline", (trigger: string) => {
                 switch (trigger) {
 
@@ -133,32 +137,54 @@ module csComp.Services {
         }
 
         public updateSensorData() {
-            if (this.project == null || this.project.timeLine==null) return;
+            if (this.project == null || this.project.timeLine == null) return;
             var date = this.project.timeLine.focus;
             var timepos = {};
-            var curEpoch = 1398060000; // Temp time stamp
+            var curEpoch = 1413244800000; // Temp time stamp
             // 1417078638473
             // 1417353060000
-            curEpoch = Math.floor(date / 60000) * 60;
-            
-            if (curEpoch > 1398038400 && curEpoch < 1398121200) {                
+            curEpoch = Math.floor(date / (60000 * 24)) * 60 * 24;
+            // TEMP
+            curEpoch = 1413244800;
+            if (true) { //(curEpoch > 1398038400 && curEpoch < 1398121200) {                
                 this.project.groups.forEach(g => {
                     g.layers.forEach(l => {     
                         if (l.type == "GeoJsonWebGL") {
+                            if (!l.timestamps)
+                                l.timestamps = [];
                             if (l.timestamps.indexOf(curEpoch) == -1) {
                                 l.timestamps.push(curEpoch);
+                                console.log("Getting data");
                                 d3.json("/data?type=time&interval=hour&epoch=" + curEpoch, (error, data) => {
                                     if (error) {
                                         l.timestamps.splice(l.timestamps.indexOf(curEpoch), 1);
                                     }
                                     else {
+                                        // First time, build an index of the sensor data
+                                        if (!this.sensorIndices) {
+                                            this.sensorIndices = new Array();
+                                            var si = 0;
+                                            data.LinkValues.forEach((lv) => {
+                                                this.sensorIndices[lv["LINK_ID"]] = si;
+                                                si++;
+                                            });
+                                        }
+
                                         // Do something with the data
                                         l.timestamps = data.Epochs;
                                         // Go through the data and add sensor data to the feature
+
                                         this.project.features.forEach((f: IFeature) => {
-                                            // Find this feature
-                                            var id = f.id;
+                                            // Find this feature                                             
+                                            var id = f.properties["LINK_ID"];
+                                            var lv = data.LinkValues[this.sensorIndices[id]];
+                                            if(lv)
+                                                f.sensors = lv.Values;
                                         });
+
+                                        // Set right value
+                                        this.updateValues(curEpoch);
+                                        console.log("Data processed");
                                     }
                                 });
                             }
@@ -170,7 +196,7 @@ module csComp.Services {
             this.project.features.forEach((f: IFeature) => {
                 var l = this.findLayer(f.layerId);
 
-                if (l != null)
+                if (l != null && l.type != "GeoJsonWebGL")
                 {
                         if (!l.timestamps)
                             l.timestamps = [];
@@ -182,8 +208,6 @@ module csComp.Services {
                                 }
                             }
                         }
-
-                        
 
                         if (f.sensors != null) {
                             
@@ -204,7 +228,40 @@ module csComp.Services {
             this.$messageBusService.publish("feature", "onFeatureUpdated");
 
             
-            
+            this.updateValues(curEpoch);
+        }
+
+        private updateValues(epoch: number) {
+            var timeBetweenUpd = new Date().getTime() - this.lastUpdate;
+            if (timeBetweenUpd > 300) {
+                this.lastUpdate = new Date().getTime();
+                console.log("Updating data");
+                this.project.groups.forEach(g => {
+                    g.layers.forEach(l => {
+                        if (l.type == "GeoJsonWebGL") {
+                            // Find closest epoch
+                            var realEpoch = 1413244800;
+                            var epochIndex = l.timestamps.indexOf(realEpoch)
+                        if (epochIndex != -1) {
+                                this.project.features.forEach((f: IFeature) => {
+                                    if (f.sensors && f.sensors[epochIndex]) {
+                                        var currentValue = f.sensors[epochIndex];
+                                        currentValue = parseFloat(currentValue);
+                                        if (currentValue ) {
+                                            f.properties["WEGNUMMER"] = currentValue + Math.floor((Math.random() * 100) + 1);
+                                        }
+                                    }
+                                    else {
+                                        f.properties["WEGNUMMER"] = Math.floor((Math.random() * 100) + 1);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                });
+                this.$messageBusService.publish("feature", "onFeatureUpdated");
+                console.log("Data updated");
+            }
         }
 
         private parseEvents(layer: ProjectLayer, events : any) {
