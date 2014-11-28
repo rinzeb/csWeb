@@ -44,6 +44,15 @@
         url  : string;
     }
 
+    export class Sensor {
+        active: boolean;
+        source: string;
+        property: string;
+        start: number;
+        stop: number;
+        levels : number[]; 
+    }
+
     /** project configuration. */
     export class Project {
         title           : string;
@@ -57,8 +66,11 @@
         timeLine        : DateRange;
         dashboards      : { [id: string]: Dashboard };
         dataSets        : DataSet[];
-        viewBounds      : IBoundingBox;
+        viewBounds: IBoundingBox;
+        isLoading : boolean;
         markers = {};
+        sensorurl: string;
+        sensors : Sensor[];
 
     }
 
