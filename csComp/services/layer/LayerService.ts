@@ -377,6 +377,36 @@ module csComp.Services {
                             });
                             webGl.updateDraw();
                             console.log("webgl drawn");
+                            webGl.calculateColor = function (sensorValue, idx) {
+                                var length = this.data.features[idx].properties["LENGTH"];
+                                var maxSpeed = this.data.features[idx].properties["FR_SPD_LIM"];
+                                var maxNodeVal = maxSpeed; 
+                                var minNodeVal = 0;                                 
+                                var measVal = sensorValue; 
+                                var rR = 0.5;
+                                var rG = 0.5;
+                                var rB = 0.5;
+
+                                if (measVal != -1) {
+                                    measVal = length / measVal * 3.6;
+                                    if (maxNodeVal == minNodeVal)
+                                        maxNodeVal += 1;                                    
+
+                                    rB = 0.0;
+                                    rR = (maxNodeVal - measVal) / (maxNodeVal - minNodeVal);
+                                    if (rR < 0)
+                                        rR = 0;
+                                    if (rR > 1)
+                                        rR = 1;
+                                    rG = 1 - rR;
+                                }
+                                var colorObj: any; 
+                                colorObj = new Object();
+                                colorObj.rR = rR;
+                                colorObj.rG = rG;
+                                colorObj.rB = rB;
+                                return colorObj;
+                            }
                             setInterval(function () { webGl.updateColors() }, 300);
 
                         }
