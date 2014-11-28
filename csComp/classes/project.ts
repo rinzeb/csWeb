@@ -10,8 +10,6 @@
             this.focus = d.getTime();
             if (s) this.start = s.getTime();
             if (e) this.end = e.getTime();
-
-
         }
 
         constructor() {
