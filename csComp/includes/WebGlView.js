@@ -60,7 +60,6 @@ var WebGlLayer = (function () {
             });
 
             var glLayer = L.canvasOverlay().drawing(this.drawingOnCanvas).addTo(this.leafletMap);
-
             
             this.glLayer = glLayer;
             this.canvas = glLayer.canvas();
@@ -254,7 +253,7 @@ var WebGlLayer = (function () {
             var minNodeVal = 0; // Math.min.apply(null, this.data.features[idx].measurements);
             //if (maxNodeVal != -1)
             //    maxMeas = Math.min(meanNodeVal * 2, maxNodeVal);
-            var measVal = this.data.features[idx].measurements[curIdx];
+            var measVal = this.data.features[idx].properties["SPEED"]; //this.data.features[idx].measurements[curIdx];
             var rR = 0.5;
             var rG = 0.5;
             var rB = 0.5;
