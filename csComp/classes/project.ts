@@ -68,7 +68,8 @@
         isLoading : boolean;
         markers = {};
         sensorurl: string;
-        sensors : Sensor[];
+        sensors: Sensor[];
+         
 
     }
 
@@ -88,7 +89,7 @@
         enabled                     : boolean;
         opacity                     : number;
         isLoading                   : boolean;
-        isSublayer                  : boolean;
+        isSublayer: boolean;        
         updateFilter                : Function;
         mapLayer                    : L.LayerGroup<L.ILayer>;
         group: ProjectGroup;

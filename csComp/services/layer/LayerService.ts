@@ -47,7 +47,7 @@ module csComp.Services {
     
 
     declare var String;
-    declare var WebGlLayer;
+    declare var WebGlLayer;    
 
 
     export interface ILayerService {
@@ -232,16 +232,20 @@ module csComp.Services {
          */
         public addLayer(layer: ProjectLayer) {
             var disableLayers = [];
+
+            
             switch (layer.type) {
                 case "GeoJsonWebGL":
                     layer.isLoading = true;
+                    
                     d3.json(layer.url, (error, data) => {
                         layer.isLoading = false;
+                        
                         this.$rootScope.$apply();
                         if (error)
                             this.$messageBusService.notify('ERROR loading' + layer.title, error);
                         else {
-
+                            this.$messageBusService.publish("timeline", "updateTimerange", { start: new Date(1, 1, 1), end: new Date(2014, 1, 1) });
                             this.prepareGeoJson(layer, data);
 
                             // init all features
@@ -316,8 +320,11 @@ module csComp.Services {
                         //} else
                         //    callback(null, null);
                     //},
-                    (callback) => {
-                        d3.json(layer.url, (error, data) => {
+                        (callback) => {
+                            layer.isLoading = true;
+                            d3.json(layer.url, (error, data) => {
+                                layer.isLoading = false;
+                                this.$rootScope.$apply();
                             if (error)
                                 this.$messageBusService.notify('ERROR loading' + layer.title, error);
                             else {
@@ -1109,6 +1116,7 @@ module csComp.Services {
             $.getJSON(url, (data: Project) => {
                 this.project = data;
 
+                
                 
                 
 

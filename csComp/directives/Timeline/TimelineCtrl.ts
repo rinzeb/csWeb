@@ -46,6 +46,15 @@
             ) {
             $scope.vm = this;
 
+            this.$messageBusService.subscribe("timeline", (s: string, data: any) => {                
+                switch (s) {
+                    case "updateTimerange":
+                        this.$scope.timeline.setVisibleChartRange(data.start, data.end);  
+                        this.updateFocusTime();                      
+                        break;
+                }
+            });
+
             //$scope.focusDate = $layerService.project.timeLine.focusDate();
 
             // Options voor de timeline
@@ -68,6 +77,8 @@
         });
 
             this.updateFocusTime();
+
+            
         }
 
         public onRangeChanged(properties) {            
