@@ -30,6 +30,10 @@
         public startDate: Date;
         public endDate: Date;
 
+        public timer: any;
+        public isPlaying: boolean;
+        public showControl : boolean;
+        public isPinned : boolean;
 
 
         // dependencies are injected via AngularJS $injector 
@@ -71,15 +75,55 @@
 
         }
 
+        public start() {
+            this.stop();
+            this.isPlaying = true;
+            if (this.timer) this.timer = null;
+            this.timer = setInterval(()=> { this.myTimer(); }, 500);
+
+            
+        }
+
+        public myTimer() {
+            this.$scope.timeline.move(0.005);
+            this.updateFocusTime();
+
+        }
+
+        public mouseEnter() {
+            this.showControl = true;
+        }
+
+        public mouseLeave() {
+            if (!this.isPlaying) this.showControl = false;
+             
+        }
+
+        public pinToNow() {
+            this.isPinned = true;
+            this.start();
+        }
+
+        public stop() {
+            this.isPlaying = false;
+            if (this.timer) clearInterval(this.timer);
+            
+        }
+
         public updateFocusTime() {
+            var tl = this.$scope.timeline;
+            tl.showCustomTime = true;
+            tl.setCustomTime = new Date(2014,11,27,20,40,0);
             var tc1 = $("#focustimeContainer").offset().left;
             var tc2 = $("#timelinecontainer").offset().left - 15; // + 55;
             var centerX = tc1 - tc2 + $("#focustimeContainer").width() / 2;
-            var end =  $("#timeline").width;
+            var end = $("#timeline").width;
+
+            var range = this.$scope.timeline.getVisibleChartRange();
 
             this.focusDate = new Date(this.$scope.timeline.screenToTime(centerX));
-            this.startDate = new Date(this.$scope.timeline.screenToTime(0));
-            this.endDate = new Date(this.$scope.timeline.screenToTime(end));
+            this.startDate = range.start; //new Date(range.start); //this.$scope.timeline.screenToTime(0));
+            this.endDate = range.end; //new Date(this.$scope.timeline.screenToTime(end));
 
 
             if (this.$layerService.project != null && this.$layerService.project.timeLine != null) {
