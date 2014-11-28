@@ -29,7 +29,8 @@
         featureTypeName: string;
         fType          : IFeatureType;
         isInitialized  : boolean;
-        sensors        : { [id: string]: any[]}
+        sensors        : { [id: string]: any}
+        //sensors: { [id: string]: number[] }
         
     }
 

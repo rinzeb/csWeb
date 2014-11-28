@@ -47,7 +47,7 @@ module csComp.Services {
     
 
     declare var String;
-    declare var WebGlLayer;
+    declare var WebGlLayer;    
 
 
     export interface ILayerService {
@@ -75,6 +75,7 @@ module csComp.Services {
         public maxBounds: IBoundingBox;
 
         public static $inject = [
+            '$rootScope',
             '$location',
             '$translate',
             'messageBusService',
@@ -108,7 +109,8 @@ module csComp.Services {
         private lastUpdate: number;
 
         constructor(
-            private $location          : ng.ILocationService,
+            private $rootScope,
+            private $location: ng.ILocationService,
             private $translate         : ng.translate.ITranslateService,
             private $messageBusService : Services.MessageBusService,
             private $mapService        : Services.MapService) {
@@ -143,9 +145,9 @@ module csComp.Services {
             var curEpoch = 1413244800000; // Temp time stamp
             // 1417078638473
             // 1417353060000
-            curEpoch = Math.floor(date / (60000 * 24)) * 60 * 24;
+            curEpoch = Math.floor(date / (60000 )) * 60 ;
             // TEMP
-            curEpoch = 1413244800;
+            //curEpoch = 1413244800;
             if (true) { //(curEpoch > 1398038400 && curEpoch < 1398121200) {                
                 this.project.groups.forEach(g => {
                     g.layers.forEach(l => {     
@@ -240,7 +242,7 @@ module csComp.Services {
                     g.layers.forEach(l => {
                         if (l.type == "GeoJsonWebGL") {
                             // Find closest epoch
-                            var realEpoch = 1413244800;
+                            var realEpoch = epoch;
                             var epochIndex = l.timestamps.indexOf(realEpoch)
                         if (epochIndex != -1) {
                                 this.project.features.forEach((f: IFeature) => {
@@ -248,11 +250,11 @@ module csComp.Services {
                                         var currentValue = f.sensors[epochIndex];
                                         currentValue = parseFloat(currentValue);
                                         if (currentValue ) {
-                                            f.properties["WEGNUMMER"] = currentValue + Math.floor((Math.random() * 100) + 1);
+                                            f.properties["SPEED"] = currentValue; // + Math.floor((Math.random() * 100) + 1);
                                         }
                                     }
                                     else {
-                                        f.properties["WEGNUMMER"] = Math.floor((Math.random() * 100) + 1);
+                                        //f.properties["SPEED"] = -1; //Math.floor((Math.random() * 100) + 1);
                                     }
                                 });
                             }
@@ -326,15 +328,21 @@ module csComp.Services {
          */
         public addLayer(layer: ProjectLayer) {
             var disableLayers = [];
+
+            
             switch (layer.type) {
                 case "GeoJsonWebGL":
                     this.sensorData = new Array();
+                    layer.isLoading = true;
+                    
                     d3.json(layer.url, (error, data) => {
-                        
+                        layer.isLoading = false;
+
+                        this.$rootScope.$apply();
                         if (error)
                             this.$messageBusService.notify('ERROR loading' + layer.title, error);
                         else {
-
+                            this.$messageBusService.publish("timeline", "updateTimerange", { start: new Date(2014, 9, 14), end: new Date(2014, 9, 15) });
                             
                             this.prepareGeoJson(layer, data);
 
@@ -345,7 +353,7 @@ module csComp.Services {
                                 });
                             }
 
-                            
+
                             layer.updateFilter = ((filtered: Feature[]) => {
                                 //console.log("Filtered items : " + filtered.length);
                                 webGl.handleFiltered(filtered);
@@ -354,7 +362,7 @@ module csComp.Services {
 
                             var webGl = new WebGlLayer(this.$mapService.map, data, {
                                 click: (index, feature) => {
-                                                //var feature = layer.group
+                                    //var feature = layer.group
                                     feature.isSelected = !feature.isSelected;
                                     if (!feature.isSelected) {
                                         this.$messageBusService.publish("sidebar", "hide");
@@ -364,12 +372,13 @@ module csComp.Services {
                                         this.$messageBusService.publish("feature", "onFeatureSelect", feature);
                                     }
 
-                                    
+
                                 }
                             });
                             webGl.updateDraw();
                             console.log("webgl drawn");
                             setInterval(function () { webGl.updateColors() }, 300);
+
                         }
                     });
                         
@@ -407,8 +416,11 @@ module csComp.Services {
                         //} else
                         //    callback(null, null);
                     //},
-                    (callback) => {
-                        d3.json(layer.url, (error, data) => {
+                        (callback) => {
+                            layer.isLoading = true;
+                            d3.json(layer.url, (error, data) => {
+                                layer.isLoading = false;
+                                this.$rootScope.$apply();
                             if (error)
                                 this.$messageBusService.notify('ERROR loading' + layer.title, error);
                             else {
@@ -1199,6 +1211,7 @@ module csComp.Services {
             $.getJSON(url, (data: Project) => {
                 this.project = data;
 
+                
                 
                 
 

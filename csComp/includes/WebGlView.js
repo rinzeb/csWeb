@@ -2,7 +2,43 @@
 
 var WebGlLayer = (function () {
     function WebGlLayer(lmap, jsonObj, options) {
-            //this.webGLData = 
+        //this.webGLData = 
+            this.calculateColor = function (sensorValue, idx) {
+                var length = this.data.features[idx].properties["LENGTH"];
+                var maxSpeed = this.data.features[idx].properties["FR_SPD_LIM"];
+                var maxNodeVal = maxSpeed; //  Math.max.apply(null, this.data.features[idx].measurements);
+                var minNodeVal = 0; // Math.min.apply(null, this.data.features[idx].measurements);
+                //if (maxNodeVal != -1)
+                //    maxMeas = Math.min(meanNodeVal * 2, maxNodeVal);
+                var measVal = sensorValue; // this.data.features[idx].properties["SPEED"]; //this.data.features[idx].measurements[curIdx];
+                var rR = 0.5;
+                var rG = 0.5;
+                var rB = 0.5;
+
+                if (measVal != -1) {
+                    measVal = length / measVal * 3.6;
+                    if (maxNodeVal == minNodeVal)
+                        maxNodeVal += 1;
+                    /*var rgLev = maxMeas - measVal;
+                    if (rgLev <= 0)
+                        rgLev = 1;
+                    if (rgLev > maxMeas)
+                        rgLev = maxMeas;*/
+
+                    rB = 0.0;
+                    rR = (maxNodeVal - measVal) / (maxNodeVal - minNodeVal);
+                    if (rR < 0)
+                        rR = 0;
+                    if (rR > 1)
+                        rR = 1;
+                    rG = 1 - rR;
+                }
+                var colorObj = new Object();
+                colorObj.rR = rR;
+                colorObj.rG = rG;
+                colorObj.rB = rB;
+                return colorObj;
+            }
             this.leafletMap = lmap;            
             this.data = jsonObj;
             this.measIdx = 0;
@@ -227,6 +263,8 @@ var WebGlLayer = (function () {
         this.glLayer.redraw();
     }
 
+    
+
     WebGlLayer.prototype.updateColors = function () {
         if (this.moving == true)
             return;
@@ -245,9 +283,9 @@ var WebGlLayer = (function () {
             var idxObj = this.verticesIndex[idxL];
             var idx = idxObj.index;
             
-            
+            var colorObj = this.calculateColor(this.data.features[idx].properties["SPEED"], idx);
             //var meanNodeVal = Math.average.apply(null, this.data.features[idx].measurements);
-            var length = this.data.features[idx].properties["LENGTH"];
+            /*var length = this.data.features[idx].properties["LENGTH"];
             var maxSpeed = this.data.features[idx].properties["FR_SPD_LIM"];
             var maxNodeVal = maxSpeed; //  Math.max.apply(null, this.data.features[idx].measurements);
             var minNodeVal = 0; // Math.min.apply(null, this.data.features[idx].measurements);
@@ -263,11 +301,7 @@ var WebGlLayer = (function () {
                 measVal = length / measVal * 3.6;
                 if(maxNodeVal == minNodeVal)
                     maxNodeVal += 1;
-                /*var rgLev = maxMeas - measVal;
-                if (rgLev <= 0)
-                    rgLev = 1;
-                if (rgLev > maxMeas)
-                    rgLev = maxMeas;*/
+                
 
                 rB = 0.0;
                 rR = (maxNodeVal - measVal) / (maxNodeVal - minNodeVal);
@@ -276,7 +310,7 @@ var WebGlLayer = (function () {
                 if (rR > 1)
                     rR = 1;
                 rG = 1 - rR;
-            }
+            }*/
 
             /*var rR = Math.random();
             var rG = Math.random();
@@ -284,9 +318,9 @@ var WebGlLayer = (function () {
 
             for(var i = idxObj.startIdx; i < idxObj.endIdx; i += 6)
             {
-                curVertArr[i + 2] = rR;
-                curVertArr[i + 3] = rG;
-                curVertArr[i + 4] = rB;
+                curVertArr[i + 2] = colorObj.rR;
+                curVertArr[i + 3] = colorObj.rG;
+                curVertArr[i + 4] = colorObj.rB;
             }
         }
 
