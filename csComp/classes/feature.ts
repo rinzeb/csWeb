@@ -28,8 +28,9 @@
         htmlStyle      : string;
         featureTypeName: string;
         fType          : IFeatureType;
-        isInitialized  : boolean;
-        sensors        : { [id: string]: any}
+        isInitialized: boolean;        
+        sensors        : { [id: string]: any }
+        sensorValues   : Array<any>;
         //sensors: { [id: string]: number[] }
         
     }
@@ -53,6 +54,7 @@
         public fType          : IFeatureType;
         public isInitialized  : boolean;
         public sensors        : { [id: string]: any[] }
+        public sensorValues   : Array<any>;
     }
 
     export interface IStringToString {
