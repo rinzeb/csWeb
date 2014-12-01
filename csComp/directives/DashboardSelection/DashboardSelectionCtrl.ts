@@ -129,11 +129,11 @@
         /** Select an active dashboard */
         public selectDashboard(key: string) {
             //var res = JSON.stringify(this.$dashboardService.dashboards);
-            for (var property in this.$dashboardService.dashboards) {
-                this.$dashboardService.dashboards[property].editMode = false;
+            for (var property in this.$layerService.project.dashboards) {
+                this.$layerService.project.dashboards[property].editMode = false;
             }
-            if (this.$dashboardService.dashboards.hasOwnProperty(key)) {
-                this.$dashboardService.mainDashboard = this.$dashboardService.dashboards[key];
+            if (this.$layerService.project.dashboards.hasOwnProperty(key)) {
+                this.$dashboardService.mainDashboard = this.$layerService.project.dashboards[key];
                 if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') { this.$scope.$apply(); }
 
 

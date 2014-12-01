@@ -156,7 +156,7 @@ module csComp.Services {
                                 l.timestamps = [];
                             if (l.timestamps.indexOf(curEpoch) == -1) {
                                 l.timestamps.push(curEpoch);
-                                console.log("Getting data");
+                                //console.log("Getting data");
                                 d3.json("/data?type=time&interval=hour&epoch=" + curEpoch, (error, data) => {
                                     if (error) {
                                         l.timestamps.splice(l.timestamps.indexOf(curEpoch), 1);
@@ -186,7 +186,7 @@ module csComp.Services {
 
                                         // Set right value
                                         this.updateValues(curEpoch);
-                                        console.log("Data processed");
+                                        //console.log("Data processed");
                                     }
                                 });
                             }
@@ -237,7 +237,7 @@ module csComp.Services {
             var timeBetweenUpd = new Date().getTime() - this.lastUpdate;
             if (timeBetweenUpd > 300) {
                 this.lastUpdate = new Date().getTime();
-                console.log("Updating data");
+                //console.log("Updating data");
                 this.project.groups.forEach(g => {
                     g.layers.forEach(l => {
                         if (l.type == "GeoJsonWebGL") {
@@ -262,7 +262,7 @@ module csComp.Services {
                     });
                 });
                 this.$messageBusService.publish("feature", "onFeatureUpdated");
-                console.log("Data updated");
+                //console.log("Data updated");
             }
         }
 
@@ -376,7 +376,7 @@ module csComp.Services {
                                 }
                             });
                             webGl.updateDraw();
-                            console.log("webgl drawn");
+                            //console.log("webgl drawn");
                             webGl.calculateColor = function (sensorValue, idx) {
                                 var length = this.data.features[idx].properties["LENGTH"];
                                 var maxSpeed = this.data.features[idx].properties["FR_SPD_LIM"];
@@ -1045,8 +1045,10 @@ module csComp.Services {
             if (!(featureTypeName in this.featureTypes)) {
                 if (projectFeatureTypeName in this.featureTypes)
                     featureTypeName = projectFeatureTypeName;
-                else
-                    this.featureTypes[featureTypeName] = this.createDefaultType(feature);
+                else if ("default" in this.featureTypes)
+                {
+                    featureTypeName = "default";
+                } else this.featureTypes[featureTypeName] = this.createDefaultType(feature);
             }
             feature.featureTypeName = featureTypeName;
             return this.featureTypes[featureTypeName];
@@ -1241,9 +1243,14 @@ module csComp.Services {
             $.getJSON(url, (data: Project) => {
                 this.project = data;
 
-                
-                
-                
+                if (!this.project.dashboards) {
+                    this.project.dashboards = { map : new Dashboard("map","map")};
+                    
+
+                } else {
+                    alert('add dashboard');
+                }
+
 
                 if (!this.project.timeLine) {
                     this.project.timeLine = new DateRange();

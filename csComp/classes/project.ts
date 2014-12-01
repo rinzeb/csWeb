@@ -1,15 +1,33 @@
 ﻿module csComp.Services {
 
+    var availableZoomLevels = [
+        {  title: "weeks",value: 604800000}, { title: "days", value: 86400000 },{ title: "hours", value: 3600000 }, { title: "quarters", value: 900000 }, { title: "minutes", value: 60000 }, { title: "seconds", value: 1000 }
+    ];
+
 
     export class DateRange {
         start : number;
         end: number;
         focus: number;
+        range: number; // total time range in ms
+        zoomLevel: number;
+        zoomLevelName : string;        
 
         public setFocus(d: Date,s? : Date, e? : Date) {
             this.focus = d.getTime();
             if (s) this.start = s.getTime();
             if (e) this.end = e.getTime();
+            var newRange = this.end - this.start;
+            if (this.range !== newRange) {
+                this.range = newRange;
+                availableZoomLevels.some((tl) => {
+                    this.zoomLevel = tl.value;
+                    this.zoomLevelName = tl.title;
+                    return (tl.value < (this.range / 10));
+                });
+            }
+
+
         }
 
         constructor() {
