@@ -87,7 +87,7 @@
     export class Dashboard {        
         widgets: IWidget[];
         editMode: boolean;        
-        showMap: boolean = true;
+        showMap: boolean;
         showTimeline : boolean = true;
         draggable: boolean = false;
         resizable : boolean = true;

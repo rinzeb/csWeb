@@ -994,7 +994,10 @@
             if (!(this.featureTypes.hasOwnProperty(featureTypeName))) {
                 if (this.featureTypes.hasOwnProperty(projectFeatureTypeName))
                     featureTypeName = projectFeatureTypeName;
-                else if ("default" in Object.keys(this.featureTypes))
+                else if (this.featureTypes.hasOwnProperty(feature.layerId)){
+                    featureTypeName = feature.layerId;
+                }
+                else if (this.featureTypes.hasOwnProperty("default"))
                 {
                     featureTypeName = "default";
                 } else this.featureTypes[featureTypeName] = this.createDefaultType(feature);
@@ -1090,8 +1093,6 @@
                                 try {
                                     m.removeLayer(layer.group.markers[feature.id]);
                                     delete layer.group.markers[feature.id];
-
-
                                 } catch (error) {
 
                                 }

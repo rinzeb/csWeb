@@ -109,7 +109,7 @@
                 } else {
                     this.$mapService.hideTimeline();
                 }
-                this.$scope.$apply();
+                if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') { this.$scope.$apply(); }
             }
         }
 
@@ -121,7 +121,7 @@
                 } else {
                     this.$mapService.hide();
                 }
-                this.$scope.$apply();
+                if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') { this.$scope.$apply(); }
             }
         }
 
