@@ -76,7 +76,8 @@ height: 52px;
             <div ng-show="vm.showControl" class="timelineControl" ng-class="{isPlaying : vm.isPlaying}">
                 <div ng-hide="vm.isPlaying" class="fa fa-play focustimeButton" ng-click="vm.start()"></div>
                 <div ng-show="vm.isPlaying" class="fa fa-stop focustimeButton" ng-click="vm.stop()"></div>
-                <div ng-hide="vm.isPinned" class="fa fa-thumb-tack focustimeButton pinButton" ng-class="{isPinned : vm.isPinned}" ng-click="vm.pinToNow()"></div>
+                <div style="float:right">{{vm.$layerService.project.timeLine.levelName}}</div>
+                <!--<div ng-hide="vm.isPinned" class="fa fa-thumb-tack focustimeButton pinButton" ng-class="{isPinned : vm.isPinned}" ng-click="vm.pinToNow()"></div>-->
             </div>
             <div class="focustimeText">
                 <span style="font-weight: bold">{{vm.focusDate | date:"MM/dd/yyyy"}}</span><br />

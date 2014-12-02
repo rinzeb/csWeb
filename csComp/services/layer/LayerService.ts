@@ -94,7 +94,7 @@
             if (this.project == null || this.project.timeLine == null) return;
             var date = this.project.timeLine.focus;
             var timepos = {};
-            // TODO , kijken naar huidige aggregatie nivo. Afhankelijk hiervan vragen om data bij de service
+            // TODO , kijken naar huidige aggregatie nivo. Afhankelijk hiervan vragen om data bij de service 
             var curAggr = 300; //60;
             curAggr = this.project.timeLine.zoomLevel / 1000;
             var curEpoch = Math.floor(date / (curAggr * 1000 )) * curAggr;

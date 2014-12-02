@@ -1,10 +1,17 @@
 ﻿module csComp.Services {
+  /** 
+    * Implement this interface to make your object serializable 
+    * @see http://stackoverflow.com/a/22886730/319711
+    */
+    export interface ISerializable<T> {
+        deserialize(input: Object): T;
+    }
+  
 
-    var availableZoomLevels = [
+      var availableZoomLevels = [
         {  title: "weeks",value: 604800000}, { title: "days", value: 86400000 },{ title: "hours", value: 3600000 }, { title: "quarters", value: 900000 }, { title: "minutes", value: 60000 }, { title: "seconds", value: 1000 }
     ];
-
-
+    
     export class DateRange {
         start : number;
         end: number;
@@ -26,8 +33,6 @@
                     return (tl.value < (this.range / 10));
                 });
             }
-
-
         }
 
         constructor() {
@@ -36,10 +41,8 @@
 
         startDate = () => { return new Date(this.start); }
         focusDate = () => { return new Date(this.start); }
-        endDate = () => { return new Date(this.start); }
-
+        endDate   = () => { return new Date(this.start); }
     }
-    
 
     /**
      * Represents to the overall solution class. A solution can contain multiple project.
@@ -70,7 +73,7 @@
     }
 
     /** project configuration. */
-    export class Project {
+    export class Project implements ISerializable<Project> {
         title           : string;
         description     : string;
         logo            : string;
@@ -80,6 +83,7 @@
         startposition   : Coordinates;
         features        : IFeature[];
         timeLine        : DateRange;
+        mcas            : Mca.Models.Mca[];
         dashboards      : { [id: string]: Dashboard };
         dataSets        : DataSet[];
         viewBounds: IBoundingBox;
@@ -89,6 +93,23 @@
         sensors: Sensor[];
          
 
+        public deserialize(input: Project): Project {
+            this.viewBounds       = input.viewBounds;
+            this.title            = input.title;
+            this.description      = input.description;
+            this.logo             = input.logo;
+            this.markers          = input.markers;
+            this.startposition    = input.startposition;
+            this.features         = input.features;
+            this.featureTypes     = input.featureTypes;
+            this.propertyTypeData = input.propertyTypeData;
+            this.groups           = input.groups;
+            this.mcas             = [];
+            for (var mca in input.mcas) {
+                this.mcas.push(new Mca.Models.Mca().deserialize(mca));
+            }
+            return this;
+        }
     }
 
     /** bouding box to specify a region. */
