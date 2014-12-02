@@ -3,6 +3,7 @@
     import IPropertyType = csComp.Services.IPropertyType;
     import IFeature = csComp.Services.IFeature;
     import ProjectLayer = csComp.Services.ProjectLayer;
+    import StringExt    = csComp.StringExt;
 
     export interface IDataTableViewScope extends ng.IScope {
         vm             : DataTableCtrl;
@@ -21,17 +22,16 @@
     declare var String;
 
     export class DataTableCtrl {
-        public mapLabel        : string = "map";
-        public dataset         : IGeoJsonFile;
+        public mapLabel       : string = "map";
+        public dataset        : IGeoJsonFile;
         public selectedType   : csComp.Services.IFeatureType;
-        public numberOfItems   : number = 10;
-        public selectedLayerId : string;
-        public layerOptions    : Array<any> = [];
+        public numberOfItems  : number = 10;
+        public selectedLayerId: string;
+        public layerOptions   : Array<any> = [];
         public propertyTypes: Array<IPropertyType> = [];
-        public headers         : Array<string> = [];
-        public sortingColumn   : number;
-        public rows            : Array<Array<TableField>> = [];
-        private mapFeatureTitle: string;
+        public headers        : Array<string> = [];
+        public sortingColumn  : number;
+        public rows           : Array<Array<TableField>> = [];
 
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
@@ -41,7 +41,6 @@
             '$scope',
             '$http',
             '$sce',
-            '$translate',
             'layerService',
             'localStorageService',
             'messageBusService'
@@ -53,7 +52,6 @@
             private $scope               : IDataTableViewScope,
             private $http                : ng.IHttpService,
             private $sce                 : ng.ISCEService,              
-            private $translate           : ng.translate.ITranslateService,              
             private $layerService        : csComp.Services.LayerService,
             private $localStorageService : ng.localStorage.ILocalStorageService,
             private $messageBusService   : csComp.Services.MessageBusService
@@ -61,10 +59,6 @@
             // 'vm' stands for 'view model'. We're adding a reference to the controller to the scope
             // for its methods to be accessible from view / HTML
             $scope.vm = this;
-
-            $translate('MAP_FEATURES').then(translation => {
-                this.layerOptions[0].title = translation;
-            });
 
             this.bindToStorage('vm.numberOfItems', 10);
             this.numberOfItems = $localStorageService.get('vm.numberOfItems');
@@ -91,7 +85,7 @@
             this.layerOptions.push({
                 "group" : '',
                 "id"    : this.mapLabel,
-                "title" : this.mapFeatureTitle
+                "title" : "Kaartfeatures"
             });
             if (this.$layerService.project == null || this.$layerService.project.groups == null) return;
             this.$layerService.project.groups.forEach((group) => {
@@ -242,26 +236,25 @@
                 var row: Array<TableField> = [];
                 meta.forEach((mi) => {
                     var text = f.properties[mi.label];
-                    displayValue = csComp.Helpers.convertPropertyInfo(mi, text);
-                    //if (!text)
-                    //    text = ' ';
-                    //else if (!$.isNumeric(text))
-                    //    text = text.replace(/&amp;/g, '&');
-                    //switch (mi.type) {
-                    //    case "bbcode":
-                    //        displayValue = XBBCODE.process({ text: text }).html;
-                    //        break;
-                    //    case "number":
-                    //        if (!$.isNumeric(text)) displayValue ='??';
-                    //        else if (!mi.stringFormat)
-                    //            displayValue = text.toString();
-                    //        else
-                    //            displayValue = String.format(mi.stringFormat, parseFloat(text));
-                    //        break;
-                    //    default:
-                    //        displayValue = text;
-                    //        break;
-                    //}
+                    if (!text)
+                        text = ' ';
+                    else if (!$.isNumeric(text))
+                        text = text.replace(/&amp;/g, '&');
+                    switch (mi.type) {
+                        case "bbcode":
+                            displayValue = XBBCODE.process({ text: text }).html;
+                            break;
+                        case "number":
+                            if (!$.isNumeric(text)) displayValue ='??';
+                            else if (!mi.stringFormat)
+                                displayValue = text.toString();
+                            else
+                                displayValue = String.format(mi.stringFormat, parseFloat(text));
+                            break;
+                        default:
+                            displayValue = text;
+                            break;
+                    }
                     row.push(new TableField(displayValue, text, mi.type, mi.title));
                 });
                 props.push(row);
@@ -338,7 +331,6 @@
             } else {
                 // Support for browsers that support the data uri.
                 var a: any = document.createElement('a');
-                document.body.appendChild(a);
                 a.href = 'data:text/csv;charset=utf-8,' + encodeURI(csvData);
                 a.target = '_blank';
                 a.download = filename;
@@ -350,15 +342,8 @@
         /**
          * Convert to trusted html string.
          */
-        public toTrusted(html: string) {
-            try {
-                if (html === undefined || html === null)
-                    return this.$sce.trustAsHtml(html);
-                return this.$sce.trustAsHtml(html.toString());
-            } catch (e) {
-                console.log(e + ': ' + html);
-                return '';
-            }
+        public toTrusted(html: string) : string {
+            return this.$sce.trustAsHtml(html);
         }
     }
 }

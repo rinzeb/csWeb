@@ -57,6 +57,7 @@
 
         private sensorIndices: Array<any>;
         private lastUpdate: number;
+        private lastTimeZoom: number;
 
         constructor(
             private $rootScope,
@@ -77,6 +78,7 @@
             this.noStyles = true;
 
             this.lastUpdate = 0;
+            
             this.$messageBusService.subscribe("timeline", (trigger: string) => {
                 switch (trigger) {
 
@@ -92,24 +94,40 @@
             if (this.project == null || this.project.timeLine == null) return;
             var date = this.project.timeLine.focus;
             var timepos = {};
-            var curEpoch = 1413244800000; // Temp time stamp
-            // 1417078638473
-            // 1417353060000
-            curEpoch = Math.floor(date / (60000 )) * 60 ;
-            // TEMP
-            //curEpoch = 1413244800;
+            // TODO , kijken naar huidige aggregatie nivo. Afhankelijk hiervan vragen om data bij de service
+            var curAggr = 300; //60;
+            curAggr = this.project.timeLine.zoomLevel / 1000;
+            var curEpoch = Math.floor(date / (curAggr * 1000 )) * curAggr;
+
+            if (this.project && this.project.timeLine && this.project.timeLine.zoomLevel && !this.lastTimeZoom) {
+                this.lastTimeZoom = this.project.timeLine.zoomLevel;
+            }
+            
             if (true) { //(curEpoch > 1398038400 && curEpoch < 1398121200) {                
                 this.project.groups.forEach(g => {
                     g.layers.forEach(l => {     
                         if (l.type.toLowerCase() === "geojsonwebgl") {
+                            if (this.project.timeLine.zoomLevel != this.lastTimeZoom) {
+                                // Clear all stored data
+                                l.timestamps = null;
+                                l.getDataTimestamps = null;       
+                                
+                                this.project.features.forEach((f: IFeature) => {
+                                    if (f.sensorValues)
+                                        f.sensorValues = null;
+                                });                                           
+                            }
+                            
                             if (!l.timestamps)
                                 l.timestamps = [];
-                            if (l.timestamps.indexOf(curEpoch) == -1) {
-                                l.timestamps.push(curEpoch);
+                            if (!l.getDataTimestamps)
+                                l.getDataTimestamps = [];
+                            if (l.getDataTimestamps.indexOf(curEpoch) == -1) {
+                                l.getDataTimestamps.push(curEpoch);
                                 //console.log("Getting data");
-                                d3.json("/data?type=time&interval=hour&epoch=" + curEpoch, (error, data) => {
+                                d3.json("/data?type=time&interval=" + curAggr + "&epoch=" + curEpoch, (error, data) => {
                                     if (error) {
-                                        l.timestamps.splice(l.timestamps.indexOf(curEpoch), 1);
+                                        l.getDataTimestamps.splice(l.getDataTimestamps.indexOf(curEpoch), 1);
                                     }
                                     else {
                                         // First time, build an index of the sensor data
@@ -123,15 +141,40 @@
                                         }
 
                                         // Do something with the data
-                                        l.timestamps = data.Epochs;
+                                        data.Epochs.forEach((ep: any) => {
+                                            l.timestamps.push(ep);
+                                        });
+                                        
                                         // Go through the data and add sensor data to the feature
 
                                         this.project.features.forEach((f: IFeature) => {
                                             // Find this feature                                             
                                             var id = f.properties["LINK_ID"];
                                             var lv = data.LinkValues[this.sensorIndices[id]];
-                                            if(lv)
-                                                f.sensors = lv.Values;
+                                            if (lv) {
+                                                if (f.sensorValues)
+                                                    if (lv.Values) {
+                                                        lv.Values.forEach((lval: any) => {
+                                                            f.sensorValues.push(lval);
+                                                        });
+                                                    }
+                                                    else {
+                                                        data.Epochs.forEach((ep: any) => {
+                                                            f.sensorValues.push(-1);
+                                                        });
+                                                    }
+                                                else {
+                                                    if (lv.Values) {
+                                                        f.sensorValues = lv.Values;
+                                                    }
+                                                    else {
+                                                        f.sensorValues = [];
+                                                        data.Epochs.forEach((ep: any) => {
+                                                            f.sensorValues.push(-1);
+                                                        });
+                                                    }
+                                                }
+                                            }
                                         });
 
                                         // Set right value
@@ -144,7 +187,9 @@
                     });
                 });
             }
+            this.lastTimeZoom = this.project.timeLine.zoomLevel;       
             
+
             this.project.features.forEach((f: IFeature) => {
                     var l = this.findLayer(f.layerId);
 
@@ -180,6 +225,7 @@
         private updateValues(epoch: number) {
             var timeBetweenUpd = new Date().getTime() - this.lastUpdate;
             if (timeBetweenUpd > 300) {
+                this.project.timeLine.zoomLevel;
                 this.lastUpdate = new Date().getTime();
                 //console.log("Updating data");
                 this.project.groups.forEach(g => {
@@ -190,8 +236,8 @@
                             var epochIndex = l.timestamps.indexOf(realEpoch)
                         if (epochIndex != -1) {
                                 this.project.features.forEach((f: IFeature) => {
-                                    if (f.sensors && f.sensors[epochIndex]) {
-                                        var currentValue = f.sensors[epochIndex];
+                                    if (f.sensorValues && f.sensorValues[epochIndex]) {
+                                        var currentValue = f.sensorValues[epochIndex];
                                         currentValue = parseFloat(currentValue);
                                         if (currentValue ) {
                                             f.properties["SPEED"] = currentValue; // + Math.floor((Math.random() * 100) + 1);
@@ -302,6 +348,7 @@
                                 webGl.handleFiltered(filtered);
                             });
 
+                            
 
                             var webGl = new WebGlLayer(this.$mapService.map, data, {
                                 click: (index, feature) => {

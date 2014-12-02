@@ -1,4 +1,6 @@
 ﻿module csComp.Services {
+
+
     export interface IEvent {
         id   : string;
         title: string;
@@ -7,12 +9,13 @@
     }
 
     export class Event implements IEvent {
-        public id   : string;
+        public id: string;
         public title: string;
         public color: string;
         public start: number;
 
         public startDate = (): Date => { return new Date(this.start); } 
+        
     }
 
     export interface IFeature {
@@ -25,10 +28,14 @@
         htmlStyle      : string;
         featureTypeName: string;
         fType          : IFeatureType;
-        isInitialized  : boolean;
-        sensors        : { [id: string]: any}
+        isInitialized: boolean;        
+        sensors        : { [id: string]: any }
+        sensorValues   : Array<any>;
         //sensors: { [id: string]: number[] }
+        
     }
+
+   
 
     /** 
      * A feature is a single object that is show on a map (e.g. point, polyline, etc)
@@ -47,6 +54,7 @@
         public fType          : IFeatureType;
         public isInitialized  : boolean;
         public sensors        : { [id: string]: any[] }
+        public sensorValues   : Array<any>;
     }
 
     export interface IStringToString {
@@ -101,37 +109,37 @@
  
 
     export interface IPropertyType {
-        label?           : string;
-        title?           : string;
-        description?     : string;
-        type?            : string;
-        section?         : string;
-        stringFormat?    : string;
+        label?: string;
+        title?: string;
+        description?: string;
+        type?: string;
+        section?: string;
+        stringFormat?: string;
         visibleInCallOut?: boolean;
-        canEdit?         : boolean;
-        filterType?      : string;
-        isSearchable?    : boolean;
-        minValue?        : number;
-        maxValue?        : number;
+        canEdit?: boolean;
+        filterType?: string;
+        isSearchable?: boolean;
+        minValue?: number;
+        maxValue?: number;
         defaultValue?: number;        
     }
 
     export interface IFeatureTypeStyle {
-        nameLabel?           : string; // Default value is Name, i.e. the feature.properties.Name contains the title/name of the feature.
-        fillColor?           : string;
-        strokeColor?         : string;
-        drawingMode?         : string;
-        strokeWidth?         : number;
-        iconWidth?           : number;
-        iconHeight?          : number;
-        iconUri?             : string;
-        maxTitleResolution?  : string;
+        nameLabel?: string; // Default value is Name, i.e. the feature.properties.Name contains the title/name of the feature.
+        fillColor?: string;
+        strokeColor?: string;
+        drawingMode?: string;
+        strokeWidth?: number;
+        iconWidth?: number;
+        iconHeight?: number;
+        iconUri?: string;
+        maxTitleResolution?: string;
         analysispropertyType?: any;
     }
 
     export interface IFeatureType {
-        name?            : string;
-        style?           : IFeatureTypeStyle;
+        name?: string;
+        style?: IFeatureTypeStyle;
         propertyTypeData?: IPropertyType[];
         /**
          * Optional list of propertyType keys, separated by semi-colons. 
@@ -142,18 +150,27 @@
 
     export interface IGeoJsonFile {
         featureTypes?: { [key: string]: IFeatureType };
-        type         : string;
-        features     : Array<Feature>;
+        type: string;
+        features: Array<Feature>;
     }
 
     export class PropertyInfo {
-        max     : number;
-        min     : number;
-        count   : number;
-        mean    : number;
+        max: number;
+        min: number;
+        count: number;
+        mean: number;
         varience: number;
-        sd      : number;
-        sdMax   : number;
-        sdMin   : number;
+        sd: number;
+        sdMax: number;
+        sdMin: number;
     }
+
+
+
+    //export class Feature implements IFeature {
+    //    layerId   : string;
+    //    type      : string;
+    //    geometry  : IGeoJsonGeometry;
+    //    properties: Array<IStringToString>;
+    //}
 } 

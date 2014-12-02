@@ -131,7 +131,6 @@
             var end = $("#timeline").width;
 
             var range = this.$scope.timeline.getVisibleChartRange();
-            //tl.calcConversionFactor();
 
             this.focusDate = new Date(this.$scope.timeline.screenToTime(centerX));
             this.startDate = range.start; //new Date(range.start); //this.$scope.timeline.screenToTime(0));

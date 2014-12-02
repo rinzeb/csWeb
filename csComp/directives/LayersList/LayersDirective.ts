@@ -16,9 +16,9 @@
     }
     
     /**     
-      * Directive to display the available map layers.        
+      * Directive to display the available map layers.
       */
-    myModule.directive('layersDirective', [     
+    myModule.directive('layersDirective', [
         '$compile',
         function($compile)   : ng.IDirective {
             return {
