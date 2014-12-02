@@ -107,6 +107,7 @@ module csComp.Services {
 
         private sensorIndices: Array<any>;
         private lastUpdate: number;
+        private lastTimeZoom: number;
 
         constructor(
             private $rootScope,
@@ -127,6 +128,7 @@ module csComp.Services {
             this.noStyles = true;
 
             this.lastUpdate = 0;
+            
             this.$messageBusService.subscribe("timeline", (trigger: string) => {
                 switch (trigger) {
 
@@ -144,20 +146,35 @@ module csComp.Services {
             var timepos = {};
             // TODO , kijken naar huidige aggregatie nivo. Afhankelijk hiervan vragen om data bij de service
             var curAggr = 300; //60;
+            curAggr = this.project.timeLine.zoomLevel / 1000;
             var curEpoch = Math.floor(date / (curAggr * 1000 )) * curAggr;
-            
+
+            if (this.project && this.project.timeLine && this.project.timeLine.zoomLevel && !this.lastTimeZoom) {
+                this.lastTimeZoom = this.project.timeLine.zoomLevel;
+            }
             
             if (true) { //(curEpoch > 1398038400 && curEpoch < 1398121200) {                
                 this.project.groups.forEach(g => {
                     g.layers.forEach(l => {     
                         if (l.type == "GeoJsonWebGL") {
+                            if (this.project.timeLine.zoomLevel != this.lastTimeZoom) {
+                                // Clear all stored data
+                                l.timestamps = null;
+                                l.getDataTimestamps = null;       
+                                
+                                this.project.features.forEach((f: IFeature) => {
+                                    if (f.sensorValues)
+                                        f.sensorValues = null;
+                                });                                           
+                            }
+                            
                             if (!l.timestamps)
                                 l.timestamps = [];
                             if (!l.getDataTimestamps)
                                 l.getDataTimestamps = [];
                             if (l.getDataTimestamps.indexOf(curEpoch) == -1) {
                                 l.getDataTimestamps.push(curEpoch);
-                                console.log("Getting data");
+                                //console.log("Getting data");
                                 d3.json("/data?type=time&interval=" + curAggr + "&epoch=" + curEpoch, (error, data) => {
                                     if (error) {
                                         l.getDataTimestamps.splice(l.getDataTimestamps.indexOf(curEpoch), 1);
@@ -212,7 +229,7 @@ module csComp.Services {
 
                                         // Set right value
                                         this.updateValues(curEpoch);
-                                        console.log("Data processed");
+                                        //console.log("Data processed");
                                     }
                                 });
                             }
@@ -220,7 +237,9 @@ module csComp.Services {
                     });
                 });
             }
+            this.lastTimeZoom = this.project.timeLine.zoomLevel;       
             
+
             this.project.features.forEach((f: IFeature) => {
                 var l = this.findLayer(f.layerId);
 
@@ -262,8 +281,9 @@ module csComp.Services {
         private updateValues(epoch: number) {
             var timeBetweenUpd = new Date().getTime() - this.lastUpdate;
             if (timeBetweenUpd > 300) {
+                this.project.timeLine.zoomLevel;
                 this.lastUpdate = new Date().getTime();
-                console.log("Updating data");
+                //console.log("Updating data");
                 this.project.groups.forEach(g => {
                     g.layers.forEach(l => {
                         if (l.type == "GeoJsonWebGL") {
@@ -288,7 +308,7 @@ module csComp.Services {
                     });
                 });
                 this.$messageBusService.publish("feature", "onFeatureUpdated");
-                console.log("Data updated");
+                //console.log("Data updated");
             }
         }
 
@@ -403,7 +423,7 @@ module csComp.Services {
                                 }
                             });
                             webGl.updateDraw();
-                            console.log("webgl drawn");
+                            //console.log("webgl drawn");
                             webGl.calculateColor = function (sensorValue, idx) {
                                 var length = this.data.features[idx].properties["LENGTH"];
                                 var maxSpeed = this.data.features[idx].properties["FR_SPD_LIM"];
@@ -1072,8 +1092,10 @@ module csComp.Services {
             if (!(featureTypeName in this.featureTypes)) {
                 if (projectFeatureTypeName in this.featureTypes)
                     featureTypeName = projectFeatureTypeName;
-                else
-                    this.featureTypes[featureTypeName] = this.createDefaultType(feature);
+                else if ("default" in this.featureTypes)
+                {
+                    featureTypeName = "default";
+                } else this.featureTypes[featureTypeName] = this.createDefaultType(feature);
             }
             feature.featureTypeName = featureTypeName;
             return this.featureTypes[featureTypeName];
@@ -1268,9 +1290,14 @@ module csComp.Services {
             $.getJSON(url, (data: Project) => {
                 this.project = data;
 
-                
-                
-                
+                if (!this.project.dashboards) {
+                    this.project.dashboards = { map : new Dashboard("map","map")};
+                    
+
+                } else {
+                    alert('add dashboard');
+                }
+
 
                 if (!this.project.timeLine) {
                     this.project.timeLine = new DateRange();
