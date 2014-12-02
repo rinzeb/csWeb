@@ -1,8 +1,49 @@
 ﻿module csComp.Helpers {
+
+    declare var String;//: StringExt.IStringExt;
+
     export function supportsDataUri() {
         var isOldIE = navigator.appName === "Microsoft Internet Explorer";
         var isIE11 = !!navigator.userAgent.match(/Trident\/7\./);
         return !(isOldIE || isIE11);  //Return true if not any IE
+    }
+
+
+    /**
+     * Convert a property value to a display value using the property info.
+     */
+    export function convertPropertyInfo(pt: csComp.Services.IPropertyType, text: string): string {
+        var displayValue: string;
+        if (!csComp.StringExt.isNullOrEmpty(text) && !$.isNumeric(text))
+            text = text.replace(/&amp;/g, '&');
+        if (csComp.StringExt.isNullOrEmpty(text)) return text;
+        switch (pt.type) {
+            case "bbcode":
+                if (!csComp.StringExt.isNullOrEmpty(pt.stringFormat))
+                    text = String.format(pt.stringFormat, text);
+                displayValue = XBBCODE.process({ text: text }).html;
+                break;
+            case "number":
+                if (!$.isNumeric(text))
+                    displayValue = text;
+                else if (csComp.StringExt.isNullOrEmpty(pt.stringFormat))
+                    displayValue = text.toString();
+                else
+                    displayValue = String.format(pt.stringFormat, parseFloat(text));
+                break;
+            case "rank":
+                var rank = text.split(',');
+                if (rank.length != 2) return text;
+                if (pt.stringFormat)
+                    displayValue = String.format(pt.stringFormat, rank[0], rank[1]);
+                else
+                    displayValue = String.format("{0) / {1}", rank[0], rank[1]);
+                break;
+            default:
+                displayValue = text;
+                break;
+        }
+        return displayValue;
     }
 
     export function getGuid() {
@@ -10,7 +51,7 @@
         return guid;
     }
 
-     export function S4() {
+    export function S4() {
         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
     }
 

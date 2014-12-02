@@ -15,7 +15,7 @@
         layerGroup: L.LayerGroup<L.ILayer>;
         featureTypes: { [key: string]: Services.IFeatureType; };
         propertyTypeData: { [key: string]: Services.IPropertyType; };
-        timeline : any;
+        timeline : any;              
     }
     
     declare var WebGlView;
