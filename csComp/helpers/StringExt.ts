@@ -1,15 +1,4 @@
 ﻿module csComp.StringExt {
-    export interface IStringExt extends String {
-        format(s: string, ...args: any[]): string;
-    }
-
-    export class Utils {
-        /** Convert a CamelCase string to one with underscores. */
-        public static toUnderscore(s: string) {
-            return s.replace(/([A-Z])/g, $1 => "_" + $1.toLowerCase());
-        }
-    }
-
     export function isNullOrEmpty(s: string): boolean {
         return !s;
     }
@@ -52,29 +41,4 @@
         return s.indexOf("[b]") > 0 || s.indexOf("[i]") > 0 || s.indexOf("[url") > 0;
     }
 }
-
-//module String {
-//    export function isNullOrEmpty(s: string): boolean {
-//        return !s;
-//    }
-
-//}
-
-////interface String {
-////    format: () => string;
-////    isNullOrEmpty: () => boolean;
-////}
-
-////String.prototype.format = function (...args: any[]): string {
-////    var formatted = this;
-////    for (var i = 0; i < args.length; i++) {
-////        formatted = formatted.replace(
-////            RegExp("\\{" + i + "\\}", 'g'), args[i].toString());
-////    }
-////    return formatted;
-////};
-
-////String.prototype.isNullOrEmpty = function (): boolean {
-////    //var s: string = this;
-////    return this.length == 0;
-//}
+ 

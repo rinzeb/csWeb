@@ -18,6 +18,9 @@
     <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="directives\MCA\Mca.tpl.ts" />
+    <TypeScriptCompile Include="directives\MCA\Mca.ts" />
+    <TypeScriptCompile Include="directives\MCA\McaEditorCtrl.ts" />
     <TypeScriptCompile Include="classes\dashboard.ts" />
     <TypeScriptCompile Include="classes\feature.ts" />
     <TypeScriptCompile Include="classes\group.ts" />
@@ -35,7 +38,8 @@
     <TypeScriptCompile Include="directives\Timeline\TimelineCtrl.ts" />
     <TypeScriptCompile Include="helpers\Helpers.ts" />
     <TypeScriptCompile Include="helpers\MessageBus.ts" />
-    <TypeScriptCompile Include="helpers\Resize.ts" />
+    <TypeScriptCompile Include="helpers\Plot.ts" />
+    <TypeScriptCompile Include="directives\Resize\Resize.ts" />
     <TypeScriptCompile Include="directives\LegendList\LegendList.tpl.ts" />
     <TypeScriptCompile Include="directives\LegendList\LegendList.ts" />
     <TypeScriptCompile Include="directives\LegendList\LegendListCtrl.ts" />
@@ -45,10 +49,13 @@
     <TypeScriptCompile Include="directives\FilterList\FilterList.tpl.ts" />
     <TypeScriptCompile Include="directives\FilterList\FilterList.ts" />
     <TypeScriptCompile Include="directives\FilterList\FilterListCtrl.ts" />
-    <None Include="services\layer\StringExt.ts2" />
+    <TypeScriptCompile Include="directives\MCA\McaCtrl.ts" />
+    <TypeScriptCompile Include="directives\MCA\models\Criteria.ts" />
+    <TypeScriptCompile Include="directives\ShowModal\ShowModal.ts" />
     <TypeScriptCompile Include="directives\LayersList\LayersDirective.tpl.ts" />
     <TypeScriptCompile Include="directives\LayersList\LayersDirective.ts" />
     <TypeScriptCompile Include="directives\LayersList\LayersDirectiveCtrl.ts" />
+    <TypeScriptCompile Include="helpers\StringExt.ts" />
     <TypeScriptCompile Include="Scripts\typings\underscore\underscore.d.ts" />
     <TypeScriptCompile Include="services\dashboard\DashboardService.ts" />
     <TypeScriptCompile Include="services\layer\LayerService.ts" />
@@ -82,6 +89,8 @@
     <TypeScriptCompile Include="directives\DataTable\DataTable.tpl.ts" />
     <TypeScriptCompile Include="directives\DataTable\DataTable.ts" />
     <TypeScriptCompile Include="services\time\TimeService.ts" />
+    <TypeScriptCompile Include="translations\locale-en.ts" />
+    <TypeScriptCompile Include="translations\locale-nl.ts" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="directives\Dashboard\Dashboard.tpl.html" />
@@ -90,21 +99,38 @@
     <Content Include="includes\timeline.css" />
     <Content Include="includes\timeline.js" />
     <Content Include="includes\WebGlView.js" />
+    <None Include="includes\cssImages\map-black.png" />
+    <None Include="includes\cssImages\marker-black.png" />
+    <None Include="includes\cssImages\pen.png" />
+    <None Include="includes\cssImages\pen.svg" />
+    <None Include="includes\cssImages\pen_small.png" />
+    <None Include="includes\cssImages\plot_ascending.png" />
+    <None Include="includes\cssImages\plot_ascending.svg" />
+    <None Include="includes\cssImages\plot_ascending_sigmoid.png" />
+    <None Include="includes\cssImages\plot_ascending_sigmoid.svg" />
+    <None Include="includes\cssImages\plot_descending.png" />
+    <None Include="includes\cssImages\plot_descending.svg" />
+    <None Include="includes\cssImages\plot_descending_sigmoid.png" />
+    <None Include="includes\cssImages\plot_descending_sigmoid.svg" />
+    <None Include="includes\cssImages\plot_gaussian_peak.png" />
+    <None Include="includes\cssImages\plot_gaussian_peak.svg" />
+    <None Include="includes\cssImages\plot_gaussian_valley.png" />
+    <None Include="includes\cssImages\plot_gaussian_valley.svg" />
+    <None Include="includes\cssImages\readme.txt" />
+    <None Include="includes\cssImages\sliders.png" />
+    <None Include="includes\cssImages\style-black.png" />
+    <Content Include="includes\cssImages\style-black-small.png" />
     <Content Include="includes\csStyles.css" />
     <Content Include="includes\images\bar-chart-5-32.png" />
-    <Content Include="includes\images\bordercolor.png" />
+    <None Include="includes\images\bordercolor.png" />
+    <None Include="includes\images\fillcolor.png" />
+    <None Include="includes\images\line-width.png" />
     <Content Include="includes\images\database-32.png" />
-    <Content Include="includes\images\fillcolor.png" />
-    <Content Include="includes\images\filter-black.png" />
-    <Content Include="includes\images\layers-black.png" />
-    <Content Include="includes\images\line-width.png" />
-    <Content Include="includes\images\map-black.png" />
-    <Content Include="includes\images\marker-black.png" />
-    <Content Include="includes\images\minus.png" />
-    <Content Include="includes\images\plus-white.png" />
-    <Content Include="includes\images\plus.png" />
-    <Content Include="includes\images\settings.png" />
-    <Content Include="includes\images\style-black.png" />
+    <None Include="includes\images\minus.png" />
+    <None Include="includes\images\plus-white.png" />
+    <None Include="includes\images\plus.png" />
+    <None Include="includes\images\polygon.png" />
+    <None Include="includes\images\settings.png" />
     <Content Include="directives\LegendList\LegendList.tpl.html" />
     <Content Include="directives\DataTable\DataTable.tpl.html" />
     <None Include="directives\FeatureProps\FeatureProps.tpl.html" />
