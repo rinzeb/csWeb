@@ -1,6 +1,6 @@
 ﻿module DashboardSelection {
     export interface IDashboardSelectionScope extends ng.IScope {
-        vm: DashboardSelectionCtrl; 
+        vm: any; //DashboardSelectionCtrl; 
         addWidget: Function;
         title: string;
         editMode: boolean;
@@ -8,12 +8,12 @@
     }
 
     export class DashboardSelectionCtrl {
-        private scope: IDashboardSelectionScope;
+        public scope: IDashboardSelectionScope;
 
         // $inject annotation.   
         // It provides $injector with information about dependencies to be injected into constructor
         // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
+        // See http://docs.angularjs.org/guide/di           
         public static $inject = [
             '$scope',
             'layerService',
@@ -58,8 +58,12 @@
         }
 
         public stopEdit() {
+            alert('hi');
+            for (var property in this.$layerService.project.dashboards) {
+                this.$layerService.project.dashboards[property].editMode = false;
+            }
             //this.activeWidget = null;
-            
+
             //this.$scope.gridsterOptions.draggable.enabled = false;
             //this.$scope.gridsterOptions.resizable.enabled = false;
         }

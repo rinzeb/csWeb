@@ -101,7 +101,7 @@
             if (true) { //(curEpoch > 1398038400 && curEpoch < 1398121200) {                
                 this.project.groups.forEach(g => {
                     g.layers.forEach(l => {     
-                        if (l.type == "GeoJsonWebGL") {
+                        if (l.type.toLowerCase() === "geojsonwebgl") {
                             if (!l.timestamps)
                                 l.timestamps = [];
                             if (l.timestamps.indexOf(curEpoch) == -1) {
@@ -148,7 +148,7 @@
             this.project.features.forEach((f: IFeature) => {
                     var l = this.findLayer(f.layerId);
 
-                if (l != null && l.type != "GeoJsonWebGL")
+                if (l != null && l.type.toLowerCase() !== "geojsonwebgl")
                 {
                         if (!l.timestamps)
                             l.timestamps = [];
@@ -184,7 +184,7 @@
                 //console.log("Updating data");
                 this.project.groups.forEach(g => {
                     g.layers.forEach(l => {
-                        if (l.type == "GeoJsonWebGL") {
+                        if (l.type.toLowerCase() == "geojsonwebgl") {
                             // Find closest epoch
                             var realEpoch = epoch;
                             var epochIndex = l.timestamps.indexOf(realEpoch)
@@ -273,8 +273,8 @@
             var disableLayers = [];
 
             
-            switch (layer.type) {
-                case "GeoJsonWebGL":
+            switch (layer.type.toLowerCase()) {
+                case "geojsonwebgl":
                     this.sensorData = new Array();
                     layer.isLoading = true;
                     
@@ -349,13 +349,14 @@
                                 return colorObj;
                             }
                             setInterval(function () { webGl.updateColors() }, 300);
+                            layer.mapLayer = webGl.glLayer;
 
                         }
                     });
                         
 
                     break;
-                case "GeoJson":
+                case "geojson":
                     async.series([
                         (callback) => {
                         // If oneLayerActive: close other group layer
@@ -440,10 +441,10 @@
                                     });
 
                                     
-                                        if (f.layerId != layer.id) return;
-                                        var ft = this.getFeatureType(f);
-                                        f.properties['Name'] = f.properties[ft.style.nameLabel];
-                                    });
+                                    //    if (f.layerId != layer.id) return;
+                                    //    var ft = this.getFeatureType(f);
+                                    //    f.properties['Name'] = f.properties[ft.style.nameLabel];
+                                    //});
                                     layer.mapLayer.addLayer(v);
                                 }
                             }
@@ -993,7 +994,7 @@
             if (!(this.featureTypes.hasOwnProperty(featureTypeName))) {
                 if (this.featureTypes.hasOwnProperty(projectFeatureTypeName))
                     featureTypeName = projectFeatureTypeName;
-                else if ("default" in this.featureTypes)
+                else if ("default" in Object.keys(this.featureTypes))
                 {
                     featureTypeName = "default";
                 } else this.featureTypes[featureTypeName] = this.createDefaultType(feature);
@@ -1079,25 +1080,34 @@
                 this.$messageBusService.publish("feature", "onFeatureDeselect");
             }
 
-            //m = layer.group.vectors;
-            if (g.clustering) {
-                m = g.cluster;
-                this.project.features.forEach((feature: IFeature) => {
-                    if (feature.layerId == layer.id) {
-                        try {
-                            m.removeLayer(layer.group.markers[feature.id]);
-                        delete layer.group.markers[feature.id];
-                            
+            switch (layer.type.toLowerCase()) {
+                case "geojson":
+                    //m = layer.group.vectors;
+                    if (g.clustering) {
+                        m = g.cluster;
+                        this.project.features.forEach((feature: IFeature) => {
+                            if (feature.layerId == layer.id) {
+                                try {
+                                    m.removeLayer(layer.group.markers[feature.id]);
+                                    delete layer.group.markers[feature.id];
 
-                        } catch (error) {
-                            
-                        }
+
+                                } catch (error) {
+
+                                }
+                            }
+                        });
+
+                    } else {
+                        this.map.map.removeLayer(layer.mapLayer);
                     }
-                });
-                
-            } else {
-                this.map.map.removeLayer(layer.mapLayer);
+                    break;
+                case "geojsonwebgl":
+                    this.map.map.removeLayer(layer.mapLayer);
+                break;
             }
+
+            
             
             this.project.features = this.project.features.filter((k: IFeature) => k.layerId != layer.id);
             var layerName = layer.id + '_';
