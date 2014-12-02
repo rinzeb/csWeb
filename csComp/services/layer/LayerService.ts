@@ -79,7 +79,7 @@ module csComp.Services {
             '$location',
             '$translate',
             'messageBusService',
-            'mapService'
+            'mapService'            
         ];
 
         public title      : string;
@@ -1243,13 +1243,11 @@ module csComp.Services {
             $.getJSON(url, (data: Project) => {
                 this.project = data;
 
-                if (!this.project.dashboards) {
+                if (!this.project.dashboards || Object.keys(this.project.dashboards).length==0) {
                     this.project.dashboards = { map : new Dashboard("map","map")};
-                    
-
-                } else {
-                    alert('add dashboard');
                 }
+                var first = Object.keys(this.project.dashboards)[0];
+                this.$messageBusService.publish("dashboardSelect", "selectRequest", first);
 
 
                 if (!this.project.timeLine) {
@@ -1337,7 +1335,7 @@ module csComp.Services {
                     this.updateFilters();
                 });
 
-                this.$messageBusService.publish("project", "loaded");
+                this.$messageBusService.publish("project", "loaded",this.project);
             });
         }
 

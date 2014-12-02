@@ -29,15 +29,18 @@
                 <label class="control-label" for="dashboardTitle">Title</label>
                 <div class="controls">
                     <input id="dashboardTitle" name="textinput" type="text" ng-model="value.name" placeholder="placeholder" class="input-xlarge">
+                </div>                            
+                <div class="checkbox" style="margin-left: 20px">
+                    <input type="checkbox" id="showmap-{{value.id}}" ng-model="value.showMap" ng-click="vm.toggleMap()">
+                    <label for="showmap-{{value.id}}">Show Map</label>
                 </div>
-                <label class="control-label" for="dashboardMap">Show Map</label>
-                <div class="controls">
-                    <input id="dashboardMap" name="textinput" ng-click="vm.toggleMap()" type="checkbox" ng-model="value.showMap" placeholder="placeholder" class="input-xlarge">
+                <div class="checkbox" style="margin-left: 20px">
+                    <input type="checkbox" id="timeline-{{value.id}}" ng-model="value.showTimeline" ng-click="vm.toggleTimeline()">
+                    <label for="timeline-{{value.id}}">Show Timeline</label>                    
                 </div>
-                <label class="control-label" for="dashboardTimeline">Show Timeline</label>
-                <div class="controls">
-                    <input id="dashboardTimeline" name="textinput" ng-click="vm.toggleTimeline()" type="checkbox" ng-model="value.showTimeline" placeholder="placeholder" class="input-xlarge">
-                </div>
+
+                    
+                
             </div>
 
         </li>

@@ -16,7 +16,7 @@
     }
 
     /**       
-      * Directive to display the available map layers.       
+      * Directive to display the available map layers.            
       */
     myModule.directive('dashboardSelection', [
         '$window', '$compile',                  
