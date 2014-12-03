@@ -5,7 +5,8 @@
         public featureDashboard: csComp.Services.Dashboard;
         public mainDashboard: csComp.Services.Dashboard;        
         public editMode: boolean;
-        public activeWidget : IWidget;
+        public activeWidget: IWidget;
+        public dashboards: any;
 
         public static $inject = [
             '$location',

@@ -125,7 +125,7 @@
                             if (l.getDataTimestamps.indexOf(curEpoch) == -1) {
                                 l.getDataTimestamps.push(curEpoch);
                                 //console.log("Getting data");
-                                d3.json("/data?type=time&interval=" + curAggr + "&epoch=" + curEpoch, (error, data) => {
+                                d3.json("/data?type=TT&interval=" + curAggr + "&epoch=" + curEpoch, (error, data) => {
                                     if (error) {
                                         l.getDataTimestamps.splice(l.getDataTimestamps.indexOf(curEpoch), 1);
                                     }
@@ -331,7 +331,7 @@
                         if (error)
                             this.$messageBusService.notify('ERROR loading' + layer.title, error);
                         else {
-                            this.$messageBusService.publish("timeline", "updateTimerange", { start: new Date(2014, 9, 14), end: new Date(2014, 9, 15) });
+                            this.$messageBusService.publish("timeline", "updateTimerange", { start: new Date(2014, 0, 1), end: new Date(2014, 0, 5) });
                             
                             this.prepareGeoJson(layer, data);
 
