@@ -1,19 +1,19 @@
 ﻿module DashboardSelection {
     export interface IDashboardSelectionScope extends ng.IScope {
-        vm: DashboardSelectionCtrl; 
+        vm: any; //DashboardSelectionCtrl; 
         addWidget: Function;
         title: string;
         editMode: boolean;
-       
+
     }
 
     export class DashboardSelectionCtrl {
-        private scope: IDashboardSelectionScope;
+        public scope: IDashboardSelectionScope;
 
         // $inject annotation.   
         // It provides $injector with information about dependencies to be injected into constructor
         // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
+        // See http://docs.angularjs.org/guide/di           
         public static $inject = [
             '$scope',
             'layerService',
@@ -28,10 +28,10 @@
             private $scope: IDashboardSelectionScope,
             private $layerService: csComp.Services.LayerService,
             private $dashboardService: csComp.Services.DashboardService,
-            private $mapService : csComp.Services.MapService,
-            private $messageBusService : csComp.Services.MessageBusService
+            private $mapService: csComp.Services.MapService,
+            private $messageBusService: csComp.Services.MessageBusService
             ) {
-            
+
             $scope.vm = this;
 
             $scope.editMode = true;
@@ -40,7 +40,7 @@
                 switch (s) {
                     case "selectRequest":
                         this.selectDashboard(key);
-                    break;
+                        break;
                 }
             }));
 
@@ -48,7 +48,7 @@
         }
 
         public startDashboardEdit(id: string) {
-            
+
             for (var property in this.$layerService.project.dashboards) {
                 if (property != id) this.$layerService.project.dashboards[property].editMode = false;
             }
@@ -58,14 +58,18 @@
         }
 
         public stopEdit() {
+            alert('hi');
+            for (var property in this.$layerService.project.dashboards) {
+                this.$layerService.project.dashboards[property].editMode = false;
+            }
             //this.activeWidget = null;
-            
+
             //this.$scope.gridsterOptions.draggable.enabled = false;
             //this.$scope.gridsterOptions.resizable.enabled = false;
         }
 
         public startEdit() {
-           // this.$scope.gridsterOptions.draggable.enabled = true;
+            // this.$scope.gridsterOptions.draggable.enabled = true;
             //this.$scope.gridsterOptions.resizable.enabled = true;
         }
 
@@ -88,13 +92,13 @@
             this.$dashboardService.mainDashboard.showTimeline = !this.$dashboardService.mainDashboard.showTimeline;
             this.checkTimeline();
         }
-        
+
 
         public toggleMap() {
             setTimeout(() => {
                 this.checkMap();
             }, 100);
-            
+
         }
 
         public checkTimeline() {
@@ -110,7 +114,7 @@
         }
 
         public checkMap() {
-            
+
             if (this.$dashboardService.mainDashboard.showMap != this.$mapService.isVisible) {
                 if (this.$dashboardService.mainDashboard.showMap) {
                     this.$mapService.show();
@@ -129,11 +133,11 @@
         /** Select an active dashboard */
         public selectDashboard(key: string) {
             //var res = JSON.stringify(this.$dashboardService.dashboards);
-            for (var property in this.$dashboardService.dashboards) {
-                this.$dashboardService.dashboards[property].editMode = false;
+            for (var property in this.$layerService.project.dashboards) {
+                this.$layerService.project.dashboards[property].editMode = false;
             }
-            if (this.$dashboardService.dashboards.hasOwnProperty(key)) {
-                this.$dashboardService.mainDashboard = this.$dashboardService.dashboards[key];
+            if (this.$layerService.project.dashboards.hasOwnProperty(key)) {
+                this.$dashboardService.mainDashboard = this.$layerService.project.dashboards[key];
                 if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') { this.$scope.$apply(); }
 
 

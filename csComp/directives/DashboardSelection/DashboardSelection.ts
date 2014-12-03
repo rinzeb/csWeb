@@ -10,7 +10,7 @@
     export var myModule;     
     try {
         myModule = angular.module(moduleName);
-    } catch (err) {
+    } catch (err) {           
         // named module does not exist, so create one
         myModule = angular.module(moduleName, []);
     }
