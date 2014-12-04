@@ -47,13 +47,13 @@
 
         }
 
-        public startDashboardEdit(id: string) {
+        public startDashboardEdit(dashboard : csComp.Services.Dashboard) {
 
-            for (var property in this.$layerService.project.dashboards) {
-                if (property != id) this.$layerService.project.dashboards[property].editMode = false;
-            }
-            //this.selectDashboard(id);
-
+            this.$layerService.project.dashboards.forEach((d: csComp.Services.Dashboard) => {
+                if (d.id !== dashboard.id) d.editMode = false;
+                }
+            );
+           
 
         }
 

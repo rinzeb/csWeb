@@ -31,7 +31,6 @@
     <TypeScriptCompile Include="directives\Dashboard\DashboardCtrl.ts" />
     <TypeScriptCompile Include="directives\DashboardSelection\DashboardSelection.ts" />
     <TypeScriptCompile Include="directives\DashboardSelection\DashboardSelectionCtrl.ts" />
-    <TypeScriptCompile Include="directives\Dashboard\file1.ts" />
     <TypeScriptCompile Include="directives\Dashboard\Widgets\BasicWidgets.ts" />
     <TypeScriptCompile Include="directives\Timeline\Timeline.tpl.ts" />
     <TypeScriptCompile Include="directives\Timeline\Timeline.ts" />
