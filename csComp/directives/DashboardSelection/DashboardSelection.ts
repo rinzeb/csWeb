@@ -20,7 +20,7 @@
       */
     myModule.directive('dashboardSelection', [
         '$window', '$compile',                  
-        function ($window, $compile): ng.IDirective {
+        function ($window, $compile): ng.IDirective {     
             return {
                 terminal: false,  // do not compile any other internal directives      
                 restrict: 'E',    // E = elements, other options are A=attributes and C=classes
@@ -56,7 +56,7 @@
                 controller: DashboardSelectionCtrl
             }              
         }
-    ]).directive('bsPopover', () => {
+    ]).directive('bsPopover', () => {        
             return (scope, element, attrs) => {
                 element.find("a[rel=popover]").popover({ placement: 'right', html: 'true' });
             };

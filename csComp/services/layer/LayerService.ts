@@ -1247,9 +1247,10 @@ module csComp.Services {
                 this.project = data;
 
                 if (!this.project.dashboards || Object.keys(this.project.dashboards).length==0) {
-                    this.project.dashboards = { map : new Dashboard("map","map")};
+                    this.project.dashboards = [];
+                this.project	.dashboards.push(new Dashboard("map", "map"));
                 }
-                var first = Object.keys(this.project.dashboards)[0];
+                var first = this.project.dashboards[0];
                 this.$messageBusService.publish("dashboardSelect", "selectRequest", first);
 
 
@@ -1276,7 +1277,7 @@ module csComp.Services {
                 }
 
                 if (!this.project.dashboards) {
-                    this.project.dashboards = {};
+                    this.project.dashboards = [];
                     var d = new csComp.Services.Dashboard("1", this.project.title);
                     d.widgets = [];                    
                 } else {

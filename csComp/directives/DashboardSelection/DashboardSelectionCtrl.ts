@@ -8,7 +8,7 @@
     }
 
     export class DashboardSelectionCtrl {
-        public scope: IDashboardSelectionScope;
+        public scope: any;
 
         // $inject annotation.   
         // It provides $injector with information about dependencies to be injected into constructor
@@ -25,7 +25,7 @@
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         constructor(
-            private $scope: IDashboardSelectionScope,
+            private $scope: any,
             private $layerService: csComp.Services.LayerService,
             private $dashboardService: csComp.Services.DashboardService,
             private $mapService: csComp.Services.MapService,
@@ -36,10 +36,10 @@
 
             $scope.editMode = true;
 
-            $messageBusService.subscribe("dashboardSelect", ((s: string, key: string) => {
+            $messageBusService.subscribe("dashboardSelect", ((s: string, dashboard: csComp.Services.Dashboard) => {
                 switch (s) {
                     case "selectRequest":
-                        this.selectDashboard(key);
+                        this.selectDashboard(dashboard);
                         break;
                 }
             }));
@@ -58,7 +58,7 @@
         }
 
         public stopEdit() {
-            alert('hi');
+            
             for (var property in this.$layerService.project.dashboards) {
                 this.$layerService.project.dashboards[property].editMode = false;
             }
@@ -77,15 +77,13 @@
         public addDashboard(widget: csComp.Services.IWidget) {
             var id = csComp.Helpers.getGuid();
             var d = new csComp.Services.Dashboard(id, "New Dashboard");
-            this.$layerService.project.dashboards[id] = d;
+            this.$layerService.project.dashboards.push(d);
         }
 
         /** Remove existing dashboard */
-        public removeDashboard(key: string) {
-            if (this.$layerService.project.dashboards.hasOwnProperty(key)) {
-                delete this.$layerService.project.dashboards[key];
-
-            }
+        public removeDashboard(key: string) {            
+            this.$layerService.project.dashboards = this.$layerService.project.dashboards.filter((s : csComp.Services.Dashboard) => s.id !== key);
+            
         }
 
         public toggleTimeline() {
@@ -131,13 +129,12 @@
         }
 
         /** Select an active dashboard */
-        public selectDashboard(key: string) {
+        public selectDashboard(dashboard: csComp.Services.Dashboard) {
             //var res = JSON.stringify(this.$dashboardService.dashboards);
-            for (var property in this.$layerService.project.dashboards) {
-                this.$layerService.project.dashboards[property].editMode = false;
-            }
-            if (this.$layerService.project.dashboards.hasOwnProperty(key)) {
-                this.$dashboardService.mainDashboard = this.$layerService.project.dashboards[key];
+            this.$layerService.project.dashboards.forEach((d: csComp.Services.Dashboard) => { d.editMode = false; });
+
+            if (dashboard) {
+                this.$dashboardService.mainDashboard = dashboard;
                 if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') { this.$scope.$apply(); }
 
 

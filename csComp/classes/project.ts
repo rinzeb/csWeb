@@ -84,7 +84,7 @@
         features        : IFeature[];
         timeLine        : DateRange;
         mcas            : Mca.Models.Mca[];
-        dashboards      : { [id: string]: Dashboard };
+        dashboards      : Dashboard[];
         dataSets        : DataSet[];
         viewBounds: IBoundingBox;
         isLoading : boolean;
