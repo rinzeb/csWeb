@@ -3,7 +3,6 @@
         vm: any; //DashboardSelectionCtrl; 
         addWidget: Function;
         title: string;
-        editMode: boolean;
 
     }
 
@@ -34,7 +33,7 @@
 
             $scope.vm = this;
 
-            $scope.editMode = true;
+            $dashboardService.editMode = true;
 
             $messageBusService.subscribe("dashboardSelect", ((s: string, dashboard: csComp.Services.Dashboard) => {
                 switch (s) {
@@ -123,6 +122,13 @@
             }
         }
 
+
+        public checkViewbound() {
+            if (this.$dashboardService.mainDashboard.viewBounds) {
+                this.$mapService.map.fitBounds(new L.LatLngBounds(this.$dashboardService.mainDashboard.viewBounds.southWest, this.$dashboardService.mainDashboard.viewBounds.northEast));
+            }
+        }
+
         /** publish a message that a new dashboard was selected */
         private publishDashboardUpdate() {
             this.$messageBusService.publish('dashboard', 'onDashboardSelected', this.$dashboardService.mainDashboard);
@@ -140,6 +146,7 @@
 
                 this.checkMap();
                 this.checkTimeline();
+                this.checkViewbound();
                 this.publishDashboardUpdate();
 
                 // render all widgets

@@ -1,11 +1,11 @@
 ﻿module Timeline {
     /**
-      * Config    
+      * Config      
       */
     var moduleName = 'csWeb.timeline';   
 
     /**                            
-      * Module   
+      * Module                  
       */
     export var myModule;
     try {
@@ -15,12 +15,12 @@
         myModule = angular.module(moduleName, []);
     }
 
-    /**                                                    
-      * Directive to display the available map layers.     
+    /**                                                        
+      * Directive to display the available map layers.       
       */
-    myModule.directive('timeline', [
+    myModule.directive('timeline', [          
         '$compile',
-        function($compile): ng.IDirective {
+        function($compile): ng.IDirective {     
             return {
                 terminal: true, // do not compile any other internal directives 
                 restrict: 'E', // E = elements, other options are A=attributes and C=classes

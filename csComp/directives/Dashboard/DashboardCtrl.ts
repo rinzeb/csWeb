@@ -27,6 +27,7 @@
         // See http://docs.angularjs.org/guide/di
         public static $inject = [
             '$scope',
+            '$compile',
             'layerService',
             'dashboardService',
             'messageBusService'
@@ -37,6 +38,7 @@
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         constructor(
             private $scope: IDashboardScope,
+            private $compile : any,
             private $layerService: csComp.Services.LayerService,
             private $dashboardService: csComp.Services.DashboardService,
             private $messageBusService: csComp.Services.MessageBusService
@@ -109,7 +111,7 @@
             if (dashboard && dashboard.widgets && dashboard.widgets.length > 0) {
             setTimeout(() => {                
                 dashboard.widgets.forEach((w: csComp.Services.IWidget) => {
-                        w.renderer();
+                        w.renderer(this.$compile,this.$scope);
                     });
             }, 100);
         }

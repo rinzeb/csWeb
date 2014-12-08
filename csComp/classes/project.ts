@@ -18,7 +18,8 @@
         focus: number;
         range: number; // total time range in ms
         zoomLevel: number;
-        zoomLevelName : string;        
+        zoomLevelName: string;
+        isLive : boolean;        
 
         public setFocus(d: Date,s? : Date, e? : Date) {
             this.focus = d.getTime();

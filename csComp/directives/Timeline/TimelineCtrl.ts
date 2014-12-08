@@ -34,6 +34,7 @@
         public isPlaying: boolean;
         public showControl : boolean;
         public isPinned : boolean;
+        
 
 
         // dependencies are injected via AngularJS $injector 
@@ -70,23 +71,35 @@
 
             $scope.timeline.draw();
             links.events.addListener($scope.timeline, 'rangechange', _.throttle((prop) => this.onRangeChanged(prop),200));
-            (<any>$("#focustimeContainer")).draggable({
-                axis: "x",
-                containment: "parent",
-                drag: _.throttle(() => this.updateFocusTime(), 200)
-        });
+            this.updateDragging();
 
             this.updateFocusTime();
 
             
         }
 
+        public updateDragging() {
+            
+            if (this.$layerService.project && this.$layerService.project.timeLine.isLive) {
+                (<any>$("#focustimeContainer")).draggable('disable');
+            } else {
+                (<any>$("#focustimeContainer")).draggable({
+                    axis: "x",
+                    containment: "parent",
+                    drag: _.throttle(() => this.updateFocusTime(), 200)
+                });    
+                (<any>$("#focustimeContainer")).draggable('enable');
+            }
+            
+        }
+
+
         public onRangeChanged(properties) {            
             this.updateFocusTime();
 
         }
 
-        public start() {
+        public start() {            
             this.stop();
             this.isPlaying = true;
             if (this.timer) this.timer = null;
@@ -95,9 +108,31 @@
             
         }
 
+        public toggleLive() {
+            
+            if (!this.$layerService.project) return;
+            this.stop();
+            this.$layerService.project.timeLine.isLive = !this.$layerService.project.timeLine.isLive;
+            if (this.$layerService.project.timeLine.isLive) {
+                this.myTimer();
+                this.start();
+            } 
+            this.updateDragging();
+            //this.isPlaying = this.isLive;
+        }
+
         public myTimer() {
-            this.$scope.timeline.move(0.005);
-            this.updateFocusTime();
+            var tl = this.$scope.timeline;
+            if (this.$layerService.project.timeLine.isLive) {                
+                var pos = tl.timeToScreen(new Date());
+                $("#focustimeContainer").css('left', pos - 75);
+                this.$scope.$apply();
+
+            } else {
+                tl.move(0.005);
+                this.updateFocusTime();    
+            }
+            
 
         }
 

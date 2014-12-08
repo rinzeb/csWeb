@@ -5,10 +5,10 @@
                 
                 <div class="widget-title" ng-click="widget.collapse=!widget.collapse" ><span class="fa fa-area-chart" style="float:left;margin-right:4px"></span>{{widget.title}}</div>
                 <div class="widget-edit" style="z-index: 1000">
-                    <div ng-show="widget.dashboard.editMode" ng-click="vm.editWidget(widget)" class="fa fa-pencil widget-button"></div>
+                    <div ng-show="widget.dashboard.editMode" ng-click="vm.$dashboardService.editWidget(widget)" class="fa fa-pencil widget-button"></div>
                     <div ng-hide="widget.collapse" ng-click="widget.collapse=true"  class="fa fa-minus-square-o widget-button"></div>                    
                     <div ng-show="widget.collapse" ng-click="widget.collapse=false"  class="fa fa-plus-square-o widget-button"></div>                    
-                    <div ng-click="vm.popup(widget)"  class="fa fa-square-o widget-button"></div>                    
+                    <div ng-show="widget.allowFullscreen" ng-click="vm.popup(widget)"  class="fa fa-square-o widget-button"></div>                    
                     
                 </div>               
                     <div class="box" ng-hide="widget.collapse">

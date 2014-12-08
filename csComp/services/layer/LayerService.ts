@@ -1248,7 +1248,7 @@ module csComp.Services {
 
                 if (!this.project.dashboards || Object.keys(this.project.dashboards).length==0) {
                     this.project.dashboards = [];
-                this.project	.dashboards.push(new Dashboard("map", "map"));
+                    this.project.dashboards.push(new Dashboard("map", "map"));
                 }
                 var first = this.project.dashboards[0];
                 this.$messageBusService.publish("dashboardSelect", "selectRequest", first);
@@ -1274,20 +1274,20 @@ module csComp.Services {
                         var propertyType: IPropertyType = this.project.propertyTypeData[key];
                         this.propertyTypeData[key] = propertyType;
                     }
-                }
+                }          
 
                 if (!this.project.dashboards) {
                     this.project.dashboards = [];
                     var d = new csComp.Services.Dashboard("1", this.project.title);
-                    d.widgets = [];                    
+                    d.widgets = [];
+                    this.project.dashboards.push(d);
                 } else {
-                    for (var das in this.project.dashboards) {
-                        if (!this.project.dashboards[das].widgets)
-                            this.project.dashboards[das].widgets = [];
-                        if (!this.project.dashboards[das].showMap)
-                            this.project.dashboards[das].showMap = true;
 
-                    }
+                    this.project.dashboards.forEach((d: Dashboard) => {
+                        if (!d.widgets) d.widgets = [];
+                        //if (!d.showMap) d.showMap = true;  
+                    });
+                
                     
 
 
