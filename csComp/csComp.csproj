@@ -18,6 +18,7 @@
     <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="directives\Dashboard\Widgets\DatasetWidget.ts" />
     <TypeScriptCompile Include="directives\MCA\Mca.tpl.ts" />
     <TypeScriptCompile Include="directives\MCA\Mca.ts" />
     <TypeScriptCompile Include="directives\MCA\McaEditorCtrl.ts" />
@@ -31,11 +32,11 @@
     <TypeScriptCompile Include="directives\Dashboard\DashboardCtrl.ts" />
     <TypeScriptCompile Include="directives\DashboardSelection\DashboardSelection.ts" />
     <TypeScriptCompile Include="directives\DashboardSelection\DashboardSelectionCtrl.ts" />
-    <TypeScriptCompile Include="directives\Dashboard\file1.ts" />
     <TypeScriptCompile Include="directives\Dashboard\Widgets\BasicWidgets.ts" />
     <TypeScriptCompile Include="directives\Timeline\Timeline.tpl.ts" />
     <TypeScriptCompile Include="directives\Timeline\Timeline.ts" />
     <TypeScriptCompile Include="directives\Timeline\TimelineCtrl.ts" />
+    <TypeScriptCompile Include="helpers\Extensions.ts" />
     <TypeScriptCompile Include="helpers\Helpers.ts" />
     <TypeScriptCompile Include="helpers\MessageBus.ts" />
     <TypeScriptCompile Include="helpers\Plot.ts" />
@@ -55,7 +56,6 @@
     <TypeScriptCompile Include="directives\LayersList\LayersDirective.tpl.ts" />
     <TypeScriptCompile Include="directives\LayersList\LayersDirective.ts" />
     <TypeScriptCompile Include="directives\LayersList\LayersDirectiveCtrl.ts" />
-    <TypeScriptCompile Include="helpers\StringExt.ts" />
     <TypeScriptCompile Include="Scripts\typings\underscore\underscore.d.ts" />
     <TypeScriptCompile Include="services\dashboard\DashboardService.ts" />
     <TypeScriptCompile Include="services\layer\LayerService.ts" />

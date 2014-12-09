@@ -1,4 +1,5 @@
-﻿module csComp.Services {
+﻿/// <reference path="../../../../apps/cscitydashboard/Website/node_modules/gulp-tsc/node_modules/typescript/bin/lib.d.ts" />
+module csComp.Services {
     'use strict';
 
     declare var WebGlLayer;    
@@ -15,7 +16,7 @@
         layerGroup: L.LayerGroup<L.ILayer>;
         featureTypes: { [key: string]: Services.IFeatureType; };
         propertyTypeData: { [key: string]: Services.IPropertyType; };
-        timeline : any;
+        timeline : any;              
     }
     
     declare var WebGlView;
@@ -1047,7 +1048,10 @@
             if (!(this.featureTypes.hasOwnProperty(featureTypeName))) {
                 if (this.featureTypes.hasOwnProperty(projectFeatureTypeName))
                     featureTypeName = projectFeatureTypeName;
-                else if ("default" in Object.keys(this.featureTypes))
+                else if (this.featureTypes.hasOwnProperty(feature.layerId)){
+                    featureTypeName = feature.layerId;
+                }
+                else if (this.featureTypes.hasOwnProperty("default"))
                 {
                     featureTypeName = "default";
                 } else this.featureTypes[featureTypeName] = this.createDefaultType(feature);
@@ -1143,8 +1147,6 @@
                                 try {
                                     m.removeLayer(layer.group.markers[feature.id]);
                                     delete layer.group.markers[feature.id];
-
-
                                 } catch (error) {
 
                                 }
@@ -1251,9 +1253,10 @@
                 this.project = data;
 
                 if (!this.project.dashboards || Object.keys(this.project.dashboards).length==0) {
-                    this.project.dashboards = { map : new Dashboard("map","map")};
+                    this.project.dashboards = [];
+                    this.project.dashboards.push(new Dashboard("map", "map"));
                 }
-                var first = Object.keys(this.project.dashboards)[0];
+                var first = this.project.dashboards[0];
                 this.$messageBusService.publish("dashboardSelect", "selectRequest", first);
 
 
@@ -1277,20 +1280,20 @@
                         var propertyType: IPropertyType = this.project.propertyTypeData[key];
                         this.propertyTypeData[key] = propertyType;
                     }
-                }
+                }          
 
                 if (!this.project.dashboards) {
-                    this.project.dashboards = {};
+                    this.project.dashboards = [];
                     var d = new csComp.Services.Dashboard("1", this.project.title);
-                    d.widgets = [];                    
+                    d.widgets = [];
+                    this.project.dashboards.push(d);
                 } else {
-                    for (var das in this.project.dashboards) {
-                        if (!this.project.dashboards[das].widgets)
-                            this.project.dashboards[das].widgets = [];
-                        if (!this.project.dashboards[das].showMap)
-                            this.project.dashboards[das].showMap = true;
 
-                    }
+                    this.project.dashboards.forEach((d: Dashboard) => {
+                        if (!d.widgets) d.widgets = [];
+                        //if (!d.showMap) d.showMap = true;  
+                    });
+                
                     
 
 

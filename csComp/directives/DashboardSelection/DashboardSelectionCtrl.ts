@@ -3,12 +3,11 @@
         vm: any; //DashboardSelectionCtrl; 
         addWidget: Function;
         title: string;
-        editMode: boolean;
-       
+
     }
 
     export class DashboardSelectionCtrl {
-        public scope: IDashboardSelectionScope;
+        public scope: any;
 
         // $inject annotation.   
         // It provides $injector with information about dependencies to be injected into constructor
@@ -25,40 +24,40 @@
         // dependencies are injected via AngularJS $injector
         // controller's name is registered in Application.ts and specified from ng-controller attribute in index.html
         constructor(
-            private $scope: IDashboardSelectionScope,
+            private $scope: any,
             private $layerService: csComp.Services.LayerService,
             private $dashboardService: csComp.Services.DashboardService,
-            private $mapService : csComp.Services.MapService,
-            private $messageBusService : csComp.Services.MessageBusService
+            private $mapService: csComp.Services.MapService,
+            private $messageBusService: csComp.Services.MessageBusService
             ) {
-            
+
             $scope.vm = this;
 
-            $scope.editMode = true;
+            $dashboardService.editMode = true;
 
-            $messageBusService.subscribe("dashboardSelect", ((s: string, key: string) => {
+            $messageBusService.subscribe("dashboardSelect", ((s: string, dashboard: csComp.Services.Dashboard) => {
                 switch (s) {
                     case "selectRequest":
-                        this.selectDashboard(key);
-                    break;
+                        this.selectDashboard(dashboard);
+                        break;
                 }
             }));
 
 
         }
 
-        public startDashboardEdit(id: string) {
-            
-            for (var property in this.$layerService.project.dashboards) {
-                if (property != id) this.$layerService.project.dashboards[property].editMode = false;
-            }
-            //this.selectDashboard(id);
+        public startDashboardEdit(dashboard : csComp.Services.Dashboard) {
 
+            this.$layerService.project.dashboards.forEach((d: csComp.Services.Dashboard) => {
+                if (d.id !== dashboard.id) d.editMode = false;
+                }
+            );
+           
 
         }
 
         public stopEdit() {
-            alert('hi');
+            
             for (var property in this.$layerService.project.dashboards) {
                 this.$layerService.project.dashboards[property].editMode = false;
             }
@@ -69,7 +68,7 @@
         }
 
         public startEdit() {
-           // this.$scope.gridsterOptions.draggable.enabled = true;
+            // this.$scope.gridsterOptions.draggable.enabled = true;
             //this.$scope.gridsterOptions.resizable.enabled = true;
         }
 
@@ -77,28 +76,26 @@
         public addDashboard(widget: csComp.Services.IWidget) {
             var id = csComp.Helpers.getGuid();
             var d = new csComp.Services.Dashboard(id, "New Dashboard");
-            this.$layerService.project.dashboards[id] = d;
+            this.$layerService.project.dashboards.push(d);
         }
 
         /** Remove existing dashboard */
-        public removeDashboard(key: string) {
-            if (this.$layerService.project.dashboards.hasOwnProperty(key)) {
-                delete this.$layerService.project.dashboards[key];
-
-            }
+        public removeDashboard(key: string) {            
+            this.$layerService.project.dashboards = this.$layerService.project.dashboards.filter((s : csComp.Services.Dashboard) => s.id !== key);
+            
         }
 
         public toggleTimeline() {
             this.$dashboardService.mainDashboard.showTimeline = !this.$dashboardService.mainDashboard.showTimeline;
             this.checkTimeline();
         }
-        
+
 
         public toggleMap() {
             setTimeout(() => {
                 this.checkMap();
             }, 100);
-            
+
         }
 
         public checkTimeline() {
@@ -109,19 +106,26 @@
                 } else {
                     this.$mapService.hideTimeline();
                 }
-                this.$scope.$apply();
+                if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') { this.$scope.$apply(); }
             }
         }
 
         public checkMap() {
-            
+
             if (this.$dashboardService.mainDashboard.showMap != this.$mapService.isVisible) {
                 if (this.$dashboardService.mainDashboard.showMap) {
                     this.$mapService.show();
                 } else {
                     this.$mapService.hide();
                 }
-                this.$scope.$apply();
+                if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') { this.$scope.$apply(); }
+            }
+        }
+
+
+        public checkViewbound() {
+            if (this.$dashboardService.mainDashboard.viewBounds) {
+                this.$mapService.map.fitBounds(new L.LatLngBounds(this.$dashboardService.mainDashboard.viewBounds.southWest, this.$dashboardService.mainDashboard.viewBounds.northEast));
             }
         }
 
@@ -131,18 +135,18 @@
         }
 
         /** Select an active dashboard */
-        public selectDashboard(key: string) {
+        public selectDashboard(dashboard: csComp.Services.Dashboard) {
             //var res = JSON.stringify(this.$dashboardService.dashboards);
-            for (var property in this.$dashboardService.dashboards) {
-                this.$dashboardService.dashboards[property].editMode = false;
-            }
-            if (this.$dashboardService.dashboards.hasOwnProperty(key)) {
-                this.$dashboardService.mainDashboard = this.$dashboardService.dashboards[key];
+            this.$layerService.project.dashboards.forEach((d: csComp.Services.Dashboard) => { d.editMode = false; });
+
+            if (dashboard) {
+                this.$dashboardService.mainDashboard = dashboard;
                 if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') { this.$scope.$apply(); }
 
 
                 this.checkMap();
                 this.checkTimeline();
+                this.checkViewbound();
                 this.publishDashboardUpdate();
 
                 // render all widgets

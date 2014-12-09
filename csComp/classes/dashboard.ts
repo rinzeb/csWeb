@@ -15,7 +15,8 @@
         renderer: Function;
         resize: Function;
         background : string;
-        init : Function;
+        init: Function;
+        start : Function;
         col: number; row: number; sizeY: number; sizeX: number; name: string; id: string;
         properties: {};
         dataSets: DataSet[];
@@ -24,10 +25,13 @@
         collapse: boolean;
         canCollapse : boolean;
         width: number;
-        height:number;
+        height: number;
+        allowFullscreen: boolean;
+        messageBusService: csComp.Services.MessageBusService;
+        layerService: csComp.Services.LayerService;
     }
 
-   
+     
 
     export class BaseWidget implements IWidget {
         public widgetType: string;
@@ -47,8 +51,12 @@
         public canCollapse : boolean;
         public width: number;
         public height: number;
+        public allowFullscreen: boolean;
+        public messageBusService: csComp.Services.MessageBusService;
+        public layerService : csComp.Services.LayerService;
 
-        constructor(title?: string, type?: string) {
+        constructor(title? : string, type? : string) {
+           
             if (title) this.title = title;
             if (type) this.widgetType = type;
             this.properties = {};
@@ -56,6 +64,10 @@
 
            
 
+        }
+
+        public start() {
+            
         }
 
         public init(sX: number, sY: number, c: number, r: number, id? : string, width? : number, height? : number) {
@@ -69,9 +81,10 @@
             this.height = (height) ? height : 150;            
             this.id = id;
             this.elementId = id;
+            this.start();
 
         }
-        public renderer = ($scope: any) => { };
+        public renderer = ($compile : any,$scope: any) => { };
 
         public updateDateRange(r: csComp.Services.DateRange) {
             this.range = r;
@@ -87,11 +100,13 @@
     export class Dashboard {        
         widgets: IWidget[];
         editMode: boolean;        
-        showMap: boolean = true;
+        showMap: boolean;
         showTimeline : boolean = true;
         draggable: boolean = false;
         resizable : boolean = true;
-        background : string;
+        background: string;
+        backgroundimage: string;
+        viewBounds: IBoundingBox;
         constructor(public id: string, public name: string) {
             this.widgets = [];
         }
@@ -107,7 +122,7 @@
         public timedata : number[];        
     }
     
-    export class DataSet {
+    export class DataSet {      
         public color: string;
         
         public data: { [key: number]: number };

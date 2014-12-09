@@ -9,14 +9,15 @@
       */
     export var myModule;
     try {
-        myModule = angular.module(moduleName);
+    myModule = angular.module(moduleName);
+
     } catch (err) {
         // named module does not exist, so create one
         myModule = angular.module(moduleName, []);            
     }  
 
     /**
-      * Directive to display the available map layers.      
+      * Directive to display the available map layers.           
       */                                           
     myModule.directive('dashboardirective', [
         '$window', '$compile',
