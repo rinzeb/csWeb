@@ -32,7 +32,7 @@
             this.map = L.map("map", {
                 zoomControl: false,
                 attributionControl: true
-            });
+            });         
         }
 
         public hide() {

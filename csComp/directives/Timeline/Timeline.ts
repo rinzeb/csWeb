@@ -17,7 +17,7 @@
 
     /**                                                        
       * Directive to display the available map layers.       
-      */
+      */                                                      
     myModule.directive('timeline', [          
         '$compile',
         function($compile): ng.IDirective {     

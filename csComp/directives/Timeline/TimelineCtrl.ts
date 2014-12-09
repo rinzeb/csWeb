@@ -27,6 +27,8 @@
         ];
 
         public focusDate: Date;
+        public line1: string;
+        public line2 : string;
         public startDate: Date;
         public endDate: Date;
 
@@ -70,7 +72,14 @@
             this.$layerService.timeline = $scope.timeline;
 
             $scope.timeline.draw();
-            links.events.addListener($scope.timeline, 'rangechange', _.throttle((prop) => this.onRangeChanged(prop),200));
+            links.events.addListener($scope.timeline, 'rangechange', _.throttle((prop) => this.onRangeChanged(prop), 200));
+            links.events.addListener($scope.timeline, 'rangechange', (prop) => {
+                if (this.$layerService.project && this.$layerService.project.timeLine.isLive) {
+                    this.myTimer();
+                }    
+            });
+
+            
             this.updateDragging();
 
             this.updateFocusTime();
@@ -167,21 +176,49 @@
 
             var range = this.$scope.timeline.getVisibleChartRange();
             //tl.calcConversionFactor();
+            
 
             this.focusDate = new Date(this.$scope.timeline.screenToTime(centerX));
+            
             this.startDate = range.start; //new Date(range.start); //this.$scope.timeline.screenToTime(0));
             this.endDate = range.end; //new Date(this.$scope.timeline.screenToTime(end));
 
 
             if (this.$layerService.project != null && this.$layerService.project.timeLine != null) {
-                this.$layerService.project.timeLine.setFocus(this.focusDate,this.startDate,this.endDate);
+                var projecttime = this.$layerService.project.timeLine;
+                projecttime.setFocus(this.focusDate, this.startDate, this.endDate);
+                var locale = "en-us";
+                var month = (<any>this.focusDate).toLocaleString(locale, { month: "long" });
+                switch (projecttime.zoomLevelName) {
+                    case "years":
+                        this.line1 = this.focusDate.getFullYear().toString();
+                        var locale = "en-us";
+                        this.line2 = month;
+                        break;
+                    case "weeks" :
+                        this.line1 = this.focusDate.getFullYear().toString();
+                        this.line2 = (<any>$).datepicker.formatDate("d", this.focusDate) + " " + month;
+                        break;
+                    
+                    
+                    default:
+                        this.line1 = (<any>$).datepicker.formatDate("M d yyyy", this.focusDate);
+                        this.line2 = (<any>$).datepicker.formatDate("hh:mm:ss", this.focusDate);
+                }
+
+                
+            
+
             }
             this.$messageBusService.publish("timeline", "focusChange", this.focusDate);
+
+            
+
             //this.$layerService.focusTime = new Date(this.timelineCtrl.screenToTime(centerX));
-            //this.$scope.$apply();
+                //this.$scope.$apply();
 
 
-        }
+            }
 
   
 

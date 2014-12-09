@@ -9,7 +9,7 @@
   
 
       var availableZoomLevels = [
-        {  title: "weeks",value: 604800000}, { title: "days", value: 86400000 },{ title: "hours", value: 3600000 }, { title: "quarters", value: 900000 }, { title: "minutes", value: 60000 }, { title: "seconds", value: 1000 }
+      { title: "years", value: 31536000000 }, {title: "weeks",value: 604800000}, { title: "days", value: 86400000 },{ title: "hours", value: 3600000 }, { title: "quarters", value: 900000 }, { title: "minutes", value: 60000 }, { title: "seconds", value: 1000 }
     ];
     
     export class DateRange {
@@ -19,7 +19,8 @@
         range: number; // total time range in ms
         zoomLevel: number;
         zoomLevelName: string;
-        isLive : boolean;        
+        isLive: boolean;        
+
 
         public setFocus(d: Date,s? : Date, e? : Date) {
             this.focus = d.getTime();
@@ -39,6 +40,8 @@
         constructor() {
             if (!focus) this.setFocus(new Date());
         }
+
+        
 
         startDate = () => { return new Date(this.start); }
         focusDate = () => { return new Date(this.start); }
