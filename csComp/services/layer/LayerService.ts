@@ -51,7 +51,10 @@
         public noStyles            : boolean;
         public lastSelectedFeature : IFeature;
         public selectedLayerId     : string;
-        public timeline            : any;
+        public timeline: any;
+        // Indicates if the timeline is in realtime mode
+        public isRealtime: boolean;
+        public activeSensor: string;
 
         public sensorData: any;
 
@@ -76,6 +79,8 @@
             this.propertyTypeData   = {};
             this.map.map.addLayer(this.layerGroup);
             this.noStyles = true;
+            this.isRealtime = false;
+            this.activeSensor = "TT";
 
             this.lastUpdate = 0;
             
@@ -94,9 +99,8 @@
             if (this.project == null || this.project.timeLine == null) return;
             var date = this.project.timeLine.focus;
             var timepos = {};
-            // TODO , kijken naar huidige aggregatie nivo. Afhankelijk hiervan vragen om data bij de service 
-            var curAggr = 300; //60;
-            curAggr = this.project.timeLine.zoomLevel / 1000;
+            
+            var curAggr = this.project.timeLine.zoomLevel / 1000;
             var curEpoch = Math.floor(date / (curAggr * 1000 )) * curAggr;
 
             if (this.project && this.project.timeLine && this.project.timeLine.zoomLevel && !this.lastTimeZoom) {
@@ -125,7 +129,7 @@
                             if (l.getDataTimestamps.indexOf(curEpoch) == -1) {
                                 l.getDataTimestamps.push(curEpoch);
                                 //console.log("Getting data");
-                                d3.json("/data?type=TT&interval=" + curAggr + "&epoch=" + curEpoch, (error, data) => {
+                                d3.json("/data?type=" + this.activeSensor + "&interval=" + curAggr + "&epoch=" + curEpoch, (error, data) => {
                                     if (error) {
                                         l.getDataTimestamps.splice(l.getDataTimestamps.indexOf(curEpoch), 1);
                                     }
@@ -143,6 +147,8 @@
                                         // Do something with the data
                                         data.Epochs.forEach((ep: any) => {
                                             l.timestamps.push(ep);
+                                            l.getDataTimestamps.push(ep);
+                                            //console.log(ep);
                                         });
                                         
                                         // Go through the data and add sensor data to the feature
