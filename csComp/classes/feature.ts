@@ -103,19 +103,20 @@
  
 
     export interface IPropertyType {
-        label?           : string;
-        title?           : string;
-        description?     : string;
-        type?            : string;
-        section?         : string;
-        stringFormat?    : string;
+        label?: string;
+        title?: string;
+        description?: string;
+        type?: string;
+        section?: string;
+        stringFormat?: string;
         visibleInCallOut?: boolean;
-        canEdit?         : boolean;
-        filterType?      : string;
-        isSearchable?    : boolean;
-        minValue?        : number;
-        maxValue?        : number;
-        defaultValue?: number;        
+        canEdit?: boolean;
+        filterType?: string;
+        isSearchable?: boolean;
+        minValue?: number;
+        maxValue?: number;
+        defaultValue?: number;
+        showAlways?: boolean;       
     }
 
     export interface IFeatureTypeStyle {

@@ -1,7 +1,7 @@
 ﻿module csComp.Services {  
     export class TitleWidget extends csComp.Services.BaseWidget {
 
-        public widgetType: string = "TitleWidget";
+        public widgetType: string = "Title";
         public title: string = "Title";
         public sizeY: number = 1;
         public sizeX: number = 2;
@@ -18,7 +18,7 @@
 
     export class DataSetWidget extends csComp.Services.BaseWidget {
 
-        public widgetType: string = "DataSetWidget";
+        public widgetType: string = "DataSet";
         public title: string = "DataSet";
         public sizeY: number = 1;
         public sizeX: number = 2;
@@ -56,7 +56,7 @@
 
     export class LayerWidget extends csComp.Services.BaseWidget {
 
-        public widgetType: string = "LayerWidget";
+        public widgetType: string = "Layer";
         public title: string = "LayerWidget";
         public sizeY: number = 1;
         public sizeX: number = 2;
@@ -71,7 +71,7 @@
 
     export class TextWidget extends csComp.Services.BaseWidget {
 
-        public widgetType: string = "TextWidget";
+        public widgetType: string = "Text";
         public title: string = "Text";
 
         

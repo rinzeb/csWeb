@@ -19,7 +19,7 @@
         public editMode: boolean;
         public activeWidget: IWidget;
         public dashboards: any; 
-        public widgetTypes : IWidget[];
+        public widgetTypes : { [key : string] : IWidget};
 
         public init() {
             
@@ -50,11 +50,11 @@
             //alert('init dashbard');
 
             //this.dashboards["main"] = this.mainDashboard;
-            this.widgetTypes = [];
-            this.widgetTypes.push(new TitleWidget());
-            this.widgetTypes.push(new TextWidget());
-            this.widgetTypes.push(new DataSetWidget());
-            this.widgetTypes.push(new LayerWidget());
+            this.widgetTypes = {};
+            this.widgetTypes["Title"] = new TitleWidget();
+            this.widgetTypes["Text"] = new TextWidget();
+            this.widgetTypes["DataSet"] = new DataSetWidget();
+            this.widgetTypes["Layer"] = new LayerWidget();
             
 
 

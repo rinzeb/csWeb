@@ -190,6 +190,11 @@
                 var locale = "en-us";
                 var month = (<any>this.focusDate).toLocaleString(locale, { month: "long" });
                 switch (projecttime.zoomLevelName) {
+                    case "decades":
+                        this.line1 = this.focusDate.getFullYear().toString();
+                        this.line2 = "";
+
+                        break;
                     case "years":
                         this.line1 = this.focusDate.getFullYear().toString();
                         var locale = "en-us";
@@ -197,13 +202,16 @@
                         break;
                     case "weeks" :
                         this.line1 = this.focusDate.getFullYear().toString();
-                        this.line2 = (<any>$).datepicker.formatDate("d", this.focusDate) + " " + month;
-                        break;
-                    
+                        this.line2 = moment(this.focusDate).format('DD')+ " " + month;
+                        break;   
+                    case "milliseconds":
+                        this.line1 = moment(this.focusDate).format('MM - DD - YYYY');
+                        this.line2 = moment(this.focusDate).format('HH:mm:ss.SSS');
+                        break;                    
                     
                     default:
-                        this.line1 = (<any>$).datepicker.formatDate("M d yyyy", this.focusDate);
-                        this.line2 = (<any>$).datepicker.formatDate("hh:mm:ss", this.focusDate);
+                        this.line1 = moment(this.focusDate).format('MM - DD - YYYY'); 
+                        this.line2 = moment(this.focusDate).format('HH:mm:ss'); 
                 }
 
                 

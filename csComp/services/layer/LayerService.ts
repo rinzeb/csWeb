@@ -29,8 +29,10 @@ module csComp.Services {
             '$rootScope',
             '$location',
             '$translate',
+            'dashboardService',
             'messageBusService',
-            'mapService'            
+            'mapService'
+                        
         ];
 
         public title      : string;
@@ -66,7 +68,8 @@ module csComp.Services {
         constructor(
             private $rootScope,
             private $location: ng.ILocationService,
-            private $translate         : ng.translate.ITranslateService,
+            private $translate: ng.translate.ITranslateService,
+            private dashboardService : Services.DashboardService,
             private $messageBusService : Services.MessageBusService,
             private $mapService        : Services.MapService) {
             //$translate('FILTER_INFO').then((translation) => console.log(translation));
@@ -406,6 +409,7 @@ module csComp.Services {
                             layer.mapLayer = webGl.glLayer;
 
                         }
+                        this.$messageBusService.publish("layer", "activated", layer);
                     });
                         
 
@@ -1290,7 +1294,16 @@ module csComp.Services {
                 } else {
 
                     this.project.dashboards.forEach((d: Dashboard) => {
-                        if (!d.widgets) d.widgets = [];
+                        if (!d.widgets) {
+                            d.widgets = [];
+                        } else {
+                            d.widgets.forEach((w: IWidget) => {
+                                //if (this.$dashboardService.widgetTypes.hasOwnProperty(w.widgetType)) {
+                                //    w.init();
+                                //}
+                                //alert(w.widgetType);
+                            });
+                        }
                         //if (!d.showMap) d.showMap = true;  
                     });
                 
