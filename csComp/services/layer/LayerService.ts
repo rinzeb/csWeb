@@ -1,5 +1,4 @@
-﻿/// <reference path="../../../../apps/cscitydashboard/Website/node_modules/gulp-tsc/node_modules/typescript/bin/lib.d.ts" />
-module csComp.Services {
+﻿module csComp.Services {
     'use strict';
 
     declare var WebGlLayer;    

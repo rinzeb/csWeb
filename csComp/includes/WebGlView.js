@@ -16,7 +16,7 @@ var WebGlLayer = (function () {
                 var rB = 0.5;
 
                 if (measVal != -1) {
-                    measVal = length / measVal * 3.6;
+                    measVal = length / measVal * 3.6; 
                     if (maxNodeVal == minNodeVal)
                         maxNodeVal += 1;
                     /*var rgLev = maxMeas - measVal;

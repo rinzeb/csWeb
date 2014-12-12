@@ -18,6 +18,8 @@
     <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="directives\Dashboard\SensorWidget.tpl.ts" />
+    <TypeScriptCompile Include="directives\Dashboard\SensorWidget.ts" />
     <TypeScriptCompile Include="directives\MCA\Mca.tpl.ts" />
     <TypeScriptCompile Include="directives\MCA\Mca.ts" />
     <TypeScriptCompile Include="directives\MCA\McaEditorCtrl.ts" />
@@ -95,6 +97,7 @@
   <ItemGroup>
     <Content Include="directives\Dashboard\Dashboard.tpl.html" />
     <Content Include="directives\DashboardSelection\DashboardSelection.tpl.html" />
+    <Content Include="directives\Dashboard\SensorWidget.tpl.html" />
     <Content Include="directives\Timeline\Timeline.tpl.html" />
     <Content Include="includes\timeline.css" />
     <Content Include="includes\timeline.js" />
