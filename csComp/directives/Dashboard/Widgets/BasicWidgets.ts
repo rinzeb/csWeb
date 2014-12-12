@@ -30,22 +30,23 @@
         public value : string;
 
         public start() {
-            if (!this.messageBusService) return;
-            this.messageBusService.subscribe("timeline", (s, data) => {
-                switch (s) {
-                    case "focusChange":
-                        this.date = this.project.timeLine.focus.toString();
-                        this.value = this.date;
-                        //alert('focus');
-                        break;  
-                }
-            });
+            //if (!this.messageBusService) return;
+            //this.messageBusService.subscribe("timeline", (s, data) => {
+            //    switch (s) {
+            //        case "focusChange":
+            //            this.date = this.project.timeLine.focus.toString();
+            //            this.value = this.date;
+            //            //alert('focus');
+            //            break;  
+            //    }
+            //});
         }
 
 
         public renderer = ($compile : any,$scope: any) => {            
             var el = $("#" + this.elementId);
-            var template = "<h3>{{widget.value}}</h3>";
+            //var template = "<h3>{{widget.value}}</h3>";
+            var template = "<datasetWidget />"
             el.html(template).show();
             $scope.widget = this;
             $compile(el.contents())($scope);
@@ -73,12 +74,12 @@
 
         public widgetType: string = "Text";
         public title: string = "Text";
-
+        public name : string = "arnoud";
         
 
         public renderer = ($compile: any,$scope: any) => {
             var el = $("#" + this.elementId);
-            var template = "<h3>{{name}}</h3>";
+            var template = "<h3><testwidget text='hoi'></testwidget>{{widget.name}}</h3>";
             el.html(template).show();
             $scope.widget = this;
             $compile(el.contents())($scope);

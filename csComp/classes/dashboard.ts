@@ -8,7 +8,8 @@
     }
 
     export interface IWidget {
-        widgetType: string;
+        directive : string;
+        data : Object;
         title: string;
         elementId: string;
         dashboard: csComp.Services.Dashboard;
@@ -34,15 +35,16 @@
      
 
     export class BaseWidget implements IWidget {
-        public widgetType: string;
+        public directive : string;
         public title: string;
+        public data : {};
         public elementId: string;
         public dashboard: csComp.Services.Dashboard;
         public col: number;
         public row: number;
         public background : string;
-        public sizeY: number = 2;
-        public sizeX: number = 4;
+        public sizeY: number;
+        public sizeX: number;
         public name: string; public id: string;
         public properties: {};
         public dataSets: DataSet[];
@@ -53,12 +55,18 @@
         public height: number;
         public allowFullscreen: boolean;
         public messageBusService: csComp.Services.MessageBusService;
-        public layerService : csComp.Services.LayerService;
+        public layerService: csComp.Services.LayerService;
+
+        //public static deserialize(input: IWidget): IWidget {
+        //    var loader = new InstanceLoader(window);
+        //    var w = <IWidget>loader.getInstance(widget.widgetType);
+        //    var res = $.extend(new BaseWidget(), input);
+        //    return res;
+        //}
 
         constructor(title? : string, type? : string) {
            
-            if (title) this.title = title;
-            if (type) this.widgetType = type;
+            if (title) this.title = title;            
             this.properties = {};
             this.dataSets = [];
 
@@ -66,21 +74,24 @@
 
         }
 
+   
+
         public start() {
             
         }
 
-        public init(sX: number, sY: number, c: number, r: number, id? : string, width? : number, height? : number) {
-            this.sizeX = sX;
-            this.sizeY = sY;
-            this.col = c;
-            this.row = r;
+        public init() {
+            //if (!sizeX) 
+            //this.sizeX = sX;
+            //this.sizeY = sY;
+            //this.col = c;
+            //this.row = r;
             this.background = "red";
-            if (!id) id = "widget" + csComp.Helpers.getGuid().replace('-', '');
-            this.width = (width) ? width : 300;
-            this.height = (height) ? height : 150;            
-            this.id = id;
-            this.elementId = id;
+            if (!this.id) this.id = "widget" + csComp.Helpers.getGuid().replace('-', '');
+            //this.width = (width) ? width : 300;
+            //this.height = (height) ? height : 150;            
+            //this.id = id;
+            this.elementId = this.id;
             this.start();
 
         }
@@ -94,21 +105,31 @@
     }
 
 
-
-    
-
-    export class Dashboard {        
+    export class Dashboard {
         widgets: IWidget[];
-        editMode: boolean;        
+        editMode: boolean;
         showMap: boolean;
-        showTimeline : boolean = true;
+        showTimeline: boolean = true;
         draggable: boolean = false;
-        resizable : boolean = true;
+        resizable: boolean = true;
         background: string;
         backgroundimage: string;
         viewBounds: IBoundingBox;
-        constructor(public id: string, public name: string) {
+        id: string;
+        name: string;
+
+        constructor() {
             this.widgets = [];
+        }
+
+        public static deserialize(input: Dashboard, dashboardService : DashboardService): Dashboard {
+            var res = $.extend(new Dashboard(), input);
+
+            res.widgets = [];
+            if (input.widgets) input.widgets.forEach((w: IWidget) => {
+                dashboardService.addNewWidget(w, res);
+            });
+            return res;
         }
     }
 

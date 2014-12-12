@@ -61,21 +61,27 @@
         }
 
         public addNewWidget(widget: IWidget, dashboard: Dashboard) : IWidget {
-            var loader = new InstanceLoader(window);
-            var w = <IWidget>loader.getInstance(widget.widgetType);
-            w.messageBusService = this.$messageBusService;
+            //var loader = new InstanceLoader(window);
+            //var w = <IWidget>loader.getInstance(widget.widgetType);
+            //w.messageBusService = this.$messageBusService;
             //w.layerService = this.$layerService;
-            w.init(widget.sizeX, widget.sizeY, 4, 0);
-            
-            w.elementId = w.id;
-            w.dashboard = dashboard;
-            dashboard.widgets.push(w);
+            //w.init();
+            //var w = BaseWidget();
+            if (!widget.id) widget.id = csComp.Helpers.getGuid();
+            widget.elementId = "widget-" + widget.id;
+            widget.dashboard = dashboard;
+            dashboard.widgets.push(widget);
             if (this.$rootScope.$root.$$phase != '$apply' && this.$rootScope.$root.$$phase != '$digest') { this.$rootScope.$apply(); }
             setTimeout(() => {
-                if (w != null) w.renderer(this.$compile, this.$rootScope);
+                //if (w != null) w.renderer(this.$compile, this.$rootScope);
+                var newElement = this.$compile("<sensorwidget></sensorwidget>")(this.$rootScope);
+                var el = $("#" + widget.elementId);
+                el.empty();
+                el.append(newElement);
+
             }, 50);
-            this.editWidget(w);
-            return w;
+            //this.editWidget(w);
+            return widget;
         }
 
         public addWidget(widget: IWidget) : IWidget {

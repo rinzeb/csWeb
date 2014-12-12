@@ -18,7 +18,6 @@
     <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="directives\Dashboard\Widgets\DatasetWidget.ts" />
     <TypeScriptCompile Include="directives\MCA\Mca.tpl.ts" />
     <TypeScriptCompile Include="directives\MCA\Mca.ts" />
     <TypeScriptCompile Include="directives\MCA\McaEditorCtrl.ts" />

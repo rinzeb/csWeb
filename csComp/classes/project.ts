@@ -77,7 +77,7 @@
     }
 
     /** project configuration. */
-    export class Project implements ISerializable<Project> {
+    export class Project  {
         title           : string;
         description     : string;
         logo            : string;
@@ -95,24 +95,18 @@
         markers = {};
         sensorurl: string;
         sensors: Sensor[];
+       
          
 
-        public deserialize(input: Project): Project {
-            this.viewBounds       = input.viewBounds;
-            this.title            = input.title;
-            this.description      = input.description;
-            this.logo             = input.logo;
-            this.markers          = input.markers;
-            this.startposition    = input.startposition;
-            this.features         = input.features;
-            this.featureTypes     = input.featureTypes;
-            this.propertyTypeData = input.propertyTypeData;
-            this.groups           = input.groups;
-            this.mcas             = [];
-            for (var mca in input.mcas) {
-                this.mcas.push(new Mca.Models.Mca().deserialize(mca));
-            }
-            return this;
+        public static deserialize(input: Project,dashboardService): Project {
+            var res = <Project>jQuery.extend(new Project(), input);
+            if (input.dashboards) {
+                res.dashboards = [];                
+                input.dashboards.forEach((d: Dashboard) =>
+                    res.dashboards.push(Dashboard.deserialize(d,dashboardService)));                
+            }            
+            return res;
+
         }
     }
 
