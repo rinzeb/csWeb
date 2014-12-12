@@ -105,14 +105,23 @@
             
         }
 
+        public updateWidget(w : csComp.Services.IWidget) {
+            var newElement = this.$compile("<sensorwidget></sensorwidget>")(this.$scope);
+            var el = $("#" + w.elementId);
+            el.empty();
+            el.append(newElement);
+        }
+
         public updateDashboard() {
             var dashboard = this.$scope.dashboard;
             if (!dashboard) return;
             if (dashboard && dashboard.widgets && dashboard.widgets.length > 0) {
             setTimeout(() => {                
                 dashboard.widgets.forEach((w: csComp.Services.IWidget) => {
-                        w.renderer(this.$compile,this.$scope);
-                    });
+                    this.updateWidget(w);
+
+                    //w.renderer(this.$compile,this.$scope);
+                });
             }, 100);
         }
 

@@ -18,7 +18,6 @@
     <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="directives\Dashboard\Widgets\DatasetWidget.ts" />
     <TypeScriptCompile Include="directives\MCA\Mca.tpl.ts" />
     <TypeScriptCompile Include="directives\MCA\Mca.ts" />
     <TypeScriptCompile Include="directives\MCA\McaEditorCtrl.ts" />
@@ -56,6 +55,7 @@
     <TypeScriptCompile Include="directives\LayersList\LayersDirective.tpl.ts" />
     <TypeScriptCompile Include="directives\LayersList\LayersDirective.ts" />
     <TypeScriptCompile Include="directives\LayersList\LayersDirectiveCtrl.ts" />
+    <TypeScriptCompile Include="Scripts\typings\moment\moment.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\underscore\underscore.d.ts" />
     <TypeScriptCompile Include="services\dashboard\DashboardService.ts" />
     <TypeScriptCompile Include="services\layer\LayerService.ts" />

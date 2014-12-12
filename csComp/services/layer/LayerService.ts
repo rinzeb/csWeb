@@ -29,8 +29,10 @@ module csComp.Services {
             '$rootScope',
             '$location',
             '$translate',
+            'dashboardService',
             'messageBusService',
-            'mapService'            
+            'mapService'
+                        
         ];
 
         public title      : string;
@@ -66,7 +68,8 @@ module csComp.Services {
         constructor(
             private $rootScope,
             private $location: ng.ILocationService,
-            private $translate         : ng.translate.ITranslateService,
+            private $translate: ng.translate.ITranslateService,
+            private dashboardService : Services.DashboardService,
             private $messageBusService : Services.MessageBusService,
             private $mapService        : Services.MapService) {
             //$translate('FILTER_INFO').then((translation) => console.log(translation));
@@ -423,6 +426,7 @@ module csComp.Services {
                             layer.mapLayer = webGl.glLayer;
 
                         }
+                        this.$messageBusService.publish("layer", "activated", layer);
                     });
                         
                     this.$messageBusService.publish("layer", "activated", layer);
@@ -960,9 +964,9 @@ module csComp.Services {
                 } else {
                     this.updateStyle(gs);
                 }
-
-                if (openStyleTab)
-                    (<any>$('#leftPanelTab a[href="#styles"]')).tab('show'); // Select tab by name
+                this.$messageBusService.publish("styles", "styleChanged", gs);                
+                if (openStyleTab) (<any>$('#leftPanelTab a[href="#styles"]')).tab('show'); // Select tab by name
+                
                 return gs;
             }
         }
@@ -1267,11 +1271,14 @@ module csComp.Services {
             this.featureTypes = {};
 
             $.getJSON(url, (data: Project) => {
-                this.project = data;
+                this.project = Project.deserialize(data,this.dashboardService);
 
                 if (!this.project.dashboards || Object.keys(this.project.dashboards).length==0) {
                     this.project.dashboards = [];
-                    this.project.dashboards.push(new Dashboard("map", "map"));
+                    var md = new Dashboard();
+                    md.id = "map";
+                    md.name = "map";
+                    this.project.dashboards.push(md);
                 }
                 var first = this.project.dashboards[0];
                 this.$messageBusService.publish("dashboardSelect", "selectRequest", first);
@@ -1301,13 +1308,24 @@ module csComp.Services {
 
                 if (!this.project.dashboards) {
                     this.project.dashboards = [];
-                    var d = new csComp.Services.Dashboard("1", this.project.title);
+                    var d = new csComp.Services.Dashboard();
+                    d.id = "1";
+                    d.name = this.project.title;
                     d.widgets = [];
                     this.project.dashboards.push(d);
                 } else {
 
                     this.project.dashboards.forEach((d: Dashboard) => {
-                        if (!d.widgets) d.widgets = [];
+                        if (!d.widgets) {
+                            d.widgets = [];
+                        } else {
+                            d.widgets.forEach((w: IWidget) => {
+                                //if (this.$dashboardService.widgetTypes.hasOwnProperty(w.widgetType)) {
+                                //    w.init();
+                                //}
+                                //alert(w.widgetType);
+                            });
+                        }
                         //if (!d.showMap) d.showMap = true;  
                     });
                 

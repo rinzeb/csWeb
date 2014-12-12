@@ -75,7 +75,9 @@
         /** Add new dashboard */
         public addDashboard(widget: csComp.Services.IWidget) {
             var id = csComp.Helpers.getGuid();
-            var d = new csComp.Services.Dashboard(id, "New Dashboard");
+            var d = new csComp.Services.Dashboard();
+            d.id = id;
+            d.name = "New Dashboard";
             this.$layerService.project.dashboards.push(d);
         }
 

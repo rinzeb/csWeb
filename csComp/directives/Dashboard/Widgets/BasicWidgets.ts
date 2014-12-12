@@ -1,7 +1,7 @@
 ﻿module csComp.Services {  
     export class TitleWidget extends csComp.Services.BaseWidget {
 
-        public widgetType: string = "TitleWidget";
+        public widgetType: string = "Title";
         public title: string = "Title";
         public sizeY: number = 1;
         public sizeX: number = 2;
@@ -18,7 +18,7 @@
 
     export class DataSetWidget extends csComp.Services.BaseWidget {
 
-        public widgetType: string = "DataSetWidget";
+        public widgetType: string = "DataSet";
         public title: string = "DataSet";
         public sizeY: number = 1;
         public sizeX: number = 2;
@@ -30,22 +30,23 @@
         public value : string;
 
         public start() {
-            if (!this.messageBusService) return;
-            this.messageBusService.subscribe("timeline", (s, data) => {
-                switch (s) {
-                    case "focusChange":
-                        this.date = this.project.timeLine.focus.toString();
-                        this.value = this.date;
-                        //alert('focus');
-                        break;  
-                }
-            });
+            //if (!this.messageBusService) return;
+            //this.messageBusService.subscribe("timeline", (s, data) => {
+            //    switch (s) {
+            //        case "focusChange":
+            //            this.date = this.project.timeLine.focus.toString();
+            //            this.value = this.date;
+            //            //alert('focus');
+            //            break;  
+            //    }
+            //});
         }
 
 
         public renderer = ($compile : any,$scope: any) => {            
             var el = $("#" + this.elementId);
-            var template = "<h3>{{widget.value}}</h3>";
+            //var template = "<h3>{{widget.value}}</h3>";
+            var template = "<datasetWidget />"
             el.html(template).show();
             $scope.widget = this;
             $compile(el.contents())($scope);
@@ -56,7 +57,7 @@
 
     export class LayerWidget extends csComp.Services.BaseWidget {
 
-        public widgetType: string = "LayerWidget";
+        public widgetType: string = "Layer";
         public title: string = "LayerWidget";
         public sizeY: number = 1;
         public sizeX: number = 2;
@@ -71,14 +72,14 @@
 
     export class TextWidget extends csComp.Services.BaseWidget {
 
-        public widgetType: string = "TextWidget";
+        public widgetType: string = "Text";
         public title: string = "Text";
-
+        public name : string = "arnoud";
         
 
         public renderer = ($compile: any,$scope: any) => {
             var el = $("#" + this.elementId);
-            var template = "<h3>{{name}}</h3>";
+            var template = "<h3><testwidget text='hoi'></testwidget>{{widget.name}}</h3>";
             el.html(template).show();
             $scope.widget = this;
             $compile(el.contents())($scope);
