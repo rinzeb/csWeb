@@ -142,7 +142,8 @@
         id                          : string;
         /** Reference for URL params: if the URL contains layers=REFERENCE1;REFERENCE2, the two layers will be turned on.  */
         reference: string;
-        events  : Event[];
+        events: Event[];
+        colorFunctions: any[];
     }
 
     /**

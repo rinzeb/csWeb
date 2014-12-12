@@ -10,7 +10,7 @@ var WebGlLayer = (function () {
                 var minNodeVal = 0; // Math.min.apply(null, this.data.features[idx].measurements);
                 //if (maxNodeVal != -1)
                 //    maxMeas = Math.min(meanNodeVal * 2, maxNodeVal);
-                var measVal = sensorValue; // this.data.features[idx].properties["SPEED"]; //this.data.features[idx].measurements[curIdx];
+                var measVal = sensorValue; 
                 var rR = 0.5;
                 var rG = 0.5;
                 var rB = 0.5;
@@ -42,6 +42,7 @@ var WebGlLayer = (function () {
             this.leafletMap = lmap;            
             this.data = jsonObj;
             this.measIdx = 0;
+            this.lastSensor = "";
             if (jsonObj.features[0].measurements != null)
                 this.maxMeasIdx = jsonObj.features[0].measurements.length;
             else
@@ -265,7 +266,8 @@ var WebGlLayer = (function () {
 
     
 
-    WebGlLayer.prototype.updateColors = function () {
+    WebGlLayer.prototype.updateColors = function (sensorId) {
+        this.lastSensor = sensorId;
         if (this.moving == true)
             return;
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.webGLData.buffer);
@@ -283,39 +285,8 @@ var WebGlLayer = (function () {
             var idxObj = this.verticesIndex[idxL];
             var idx = idxObj.index;
             
-            var colorObj = this.calculateColor(this.data.features[idx].properties["SPEED"], idx);
-            //var meanNodeVal = Math.average.apply(null, this.data.features[idx].measurements);
-            /*var length = this.data.features[idx].properties["LENGTH"];
-            var maxSpeed = this.data.features[idx].properties["FR_SPD_LIM"];
-            var maxNodeVal = maxSpeed; //  Math.max.apply(null, this.data.features[idx].measurements);
-            var minNodeVal = 0; // Math.min.apply(null, this.data.features[idx].measurements);
-            //if (maxNodeVal != -1)
-            //    maxMeas = Math.min(meanNodeVal * 2, maxNodeVal);
-            var measVal = this.data.features[idx].properties["SPEED"]; //this.data.features[idx].measurements[curIdx];
-            var rR = 0.5;
-            var rG = 0.5;
-            var rB = 0.5;
-
-            if (measVal != -1)
-            {
-                measVal = length / measVal * 3.6;
-                if(maxNodeVal == minNodeVal)
-                    maxNodeVal += 1;
-                
-
-                rB = 0.0;
-                rR = (maxNodeVal - measVal) / (maxNodeVal - minNodeVal);
-                if (rR < 0)
-                    rR = 0;
-                if (rR > 1)
-                    rR = 1;
-                rG = 1 - rR;
-            }*/
-
-            /*var rR = Math.random();
-            var rG = Math.random();
-            var rB = Math.random();*/
-
+            var colorObj = this.calculateColor(this.data.features[idx].properties[sensorId], idx); 
+           
             for(var i = idxObj.startIdx; i < idxObj.endIdx; i += 6)
             {
                 curVertArr[i + 2] = colorObj.rR;

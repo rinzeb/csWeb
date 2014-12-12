@@ -89,14 +89,14 @@ module csComp.Services {
                 switch (trigger) {
 
                 case "focusChange":
-                    this.updateSensorData();
+                    this.updateSensorData(false);
                     break;
 
                 }
             });
         }
 
-        public updateSensorData() {
+        public updateSensorData(clearData: boolean) {
             if (this.project == null || this.project.timeLine == null) return;
             var date = this.project.timeLine.focus;
             var timepos = {};
@@ -112,7 +112,7 @@ module csComp.Services {
                 this.project.groups.forEach(g => {
                     g.layers.forEach(l => {     
                         if (l.type.toLowerCase() === "geojsonwebgl") {
-                            if (this.project.timeLine.zoomLevel != this.lastTimeZoom) {
+                            if (this.project.timeLine.zoomLevel != this.lastTimeZoom || clearData) {
                                 // Clear all stored data
                                 l.timestamps = null;
                                 l.getDataTimestamps = null;       
@@ -247,7 +247,7 @@ module csComp.Services {
                                         var currentValue = f.sensorValues[epochIndex];
                                         currentValue = parseFloat(currentValue);
                                         if (currentValue ) {
-                                            f.properties["SPEED"] = currentValue; // + Math.floor((Math.random() * 100) + 1);
+                                            f.properties[this.activeSensor] = currentValue; // + Math.floor((Math.random() * 100) + 1);
                                         }
                                     }
                                     else {
@@ -373,8 +373,10 @@ module csComp.Services {
                                 }
                             });
                             webGl.updateDraw();
-                            //console.log("webgl drawn");
+                            //console.log("webgl drawn");]                          
+                            
                             webGl.calculateColor = function (sensorValue, idx) {
+                                //var prop = layer.group.styles[0].property;
                                 var length = this.data.features[idx].properties["LENGTH"];
                                 var maxSpeed = this.data.features[idx].properties["FR_SPD_LIM"];
                                 var maxNodeVal = maxSpeed; 
@@ -402,13 +404,28 @@ module csComp.Services {
                                 colorObj.rB = rB;
                                 return colorObj;
                             }
-                            setInterval(function () { webGl.updateColors() }, 300);
+                            var thisObj = this;
+                            setInterval(function () {
+                                if (layer.group.styles && layer.group.styles.length > 0) {
+                                    if (thisObj.activeSensor != layer.group.styles[0].property) {
+                                        // Update data
+                                        thisObj.activeSensor = layer.group.styles[0].property;
+                                        thisObj.updateSensorData(true);
+                                    }
+
+                                    webGl.updateColors(layer.group.styles[0].property);
+                                }
+                                else {
+                                    // Default : take travel time
+                                    webGl.updateColors("TT");
+                                }
+                            }, 300);
                             layer.mapLayer = webGl.glLayer;
 
                         }
                     });
                         
-
+                    this.$messageBusService.publish("layer", "activated", layer);
                     break;
                 case "geojson":
                     async.series([
