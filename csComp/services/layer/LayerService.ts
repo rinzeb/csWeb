@@ -164,12 +164,19 @@
                                 dataEnd = curEpoch;
                             }
 
+                            if (this.nrDownloads > 20) {
+                                dataStart = curEpoch;
+                                dataEnd = curEpoch;
+                            }
+
                             for (curEpoch = dataStart; curEpoch <= dataEnd; curEpoch += curAggr) {
                             
                                 if (l.getDataTimestamps.indexOf(curEpoch) == -1) {
                                     l.getDataTimestamps.push(curEpoch);
                                     //console.log("Getting data");
+                                    this.nrDownloads++; 
                                     d3.json("/data?type=" + this.activeSensor + "&interval=" + curAggr + "&epoch=" + curEpoch, (error, data) => {
+                                        this.nrDownloads--;
                                         if (error) {
                                             l.getDataTimestamps.splice(l.getDataTimestamps.indexOf(curEpoch), 1);
                                         }
