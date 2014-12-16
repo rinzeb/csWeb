@@ -62,7 +62,9 @@
 
         private sensorIndices: Array<any>;
         private lastUpdate: number;
+        private lastTimechange: number;
         private lastTimeZoom: number;
+        private nrDownloads: number;
 
         constructor(
             private $rootScope,
@@ -86,6 +88,8 @@
             this.activeSensor = "TT";
 
             this.lastUpdate = 0;
+            this.lastTimechange = 0;
+            this.nrDownloads = 0;
             
             this.$messageBusService.subscribe("timeline", (trigger: string) => {
                 switch (trigger) {
@@ -121,10 +125,12 @@
             if (this.project && this.project.timeLine && this.project.timeLine.zoomLevel && !this.lastTimeZoom) {
                 this.lastTimeZoom = this.project.timeLine.zoomLevel;
             }
+
+            var timeBetweenUpd = new Date().getTime() - this.lastTimechange;    
             
-            
-            if (true)  
-                {      
+            if (timeBetweenUpd > 0)  
+            {      
+                this.lastTimechange = new Date().getTime();
                 this.project.groups.forEach(g => {
                     g.layers.forEach(l => {     
                         if (l.type.toLowerCase() === "geojsonwebgl") {
@@ -145,10 +151,21 @@
                                 l.getDataTimestamps = [];
 
                             // Loop through visible area and query data
-                            var dataStart = Math.floor(this.project.timeLine.start / (curAggr * 1000)) * curAggr;
-                            var dataEnd = Math.floor(this.project.timeLine.end / (curAggr * 1000)) * curAggr ;
+                            var dataStart = Math.floor((curEpoch - (5 * curAggr)) / (curAggr)) * curAggr;
+                            var dataEnd = Math.floor((curEpoch + (5 * curAggr)) / (curAggr)) * curAggr;
+
+                            if (curEpoch > dataEnd || curEpoch < dataStart) {
+                                dataStart = curEpoch;
+                                dataEnd = curEpoch;
+                            }
+
+                            if (this.timeline.isLive) {
+                                dataStart = Math.floor((curEpoch - (10 * curAggr)) / (curAggr * 1000)) * curAggr;
+                                dataEnd = curEpoch;
+                            }
 
                             for (curEpoch = dataStart; curEpoch <= dataEnd; curEpoch += curAggr) {
+                            
                                 if (l.getDataTimestamps.indexOf(curEpoch) == -1) {
                                     l.getDataTimestamps.push(curEpoch);
                                     //console.log("Getting data");
@@ -208,7 +225,7 @@
 
                                             // Set right value
                                             this.updateValues(curEpoch);
-                                        this.$messageBusService.publish("sensors", "updated");
+                                            this.$messageBusService.publish("sensors", "updated");
                                             //console.log("Data processed");
                                         }
                                     });
