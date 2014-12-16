@@ -12,6 +12,8 @@
         }
     }
 
+    declare var JSON;
+
     export class DashboardService {
         public maxBounds: IBoundingBox;
         public featureDashboard: csComp.Services.Dashboard;
@@ -60,6 +62,8 @@
 
         }
 
+        
+
         public addNewWidget(widget: IWidget, dashboard: Dashboard) : IWidget {
             //var loader = new InstanceLoader(window);
             //var w = <IWidget>loader.getInstance(widget.widgetType);
@@ -74,14 +78,19 @@
             if (this.$rootScope.$root.$$phase != '$apply' && this.$rootScope.$root.$$phase != '$digest') { this.$rootScope.$apply(); }
             setTimeout(() => {
                 //if (w != null) w.renderer(this.$compile, this.$rootScope);
-                var newElement = this.$compile("<sensorwidget></sensorwidget>")(this.$rootScope);
-                var el = $("#" + widget.elementId);
-                el.empty();
-                el.append(newElement);
+                this.updateWidget(widget);
 
             }, 50);
             //this.editWidget(w);
             return widget;
+        }
+
+        public updateWidget(widget: csComp.Services.IWidget) {
+            var d = JSON.stringify(widget.data);
+            var newElement = this.$compile("<" + widget.directive + " widget='" + d + "'></" + widget.directive + ">")(this.$rootScope);
+            var el = $("#" + widget.elementId);
+            el.empty();
+            el.append(newElement);
         }
 
         public addWidget(widget: IWidget) : IWidget {
