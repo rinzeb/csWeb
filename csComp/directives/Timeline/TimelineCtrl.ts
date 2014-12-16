@@ -136,7 +136,7 @@
                 var pos = tl.timeToScreen(new Date());
                 $("#focustimeContainer").css('left', pos - 75);
                 this.$scope.$apply();
-
+                this.updateFocusTime(); 
             } else {
                 tl.move(0.005);
                 this.updateFocusTime();    

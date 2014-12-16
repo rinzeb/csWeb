@@ -110,7 +110,9 @@
                 this.lastTimeZoom = this.project.timeLine.zoomLevel;
             }
             
-            if (true) { //(curEpoch > 1398038400 && curEpoch < 1398121200) {                
+            
+            if (true)  
+                {      
                 this.project.groups.forEach(g => {
                     g.layers.forEach(l => {     
                         if (l.type.toLowerCase() === "geojsonwebgl") {
@@ -129,68 +131,75 @@
                                 l.timestamps = [];
                             if (!l.getDataTimestamps)
                                 l.getDataTimestamps = [];
-                            if (l.getDataTimestamps.indexOf(curEpoch) == -1) {
-                                l.getDataTimestamps.push(curEpoch);
-                                //console.log("Getting data");
-                                d3.json("/data?type=" + this.activeSensor + "&interval=" + curAggr + "&epoch=" + curEpoch, (error, data) => {
-                                    if (error) {
-                                        l.getDataTimestamps.splice(l.getDataTimestamps.indexOf(curEpoch), 1);
-                                    }
-                                    else {
-                                        // First time, build an index of the sensor data
-                                        if (!this.sensorIndices) {
-                                            this.sensorIndices = new Array();
-                                            var si = 0;
-                                            data.LinkValues.forEach((lv) => {
-                                                this.sensorIndices[lv["LINK_ID"]] = si;
-                                                si++;
-                                            });
+
+                            // Loop through visible area and query data
+                            var dataStart = Math.floor(this.project.timeLine.start / (curAggr * 1000)) * curAggr;
+                            var dataEnd = Math.floor(this.project.timeLine.end / (curAggr * 1000)) * curAggr ;
+
+                            for (curEpoch = dataStart; curEpoch <= dataEnd; curEpoch += curAggr) {
+                                if (l.getDataTimestamps.indexOf(curEpoch) == -1) {
+                                    l.getDataTimestamps.push(curEpoch);
+                                    //console.log("Getting data");
+                                    d3.json("/data?type=" + this.activeSensor + "&interval=" + curAggr + "&epoch=" + curEpoch, (error, data) => {
+                                        if (error) {
+                                            l.getDataTimestamps.splice(l.getDataTimestamps.indexOf(curEpoch), 1);
                                         }
+                                        else {
+                                            // First time, build an index of the sensor data
+                                            if (!this.sensorIndices) {
+                                                this.sensorIndices = new Array();
+                                                var si = 0;
+                                                data.LinkValues.forEach((lv) => {
+                                                    this.sensorIndices[lv["LINK_ID"]] = si;
+                                                    si++;
+                                                });
+                                            }
 
-                                        // Do something with the data
-                                        data.Epochs.forEach((ep: any) => {
-                                            l.timestamps.push(ep);
-                                            l.getDataTimestamps.push(ep);
-                                            //console.log(ep);
-                                        });
-                                        
-                                        // Go through the data and add sensor data to the feature
+                                            // Do something with the data
+                                            data.Epochs.forEach((ep: any) => {
+                                                l.timestamps.push(ep);
+                                                l.getDataTimestamps.push(ep);
+                                                //console.log(ep);
+                                            });
 
-                                        this.project.features.forEach((f: IFeature) => {
-                                            // Find this feature                                             
-                                            var id = f.properties["LINK_ID"];
-                                            var lv = data.LinkValues[this.sensorIndices[id]];
-                                            if (lv) {
-                                                if (f.sensorValues)
-                                                    if (lv.Values) {
-                                                        lv.Values.forEach((lval: any) => {
-                                                            f.sensorValues.push(lval);
-                                                        });
-                                                    }
+                                            // Go through the data and add sensor data to the feature
+
+                                            this.project.features.forEach((f: IFeature) => {
+                                                // Find this feature                                             
+                                                var id = f.properties["LINK_ID"];
+                                                var lv = data.LinkValues[this.sensorIndices[id]];
+                                                if (lv) {
+                                                    if (f.sensorValues)
+                                                        if (lv.Values) {
+                                                            lv.Values.forEach((lval: any) => {
+                                                                f.sensorValues.push(lval);
+                                                            });
+                                                        }
+                                                        else {
+                                                            data.Epochs.forEach((ep: any) => {
+                                                                f.sensorValues.push(-1);
+                                                            });
+                                                        }
                                                     else {
-                                                        data.Epochs.forEach((ep: any) => {
-                                                            f.sensorValues.push(-1);
-                                                        });
-                                                    }
-                                                else {
-                                                    if (lv.Values) {
-                                                        f.sensorValues = lv.Values;
-                                                    }
-                                                    else {
-                                                        f.sensorValues = [];
-                                                        data.Epochs.forEach((ep: any) => {
-                                                            f.sensorValues.push(-1);
-                                                        });
+                                                        if (lv.Values) {
+                                                            f.sensorValues = lv.Values;
+                                                        }
+                                                        else {
+                                                            f.sensorValues = [];
+                                                            data.Epochs.forEach((ep: any) => {
+                                                                f.sensorValues.push(-1);
+                                                            });
+                                                        }
                                                     }
                                                 }
-                                            }
-                                        });
+                                            });
 
-                                        // Set right value
-                                        this.updateValues(curEpoch);
-                                        //console.log("Data processed");
-                                    }
-                                });
+                                            // Set right value
+                                            this.updateValues(curEpoch);
+                                            //console.log("Data processed");
+                                        }
+                                    });
+                                }
                             }
                         }
                     });
@@ -242,8 +251,16 @@
                         if (l.type.toLowerCase() == "geojsonwebgl") {
                             // Find closest epoch
                             var realEpoch = epoch;
-                            var epochIndex = l.timestamps.indexOf(realEpoch)
-                        if (epochIndex != -1) {
+                            var epochIndex = l.timestamps.indexOf(realEpoch);
+                            var nrMinutesBack = 0;
+                            while (epochIndex == -1 && nrMinutesBack < 2000) {
+                                realEpoch = realEpoch - 60;
+                                epochIndex = l.timestamps.indexOf(realEpoch);
+                                nrMinutesBack++;
+                            }
+
+
+                            if (epochIndex != -1) {
                                 this.project.features.forEach((f: IFeature) => {
                                     if (f.sensorValues && f.sensorValues[epochIndex]) {
                                         var currentValue = f.sensorValues[epochIndex];
@@ -340,7 +357,7 @@
                         if (error)
                             this.$messageBusService.notify('ERROR loading' + layer.title, error);
                         else {
-                            this.$messageBusService.publish("timeline", "updateTimerange", { start: new Date(2014, 0, 1), end: new Date(2014, 0, 5) });
+                            this.$messageBusService.publish("timeline", "updateTimerange", { start: new Date(2014, 11, 14), end: new Date(2014, 11, 17) });
                             
                             this.prepareGeoJson(layer, data);
 
@@ -375,42 +392,13 @@
                                 }
                             });
                             webGl.updateDraw();
-                            //console.log("webgl drawn");]                          
                             
-                            webGl.calculateColor = function (sensorValue, idx) {
-                                //var prop = layer.group.styles[0].property;
-                                var length = this.data.features[idx].properties["LENGTH"];
-                                var maxSpeed = this.data.features[idx].properties["FR_SPD_LIM"];
-                                var maxNodeVal = maxSpeed; 
-                                var minNodeVal = 0;                                 
-                                var measVal = sensorValue; 
-                                var rR = 0.5;
-                                var rG = 0.5;
-                                var rB = 0.5;
-                                if (measVal != -1) {
-                                    measVal = length / measVal * 3.6;
-                                    if (maxNodeVal == minNodeVal)
-                                        maxNodeVal += 1;                                    
-                                    rB = 0.0;
-                                    rR = (maxNodeVal - measVal) / (maxNodeVal - minNodeVal);
-                                    if (rR < 0)
-                                        rR = 0;
-                                    if (rR > 1)
-                                        rR = 1;
-                                    rG = 1 - rR;
-                                }
-                                var colorObj: any; 
-                                colorObj = new Object();
-                                colorObj.rR = rR;
-                                colorObj.rG = rG;
-                                colorObj.rB = rB;
-                                return colorObj;
-                            }
                             var thisObj = this;
                             setInterval(function () {
                                 if (layer.group.styles && layer.group.styles.length > 0) {
                                     if (thisObj.activeSensor != layer.group.styles[0].property) {
                                         // Update data
+                                        webGl.calculateColor = layer.colorFunctions[layer.group.styles[0].property];
                                         thisObj.activeSensor = layer.group.styles[0].property;
                                         thisObj.updateSensorData(true);
                                     }
