@@ -98,6 +98,18 @@
             });
         }
 
+        public closeProject() {
+            if (this.project == null) return;
+            
+            this.project.groups.forEach((group: ProjectGroup) => {
+                group.layers.forEach((layer: ProjectLayer) => {
+                    if (layer.enabled) {
+                        this.removeLayer(layer);
+                    }
+                });
+            });
+        }
+
         public updateSensorData(clearData: boolean) {
             if (this.project == null || this.project.timeLine == null) return;
             var date = this.project.timeLine.focus;
@@ -196,6 +208,7 @@
 
                                             // Set right value
                                             this.updateValues(curEpoch);
+                                        this.$messageBusService.publish("sensors", "updated");
                                             //console.log("Data processed");
                                         }
                                     });

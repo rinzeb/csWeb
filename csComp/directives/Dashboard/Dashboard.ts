@@ -9,7 +9,7 @@
       */
     export var myModule;
     try {
-    myModule = angular.module(moduleName, ['csWeb.sensorWidget']);
+    myModule = angular.module(moduleName);
 
     } catch (err) {
         // named module does not exist, so create one
@@ -58,7 +58,7 @@
 
                     //scope.dashboard = attrs.param;
                     //var s = jQuery.parseJSON(attrs.param);                    
-                    scope.initDashboard(); 
+                    scope.initDashboard();            
                                
                 },
                 replace:false,      

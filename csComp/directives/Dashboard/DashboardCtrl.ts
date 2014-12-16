@@ -105,11 +105,12 @@
             
         }
 
-        public updateWidget(w : csComp.Services.IWidget) {
-            var newElement = this.$compile("<sensorwidget></sensorwidget>")(this.$scope);
-            var el = $("#" + w.elementId);
-            el.empty();
-            el.append(newElement);
+        public updateWidget(w: csComp.Services.IWidget) {
+            this.$dashboardService.updateWidget(w);
+            //var newElement = this.$compile("<" + w.directive + " widget=" + w + "></" + w.directive + ">")(this.$scope);
+            //var el = $("#" + w.elementId);
+            //el.empty();
+            //el.append(newElement);
         }
 
         public updateDashboard() {
