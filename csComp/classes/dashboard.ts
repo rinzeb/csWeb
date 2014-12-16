@@ -115,20 +115,23 @@
         background: string;
         backgroundimage: string;
         viewBounds: IBoundingBox;
+        timeline: DateRange;
         id: string;
-        name: string;
+        name: string;            
 
         constructor() {
             this.widgets = [];
         }
 
         public static deserialize(input: Dashboard, dashboardService : DashboardService): Dashboard {
-            var res = $.extend(new Dashboard(), input);
+            var res = <Dashboard>$.extend(new Dashboard(), input);
 
             res.widgets = [];
             if (input.widgets) input.widgets.forEach((w: IWidget) => {
                 dashboardService.addNewWidget(w, res);
             });
+            if (input.timeline) res.timeline = $.extend(new DateRange(), input.timeline);
+            
             return res;
         }
     }

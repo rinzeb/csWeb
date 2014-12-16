@@ -35,21 +35,7 @@
             });         
         }
 
-        public hide() {
-            this.isVisible = false;
-        }
-
-        public show() {
-            this.isVisible = true;
-        }
-
-        public hideTimeline() {
-            this.timelineVisible = false;
-        }
-
-        public showTimeline() {
-            this.timelineVisible = true;
-        }
+     
 
         public changeBaseLayer(layerObj: L.ILayer) {
             this.map.addLayer(layerObj);

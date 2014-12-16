@@ -20,6 +20,13 @@
     
     declare var WebGlView;
     
+    export class VisualState {
+        public leftPanelVisible: boolean = false;
+        public rightPanelVisible: boolean = false;
+        public dashboardVisible: boolean = true;
+        public mapVisible: boolean = true;
+        public timelineVisible : boolean = true;
+    }
 
     export class LayerService implements ILayerService {
         public maxBounds: IBoundingBox;
@@ -45,6 +52,7 @@
           
         public project: Project;
         public solution: Solution;
+        public visual : VisualState = new VisualState();
         
         public layerGroup = new L.LayerGroup();
         public dimension           : any;
@@ -75,7 +83,8 @@
             private $mapService        : Services.MapService) {
             //$translate('FILTER_INFO').then((translation) => console.log(translation));
             // NOTE EV: private props in constructor automatically become fields, so mb and map are superfluous.
-            this.mb             = $messageBusService;
+            this.mb = $messageBusService;
+            this.visual = new VisualState();
             this.map            = $mapService;
             this.accentColor    = "";
             this.title          = "";

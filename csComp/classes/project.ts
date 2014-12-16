@@ -103,7 +103,8 @@
             if (input.dashboards) {
                 res.dashboards = [];                
                 input.dashboards.forEach((d: Dashboard) =>
-                    res.dashboards.push(Dashboard.deserialize(d,dashboardService)));                
+                    res.dashboards.push(Dashboard.deserialize(d, dashboardService)));                
+                
             }            
             return res;
 

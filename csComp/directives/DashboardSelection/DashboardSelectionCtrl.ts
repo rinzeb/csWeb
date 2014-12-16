@@ -101,24 +101,39 @@
         }
 
         public checkTimeline() {
+            var db = this.$dashboardService.mainDashboard;
 
-            if (this.$dashboardService.mainDashboard.showTimeline != this.$mapService.timelineVisible) {
-                if (this.$dashboardService.mainDashboard.showTimeline) {
-                    this.$mapService.showTimeline();
+            if (db.timeline) {
+
+                var s = new Date(db.timeline.start);
+                var e = new Date();
+                if (db.timeline.end) e = new Date(db.timeline.end);
+                //this.$messageBusService.publish("timeline", "updateTimerange", { "start": s, "end": e});                
+                    this.$messageBusService.publish("timeline", "updateTimerange", { start: s, end: e });
+                
+
+                //this.$layerService.project.timeLine.setFocus(db.timeline.focusDate, db.timeline.startDate, db.timeline.endDate);
+            }
+
+            if (db.showTimeline != this.$layerService.visual.timelineVisible) {
+                if (db.showTimeline) {
+                    this.$layerService.visual.timelineVisible = true;
                 } else {
-                    this.$mapService.hideTimeline();
+                    this.$layerService.visual.timelineVisible = false;
                 }
+                
                 if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') { this.$scope.$apply(); }
             }
         }
 
         public checkMap() {
-
-            if (this.$dashboardService.mainDashboard.showMap != this.$mapService.isVisible) {
+            
+            
+            if (this.$dashboardService.mainDashboard.showMap != this.$layerService.visual.mapVisible) {
                 if (this.$dashboardService.mainDashboard.showMap) {
-                    this.$mapService.show();
+                    this.$layerService.visual.mapVisible = true;
                 } else {
-                    this.$mapService.hide();
+                    this.$layerService.visual.mapVisible = false;
                 }
                 if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') { this.$scope.$apply(); }
             }
