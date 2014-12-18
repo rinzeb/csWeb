@@ -430,7 +430,7 @@ module csComp.Services {
             }
         }
 
-        private updateFeature(feature: IFeature, group?: ProjectGroup) {
+        public updateFeature(feature: IFeature, group?: ProjectGroup) {
             if (feature.geometry.type == "Point") {
                 var layer = this.findLayer(feature.layerId);
                 if (layer != null) this.updateFeatureIcon(feature, layer);

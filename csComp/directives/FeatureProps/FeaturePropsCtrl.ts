@@ -12,19 +12,22 @@
         constructor(position: string) {
             this.position = position;
             this.closeButton = true;
-            this.autoPan = true;            
+            this.autoPan = true;             
         }
     }
 
     export interface IFeaturePropsScope extends ng.IScope {
-        vm       : FeaturePropsCtrl;
-        showMenu : boolean;
-        poi      : IFeature;
+        vm: FeaturePropsCtrl;
+        showMenu: boolean;
+        poi: IFeature;
         callOut: CallOut;
         tabs: JQuery;
         tabScrollDelta: number;
         featureTabActivated(sectionTitle: string, section: CallOutSection);
-        autocollapse(init: boolean):void;
+        autocollapse(init: boolean): void;
+        editMode: boolean;
+        editModeValue;
+        testMethod;
     }
 
     export interface ICallOutProperty {
@@ -226,14 +229,17 @@
             this.scope = $scope;
             $scope.vm = this;
             $scope.showMenu = false;
+            $scope.editMode = false;
             
             $scope.featureTabActivated = function (sectionTitle: string, section: CallOutSection) {
                 $messageBusService.publish('FeatureTab', 'activated', { sectionTitle: sectionTitle, section: section });
             };
             
             console.log('SidebarCtrl: constructed');
+
             this.$messageBusService.subscribe("sidebar", this.sidebarMessageReceived);
             this.$messageBusService.subscribe("feature", this.featureMessageReceived);
+            this.$messageBusService.subscribe("editmode", this.editModeMessageReceived);
 
 
             var widthOfList = function () {
@@ -244,6 +250,40 @@
                     itemsWidth += itemWidth;
                 });
                 return itemsWidth;
+            }
+
+            $scope.editModeValue = (item, key: String) => {
+                if (this.$scope.editMode) {
+                    var correctedValue = '';
+                    var validatorType = 'text';
+                    var validatorString = '';
+                    var itemType = item.meta.type;
+                    var itemName = item.property;
+
+                    if (itemType == 'text') { // Check required when text
+                        validatorString += 'required';
+                    } else if (itemType == 'number') { // Check required, min and max when number
+                        item.value = parseInt(item.value);
+                        if (item.meta.min)
+                            validatorString += 'min="' + item.meta.min + '" ';
+                        if (item.meta.max)
+                            validatorString += 'max="' + item.meta.max + '"';
+                        validatorType = 'number';
+                        validatorString += 'required';
+                    } else if (itemType == 'boolean') { // Displays a checkbox when boolean
+                        validatorType = 'checkbox';
+                    }
+
+                    correctedValue += '<form name="' + itemName + 'Form">'
+                    + '<div ng-class="{ \'has-error\': ' + itemName + 'Form.' + itemName + '.$invalid }">'
+                    + '<input type="' + validatorType + '" name="' + itemName + '" data-ng-model="' + key + '" class="form-control" ' + validatorString + ' />'
+                    + '</div>'
+                    + '</form>';
+
+                    return correctedValue;
+                } else {
+                    return String(item.value);
+                }
             }
 
             $scope.autocollapse = function (initializeTabPosition = false) {
@@ -354,6 +394,23 @@
                 break;
                default:
             }
+            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
+                this.$scope.$apply();
+            }
+        }
+        
+        private editModeMessageReceived = (title: string): void => {
+            switch (title) {
+                case "enable":
+                    this.$scope.editMode = true;
+                    break;
+                case "disable":
+                    this.$scope.editMode = false;
+                    break;
+                default:
+            }
+            // NOTE EV: You need to call apply only when an event is received outside the angular scope.
+            // However, make sure you are not calling this inside an angular apply cycle, as it will generate an error.
             if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
                 this.$scope.$apply();
             }

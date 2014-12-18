@@ -30,7 +30,7 @@
                     <td><a class="fa fa-filter makeNarrow" data-ng-show="item.canFilter" data-ng-click="vm.$layerService.setFilter(item)"></a></td>
                     <td><a class="fa fa-eye makeNarrow" data-ng-show="item.canStyle" data-ng-click="vm.$layerService.setStyle(item)"></a></td>
                     <td>{{item.key}}</td>
-                    <td class="text-right" data-ng-bind-html="vm.toTrusted(item.value)"></td>
+                    <td class="text-right" compile-html data-ng-bind-html="vm.toTrusted(editModeValue(item, \'item.value\'))"></td>
                 </tr>
             </table>
         </div>

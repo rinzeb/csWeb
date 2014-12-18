@@ -28,6 +28,12 @@
     <TypeScriptCompile Include="helpers\Helpers.ts" />
     <TypeScriptCompile Include="helpers\MessageBus.ts" />
     <TypeScriptCompile Include="helpers\Resize.ts" />
+    <TypeScriptCompile Include="directives\FeatureTypes\FeatureTypes.tpl.ts" />
+    <TypeScriptCompile Include="directives\FeatureTypes\FeatureTypes.ts" />
+    <TypeScriptCompile Include="directives\FeatureTypes\FeatureTypesCtrl.ts" />
+    <TypeScriptCompile Include="directives\PropertyTypes\PropertyTypes.tpl.ts" />
+    <TypeScriptCompile Include="directives\PropertyTypes\PropertyTypes.ts" />
+    <TypeScriptCompile Include="directives\PropertyTypes\PropertyTypesCtrl.ts" />
     <TypeScriptCompile Include="directives\LegendList\LegendList.tpl.ts" />
     <TypeScriptCompile Include="directives\LegendList\LegendList.ts" />
     <TypeScriptCompile Include="directives\LegendList\LegendListCtrl.ts" />
@@ -101,6 +107,8 @@
   <ItemGroup>
     <Content Include="includes\pnotify.custom.min.css" />
     <Content Include="directives\FeatureList\FeatureList.tpl.html" />
+    <Content Include="directives\FeatureTypes\FeatureTypes.tpl.html" />
+    <Content Include="directives\PropertyTypes\PropertyTypes.tpl.html" />
     <Content Include="directives\FilterList\FilterList.tpl.html" />
     <Content Include="directives\StyleList\StyleList.tpl.html" />
     <Content Include="directives\BaseMapList\BaseMapList.tpl.html" />
