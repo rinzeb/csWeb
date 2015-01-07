@@ -13,6 +13,7 @@
     }
 
     declare var JSON;
+    declare var io;
 
     export class DashboardService {
         public maxBounds: IBoundingBox;
@@ -21,10 +22,13 @@
         public editMode: boolean;
         public activeWidget: IWidget;
         public dashboards: any; 
-        public widgetTypes : { [key : string] : IWidget};
+        public widgetTypes: { [key: string]: IWidget };
+        public socket;
 
         public init() {
-            
+
+           
+
 
         }
         public static $inject = [
@@ -57,8 +61,14 @@
             this.widgetTypes["Text"] = new TextWidget();
             this.widgetTypes["DataSet"] = new DataSetWidget();
             this.widgetTypes["Layer"] = new LayerWidget();
-            
 
+            this.socket = new io();
+            
+            //this.socket.on('update', (s) => {                
+            //    alert(s.topic);
+
+            //});
+            this.socket.connect();
 
         }
 
@@ -86,6 +96,7 @@
         }
 
         public updateWidget(widget: csComp.Services.IWidget) {
+            //alert('hoi arnoud');
             var d = JSON.stringify(widget.data);
             var newElement = this.$compile("<" + widget.directive + " widget='" + d + "'></" + widget.directive + ">")(this.$rootScope);
             var el = $("#" + widget.elementId);

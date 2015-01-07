@@ -113,7 +113,9 @@
         draggable: boolean = false;
         resizable: boolean = true;
         background: string;
-        backgroundimage: string;
+        backgroundimage: string; 
+        visiblelayers : string[];
+
         viewBounds: IBoundingBox;
         timeline: DateRange;
         id: string;

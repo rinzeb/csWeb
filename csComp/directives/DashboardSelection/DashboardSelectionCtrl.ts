@@ -139,8 +139,29 @@
             }
         }
 
+        public checkLayers() {
+            var db = this.$dashboardService.mainDashboard;
+            if (db.visiblelayers) {
+                this.$layerService.project.groups.forEach((g: csComp.Services.ProjectGroup) => {
+                    g.layers.forEach((l: csComp.Services.ProjectLayer) => {
+                        if (l.enabled && db.visiblelayers.indexOf(l.reference) == -1) {
+                            this.$layerService.removeLayer(l);
+                            l.enabled = false;
+                        }
+                        if (!l.enabled && db.visiblelayers.indexOf(l.reference) >= 0) {
+                            this.$layerService.addLayer(l);
+                            l.enabled = true;
+                        }
+                    });
+
+                });
+            }
+
+        }
+
 
         public checkViewbound() {
+            
             if (this.$dashboardService.mainDashboard.viewBounds) {
                 this.$mapService.map.fitBounds(new L.LatLngBounds(this.$dashboardService.mainDashboard.viewBounds.southWest, this.$dashboardService.mainDashboard.viewBounds.northEast));
             }
@@ -160,11 +181,15 @@
                 this.$dashboardService.mainDashboard = dashboard;
                 if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') { this.$scope.$apply(); }
 
+                setTimeout(() => {
 
-                this.checkMap();
-                this.checkTimeline();
-                this.checkViewbound();
-                this.publishDashboardUpdate();
+
+                    this.checkMap();
+                    this.checkTimeline();
+                    this.checkViewbound();
+                    this.publishDashboardUpdate();
+                    this.checkLayers();
+                }, 100);
 
                 // render all widgets
                 //this.refreshDashboard();

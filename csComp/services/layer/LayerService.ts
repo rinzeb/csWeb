@@ -94,7 +94,7 @@
             this.map.map.addLayer(this.layerGroup);
             this.noStyles = true;
             this.isRealtime = false;
-            this.activeSensor = "TT";
+            this.activeSensor = "";
 
             this.lastUpdate = 0;
             this.lastTimechange = 0;
@@ -384,6 +384,12 @@
                 f.properties['Name'] = f.properties[ft.style.nameLabel];
             }); 
         }
+
+        public refreshLayer(layer: ProjectLayer) {
+            this.removeLayer(layer);
+            this.addLayer(layer);
+        }
+
         /** 
          * Add a layer
          */
@@ -468,7 +474,7 @@
                     async.series([
                         (callback) => {
                         // If oneLayerActive: close other group layer
-                        if (layer.group.oneLayerActive) {
+                        if (layer.group && layer.group.oneLayerActive) {
                            layer.group.layers.forEach((l: ProjectLayer) => {
                                if (l != layer && l.enabled) {                                   
                                    disableLayers.push(l);
@@ -594,6 +600,7 @@
             var feature = <Feature>layer.feature;
             // add title
             var title = layer.feature.properties.Name;
+            if (!title) return;
             var rowLength = title.length;
             var content = "<td colspan='3'>" + title + "</td></tr>";
             // add filter values
@@ -962,6 +969,8 @@
             return r;
         }
 
+        
+
         public setStyle(property: any, openStyleTab = true) {            
             var f: IFeature = property.feature;
             if (f != null) {
@@ -1004,7 +1013,7 @@
             }
         }
 
-        private saveStyle(group: ProjectGroup, style: GroupStyle) {
+        public saveStyle(group: ProjectGroup, style: GroupStyle) {
             // check if there are other styles that affect the same visual aspect, remove them
             var oldStyles = group.styles.filter((s: GroupStyle) => s.visualAspect == style.visualAspect);
 

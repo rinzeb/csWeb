@@ -79,36 +79,38 @@
             this.availableAspects = ["strokeColor", "fillColor", "strokeWidth"];
             this.colorScales = {};
 
-            $translate('WHITE_RED').then((translation) => {
-                this.colorScales[translation] = ["white", "red"];
-            });
-            $translate('RED_WHITE').then((translation) => {
-                this.colorScales[translation] = ["red", "white"];
-            });
-            $translate('GREEN_RED').then((translation) => {
-                this.colorScales[translation] = ["green", "red"];
-            });
-            $translate('RED_GREEN').then((translation) => {
-                this.colorScales[translation] = ["red", "green"];
-            });
-            $translate('WHITE_BLUE').then((translation) => {
-                this.colorScales[translation] = ["white", "blue"];
-            });
-            $translate('BLUE_WHITE').then((translation) => {
-                this.colorScales[translation] = ["blue", "white"];
-            });
-            $translate('WHITE_GREEN').then((translation) => {
-                this.colorScales[translation] = ["white", "green"];
-            });
-            $translate('GREEN_WHITE').then((translation) => {
-                this.colorScales[translation] = ["green", "white"];
-            });
-            $translate('WHITE_ORANGE').then((translation) => {
-                this.colorScales[translation] = ["white", "orange"];
-            });
-            $translate('ORANGE_WHITE').then((translation) => {
-                this.colorScales[translation] = ["orange", "white"];
-            });
+            if ($translate) {
+                $translate('WHITE_RED').then((translation) => {
+                    this.colorScales[translation] = ["white", "red"];
+                });
+                $translate('RED_WHITE').then((translation) => {
+                    this.colorScales[translation] = ["red", "white"];
+                });
+                $translate('GREEN_RED').then((translation) => {
+                    this.colorScales[translation] = ["green", "red"];
+                });
+                $translate('RED_GREEN').then((translation) => {
+                    this.colorScales[translation] = ["red", "green"];
+                });
+                $translate('WHITE_BLUE').then((translation) => {
+                    this.colorScales[translation] = ["white", "blue"];
+                });
+                $translate('BLUE_WHITE').then((translation) => {
+                    this.colorScales[translation] = ["blue", "white"];
+                });
+                $translate('WHITE_GREEN').then((translation) => {
+                    this.colorScales[translation] = ["white", "green"];
+                });
+                $translate('GREEN_WHITE').then((translation) => {
+                    this.colorScales[translation] = ["green", "white"];
+                });
+                $translate('WHITE_ORANGE').then((translation) => {
+                    this.colorScales[translation] = ["white", "orange"];
+                });
+                $translate('ORANGE_WHITE').then((translation) => {
+                    this.colorScales[translation] = ["orange", "white"];
+                });       
+            }
         }
     }
 
