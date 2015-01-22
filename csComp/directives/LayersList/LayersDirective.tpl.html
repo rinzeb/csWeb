@@ -18,12 +18,18 @@
                 <div style="list-style-type: none; padding: 0;" data-ng-class="{indent: layer.isSublayer}">
                     <!--<button type="button" class="btn btn-default" data-container="body" data-toggle="popover" data-placement="right" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." data-original-title="" title="">Right</button>-->
                     <div ng-hide="group.oneLayerActive" class="checkbox checkbox-primary" style="margin-left: 20px">
+                        <div ng-if="editMode">
+                            <p class="pull-right" ng-click="showDrawMode(layer.id)" style="cursor:pointer;padding-right:15px;" ng-class="(selectedFeatureLayer==layer.id) ? \'selectedFeature\': \'\'"><i class="fa fa-pencil"></i></p>
+                        </div>
                         <input type="checkbox" id="cblayer{{layer.id}}" ng-model="layer.enabled" data-ng-click="vm.toggleLayer(layer);">
                         <label for="cblayer{{layer.id}}">
                             {{layer.title}}
                         </label>
                     </div>
                     <div ng-show="group.oneLayerActive" class="radio radio-primary" style="margin-left: 20px">
+                        <div ng-if="editMode">
+                            <p class="pull-right" ng-click="showDrawMode(layer.id)" style="cursor:pointer;padding-right:15px;" ng-class="(selectedFeatureLayer==layer.id) ? \'selectedFeature\': \'\'"><i class="fa fa-pencil"></i></p>
+                        </div>
                         <input type="radio" ng-value="true" id="rblayer{{layer.id}}" ng-model="layer.enabled" data-ng-click="vm.toggleLayer(layer);">
                         <label for="rblayer{{layer.id}}">
                             {{layer.title}}

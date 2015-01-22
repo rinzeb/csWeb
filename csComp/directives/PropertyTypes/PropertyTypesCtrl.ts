@@ -2,6 +2,8 @@
 
     export interface IPropertyTypesScope extends ng.IScope {
         vm: PropertyTypesCtrl;
+        showMenu: boolean;
+        showMenuEdit: boolean;
         filterProperty;
         propertyTypes;
         getSections;
@@ -30,13 +32,20 @@
             private $messageBusService: csComp.Services.MessageBusService
             ) {
             this.$scope.vm = this;
+            this.$scope.showMenu = false;
+            this.$scope.showMenuEdit = false;
+
 
             if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
                 this.$scope.$apply();
             }
 
             this.$messageBusService.subscribe("editmode", this.editModeMessageReceived);
+            this.$messageBusService.subscribe("sidebar", this.sidebarMessageReceived);
 
+            /**
+             * Get all sections from the available PropertyTypes
+             */
             $scope.getSections = () => {
                 var propertyTypeData = this.$layerService.project.propertyTypeData;
                 var newSections = new Array();
@@ -64,6 +73,9 @@
                 $scope.sections = newSections;
             }
 
+            /**
+             * Add a new section to sections array
+             */
             $scope.addSection = (name: String) => {
                 var sections = $scope.sections;
                 var add = true;
@@ -79,6 +91,9 @@
                 }
             }
 
+            /**
+             * Create an array with all the PropertyTypes for a features (or all features if no feature is selected)
+             */
             $scope.filterProperty = (selectedData) => {
                 var allPropertyTypes = this.$layerService.project.propertyTypeData;
                 var propertyTypes = new Array();
@@ -117,10 +132,45 @@
         private editModeMessageReceived = (title: string): void => {
             switch (title) {
                 case "enable":
+                    this.$messageBusService.publish("sidebar", "showEdit");
                     this.$scope.vm = this;
                     this.$scope.propertyTypes = this.$layerService.project.propertyTypeData;
                     break;
                 case "disable":
+                    this.$messageBusService.publish("sidebar", "hideEdit");
+                    break;
+                default:
+            }
+            // NOTE EV: You need to call apply only when an event is received outside the angular scope.
+            // However, make sure you are not calling this inside an angular apply cycle, as it will generate an error.
+            if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') {
+                this.$scope.$apply();
+            }
+        }
+
+        /** 
+         * Callback function
+         * @see {http://stackoverflow.com/questions/12756423/is-there-an-alias-for-this-in-typescript}
+         * @see {http://stackoverflow.com/questions/20627138/typescript-this-scoping-issue-when-called-in-jquery-callback}
+         * @todo {notice the strange syntax using a fat arrow =>, which is to preserve the this reference in a callback!}
+         */
+        private sidebarMessageReceived = (title: string): void => {
+            //console.log("sidebarMessageReceived");
+            switch (title) {
+                case "toggle":
+                    this.$scope.showMenu = !this.$scope.showMenu;
+                    break;
+                case "show":
+                    this.$scope.showMenu = true;
+                    break;
+                case "showEdit":
+                    this.$scope.showMenuEdit = true;
+                    break;
+                case "hide":
+                    this.$scope.showMenu = false;
+                    break;
+                case "hideEdit":
+                    this.$scope.showMenuEdit = false;
                     break;
                 default:
             }

@@ -252,6 +252,7 @@
                 return itemsWidth;
             }
 
+            // Changes the text field to an input field if edit mode is enabled
             $scope.editModeValue = (item, key: String) => {
                 if (this.$scope.editMode) {
                     var correctedValue = '';

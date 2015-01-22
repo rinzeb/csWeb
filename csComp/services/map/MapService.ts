@@ -1,20 +1,21 @@
 ﻿module csComp.Services {
     'use strict';
 
- 
     /*
      * Singleton service that holds a reference to the map. 
      * In case other controllers need access to the map, they can inject this service. 
      */
     export class MapService {
         public static $inject = [
-            'messageBusService'
+            'messageBusService',
         ];
 
         public map: L.Map;
 
         public baseLayers: any;
         private activeBaseLayer: L.ILayer;
+        private drawControl: any;
+        private drawnItems: any;
 
         constructor(private $messageBusService: csComp.Services.MessageBusService) {
             //this.map = L.map("map", {
@@ -46,7 +47,6 @@
             this.map.invalidateSize();
         }
 
-
         /**
          * Zoom to a location on the map.
          */
@@ -63,7 +63,7 @@
                 center = new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]);
                 this.map.setView(center, 14);
             } else {
-                var bb : Array<number>;
+                var bb: Array<number>;
                 if (feature.geometry.type.toUpperCase().indexOf("MULTI") < 0)
                     bb = this.getBoundingBox(feature.geometry.coordinates[0]);
                 else { // MULTIPOLYGON or MULTILINESTRING
@@ -82,6 +82,92 @@
             this.$messageBusService.publish("feature", "onFeatureSelect", feature);
         }
 
+        /**
+         * Generates the Leaflet.Draw toolbar with the features
+         */
+        public initDrawableMap(drawTypes) {
+            this.drawnItems = L.featureGroup().addTo(this.map);
+
+            // Generate the ModeHandlers for the features
+            this.setModeHandlers(drawTypes);
+
+            // Draws the control panel object
+            this.drawControl = new (<any>L).Control.Draw({
+                edit: { featureGroup: this.drawnItems },
+                position: 'bottomleft'
+            });
+
+            // Listener for when a item gets created
+            this.map.on('draw:created', function (event) {
+                this.saveDrawnItem(event);
+                console.log(event);
+            }.bind(this));
+        }
+
+        /**
+         * Shows the Leaflet.Draw toolbar
+         */
+        public enableDrawableMap(drawTypes) {
+            this.map.addControl(this.drawControl);            
+        }
+
+        /**
+         * Disables the Leaflet.Draw toolbar
+         */
+        public disableDrawableMap() {
+            this.map.removeControl(this.drawControl);
+        }
+
+        /**
+         * Gets called upon when an item gets drawed by the user
+         */
+        public saveDrawnItem(item) {
+            var layer = item.layer;
+            var type = item.layerType;
+
+            this.drawnItems.addLayer(layer);
+            
+            // TODO: Identify item and save values
+            
+            // TODO: Open sidebar with available properties
+
+        }
+
+        /**
+         * Overwrite the default Leaflet.Draw mode handlers with the features mode handlers
+         */
+        public setModeHandlers(drawTypes) {
+            (<any>L).DrawToolbar.include({
+                getModeHandlers: function (map) {
+                    var modeHandlers = [];
+
+                    for (feature in drawTypes) {
+                        var feature = drawTypes[feature];
+                        var drawingMode = undefined;
+                        
+                        // Add more drawing types here when they become available
+                        switch (feature.drawingMode) {
+                            case ('Point'):
+                                drawingMode = new (<any>L).Draw.Marker(map);
+                                break;
+                            case ('Polygon'):
+                                drawingMode = new (<any>L).Draw.Polygon(map);
+                                break;
+                        }
+
+                        var modeHandler = {
+                            enabled: true,
+                            handler: drawingMode,
+                            title: feature.description,
+                            name: feature.name
+                        }
+                        modeHandlers.push(modeHandler);
+                    }
+                    return modeHandlers;
+                }
+            });            
+        }
+        
         //private getCentroid(arr) {
         //    return arr.reduce((x, y) => [x[0] + y[0] / arr.length, x[1] + y[1] / arr.length], [0, 0]);
         //}
