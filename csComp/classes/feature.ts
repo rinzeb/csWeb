@@ -116,7 +116,8 @@
         minValue?: number;
         maxValue?: number;
         defaultValue?: number;
-        showAlways?: boolean;       
+        showAlways?: boolean;      
+        onTimeline? : boolean; 
     }
 
     export interface IFeatureTypeStyle {

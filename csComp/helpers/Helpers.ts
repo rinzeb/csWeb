@@ -23,6 +23,9 @@
                     text = String.format(pt.stringFormat, text);
                 displayValue = XBBCODE.process({ text: text }).html;
                 break;
+            case "bool":
+                displayValue = text;
+                break;
             case "number":
                 if (!$.isNumeric(text))
                     displayValue = text;

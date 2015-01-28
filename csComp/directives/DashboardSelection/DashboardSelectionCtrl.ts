@@ -68,7 +68,7 @@
         }
 
         public startEdit() {
-            // this.$scope.gridsterOptions.draggable.enabled = true;
+             //this.$scope.gridsterOptions.draggable.enabled = true;
             //this.$scope.gridsterOptions.resizable.enabled = true;
         }
 

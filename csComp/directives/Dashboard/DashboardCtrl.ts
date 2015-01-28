@@ -12,7 +12,7 @@
         param: any;
         initDashboard: Function;
         minus: Function;
-        
+                      
         
     }
 
@@ -50,7 +50,7 @@
                 columns: 20,
                 rows: 20,
                 draggable: {
-                    enabled:true
+                    enabled:false
                 },
                 resizable: {
                     enabled: true,
@@ -114,6 +114,7 @@
         }
 
         public updateDashboard() {
+            
             var dashboard = this.$scope.dashboard;
             if (!dashboard) return;
             if (dashboard && dashboard.widgets && dashboard.widgets.length > 0) {

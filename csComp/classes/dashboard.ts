@@ -100,7 +100,7 @@
         public updateDateRange(r: csComp.Services.DateRange) {
             this.range = r;
         }
-
+            
         public resize = (status: string, width : number, height : number) => {};
     }
 

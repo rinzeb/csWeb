@@ -73,6 +73,7 @@
         private lastTimechange: number;
         private lastTimeZoom: number;
         private nrDownloads: number;
+        public timelineEvents = [];
 
         constructor(
             private $rootScope,
@@ -330,16 +331,16 @@
         private parseEvents(layer: ProjectLayer, events : any) {
             if (events && this.timeline) {
                 layer.events = events;
-                var devents = [];
+                
                 layer.events.forEach((e: Event) => {
                     if (!e.id) e.id = csComp.Helpers.getGuid();
-                    devents.push({
+                    this.timelineEvents.push({
                         'start': new Date(e.start),
 
                         'content': e.title
                     });
                 });
-                this.timeline.draw(devents);
+                this.timeline.draw(this.timelineEvents);
             }
         }
 
@@ -350,13 +351,13 @@
                 this.featureTypes[featureTypeName] = featureType;
                                     //var pt = "." + featureTypeName;
                                     //var icon = featureType.style.iconUri;
-                var t = "{\".style" + featureTypeName + "\":";
-                if (featureType.style.iconUri != null) {
-                    t += " { \"background\": \"url(" + featureType.style.iconUri + ") no-repeat right center\",";
-                };
-                t += " \"background-size\": \"100% 100%\",\"border-style\": \"none\"} }";
-                var json = $.parseJSON(t);
-                (<any>$).injectCSS(json);
+                //var t = "{\".style" + featureTypeName + "\":";
+                //if (featureType.style.iconUri != null) {
+                //    t += " { \"background\": \"url(" + featureType.style.iconUri + ") no-repeat right center\",";
+                //};
+                //t += " \"background-size\": \"100% 100%\",\"border-style\": \"none\"} }";
+                //var json = $.parseJSON(t);
+                //(<any>$).injectCSS(json);
 
                 //console.log(JSON.stringify(poiType, null, 2));
             }
@@ -542,8 +543,8 @@
                                             lay.on({
                                                 mouseover : (a) => this.showFeatureTooltip(a, layer.group),
                                                 mouseout  : (s) => this.hideFeatureTooltip(s),
-                                                mousemove : (d) => this.updateFeatureTooltip(d),
-                                                click     : () => { this.selectFeature(feature); }
+                                                mousemove : (d) => this.updateFeatureTooltip(d)
+                                                //click     : () => { this.selectFeature(feature); }
                                             });
                                         },
                                         style : (f: IFeature, m) => {
@@ -795,7 +796,7 @@
          * init feature (add to feature list, crossfilter)
          */
         private initFeature(feature: IFeature, layer: ProjectLayer): IFeatureType {
-            //if (!feature.isInitialized) 
+            if (!feature.isInitialized) 
             {
                 feature.isInitialized = true;
                 if (feature.id == null) feature.id = Helpers.getGuid();
@@ -1739,6 +1740,7 @@
                     if (included && !onmap) group.vectors.addLayer(marker);
                 }
             });
+            this.$messageBusService.publish("filter", "updated", group);
         }
 
         private resetMapFilter(group: ProjectGroup) {

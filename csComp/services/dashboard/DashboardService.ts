@@ -62,14 +62,14 @@
             this.widgetTypes["DataSet"] = new DataSetWidget();
             this.widgetTypes["Layer"] = new LayerWidget();
 
-            this.socket = new io();
+            //this.socket = new io();
             
             //this.socket.on('update', (s) => {                
             //    alert(s.topic);
 
             //});
-            this.socket.connect();
-
+            //this.socket.connect();
+               
         }
 
         
