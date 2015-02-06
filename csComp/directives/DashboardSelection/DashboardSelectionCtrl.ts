@@ -9,6 +9,8 @@
     export class DashboardSelectionCtrl {
         public scope: any;
 
+        public group : csComp.Services.DashboardGroup;
+
         // $inject annotation.   
         // It provides $injector with information about dependencies to be injected into constructor
         // it is better to have it close to the constructor, because the parameters must match in count and type.
@@ -35,20 +37,20 @@
 
             $dashboardService.editMode = true;
 
-            $messageBusService.subscribe("dashboardSelect", ((s: string, dashboard: csComp.Services.Dashboard) => {
-                switch (s) {
-                    case "selectRequest":
-                        this.selectDashboard(dashboard);
-                        break;
-                }
-            }));
+            //$messageBusService.subscribe("dashboardSelect", ((s: string, dashboard: csComp.Services.Dashboard) => {
+            //    switch (s) {
+            //        case "selectRequest":
+            //            this.selectDashboard(dashboard);
+            //            break;
+            //    }
+            //}));
 
 
         }
 
         public startDashboardEdit(dashboard : csComp.Services.Dashboard) {
 
-            this.$layerService.project.dashboards.forEach((d: csComp.Services.Dashboard) => {
+            this.group.dashboards.forEach((d: csComp.Services.Dashboard) => {
                 if (d.id !== dashboard.id) d.editMode = false;
                 }
             );
@@ -58,8 +60,8 @@
 
         public stopEdit() {
             
-            for (var property in this.$layerService.project.dashboards) {
-                this.$layerService.project.dashboards[property].editMode = false;
+            for (var property in this.group.dashboards) {
+                this.group.dashboards[property].editMode = false;
             }
             //this.activeWidget = null;
 
@@ -78,12 +80,12 @@
             var d = new csComp.Services.Dashboard();
             d.id = id;
             d.name = "New Dashboard";
-            this.$layerService.project.dashboards.push(d);
+            this.group.dashboards.push(d);
         }
 
         /** Remove existing dashboard */
         public removeDashboard(key: string) {            
-            this.$layerService.project.dashboards = this.$layerService.project.dashboards.filter((s : csComp.Services.Dashboard) => s.id !== key);
+            this.group.dashboards = this.group.dashboards.filter((s : csComp.Services.Dashboard) => s.id !== key);
             
         }
 
@@ -95,7 +97,7 @@
 
         public toggleMap() {
             setTimeout(() => {
-                this.checkMap();
+                //this.checkMap();
             }, 100);
 
         }
@@ -126,18 +128,7 @@
             }
         }
 
-        public checkMap() {
-            
-            
-            if (this.$dashboardService.mainDashboard.showMap != this.$layerService.visual.mapVisible) {
-                if (this.$dashboardService.mainDashboard.showMap) {
-                    this.$layerService.visual.mapVisible = true;
-                } else {
-                    this.$layerService.visual.mapVisible = false;
-                }
-                if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') { this.$scope.$apply(); }
-            }
-        }
+        
 
         public checkLayers() {
             var db = this.$dashboardService.mainDashboard;
@@ -175,7 +166,7 @@
         /** Select an active dashboard */
         public selectDashboard(dashboard: csComp.Services.Dashboard) {
             //var res = JSON.stringify(this.$dashboardService.dashboards);
-            this.$layerService.project.dashboards.forEach((d: csComp.Services.Dashboard) => { d.editMode = false; });
+            this.group.dashboards.forEach((d: csComp.Services.Dashboard) => { d.editMode = false; });
 
             if (dashboard) {
                 this.$dashboardService.mainDashboard = dashboard;
@@ -183,8 +174,7 @@
 
                 setTimeout(() => {
 
-
-                    this.checkMap();
+                    //this.$dashboardService.checkMap();
                     this.checkTimeline();
                     this.checkViewbound();
                     this.publishDashboardUpdate();

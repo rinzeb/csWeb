@@ -67,19 +67,21 @@
         public activeSensor: string;
 
         public sensorData: any;
+        
 
         private sensorIndices: Array<any>;
         private lastUpdate: number;
         private lastTimechange: number;
         private lastTimeZoom: number;
         private nrDownloads: number;
-        public timelineEvents = [];
+        public timelineEvents = [];        
 
         constructor(
             private $rootScope,
             private $location: ng.ILocationService,
             private $translate: ng.translate.ITranslateService,
-            private dashboardService : Services.DashboardService,
+            private dashboardService: Services.DashboardService,
+            
             private $messageBusService : Services.MessageBusService,
             private $mapService        : Services.MapService) {
             //$translate('FILTER_INFO').then((translation) => console.log(translation));
@@ -543,8 +545,8 @@
                                             lay.on({
                                                 mouseover : (a) => this.showFeatureTooltip(a, layer.group),
                                                 mouseout  : (s) => this.hideFeatureTooltip(s),
-                                                mousemove : (d) => this.updateFeatureTooltip(d)
-                                                //click     : () => { this.selectFeature(feature); }
+                                                mousemove : (d) => this.updateFeatureTooltip(d)  ,
+                                                click     : () => { this.selectFeature(feature); }
                                             });
                                         },
                                         style : (f: IFeature, m) => {
@@ -824,60 +826,78 @@
                     html: feature.htmlStyle
                 });
             } else {
-                var html = "<div ";
-                var props = {};
-                var ft = this.getFeatureType(feature);
+                var drawingMode = DrawingModeType.Point;
+                if (feature.fType != null && feature.fType.style!=null && feature.fType.style.drawingMode!=null) drawingMode = DrawingModeType[feature.fType.style.drawingMode];
+                ft = feature.fType;
 
-                //if (feature.poiTypeName != null) html += "class='style" + feature.poiTypeName + "'";
+                switch (drawingMode) {
+                    case DrawingModeType.Image:                        
+                        
+                        icon = L.icon(<L.IconOptions>{
+                            iconUrl: ft.style.iconUri,                            
+                            iconSize: new L.Point(ft.style.iconWidth,ft.style.iconHeight)                            
+                        });
+                        
+                        break;
+                    case DrawingModeType.Point:
+                        var html = "<div ";
+                        var props = {};
+                        var ft = this.getFeatureType(feature);
 
-                if (ft.style.fillColor == null && ft.style.iconUri == null) ft.style.fillColor = "lightgray";
 
-                props["background"] = ft.style.fillColor;
-                props["width"] = "32px";
-                props["height"] = "32px";
-                props["border-radius"] = "20%";
-                props["border-style"] = "solid";
-                props["border-color"] = "black";
-                props["border-width"] = "0";
+                        if (ft.style.fillColor == null && ft.style.iconUri == null) ft.style.fillColor = "lightgray";
 
-                layer.group.styles.forEach((gs: GroupStyle) => {
-                    if (gs.enabled && feature.properties.hasOwnProperty(gs.property)) {
-                        var v = feature.properties[gs.property];
+                        props["background"] = ft.style.fillColor;
+                        props["width"] = (ft.style.iconWidth + 4) + "px";
+                        props["height"] = (ft.style.iconHeight + 4) + "px";
+                        
+                        props["border-radius"] = (ft.style.cornerRadius!=null ? ft.style.cornerRadius : 20) + "%";
+                        props["border-style"] = "solid";
+                        props["border-color"] = "black";
+                        props["border-width"] = "0";
 
-                        switch (gs.visualAspect) {
-                        case "fillColor":
-                            if (gs.meta.type == "color") {
-                                props["background-color"] = v;
-                            } else {
-                                var bezInterpolator = chroma.interpolate.bezier(gs.colors);
-                                props["background-color"] = bezInterpolator((v - gs.info.sdMin) / (gs.info.sdMax - gs.info.sdMin)).hex();
+                        layer.group.styles.forEach((gs: GroupStyle) => {
+                            if (gs.enabled && feature.properties.hasOwnProperty(gs.property)) {
+                                var v = feature.properties[gs.property];
+
+                                switch (gs.visualAspect) {
+                                    case "fillColor":
+                                        if (gs.meta.type == "color") {
+                                            props["background-color"] = v;
+                                        } else {
+                                            var bezInterpolator = chroma.interpolate.bezier(gs.colors);
+                                            props["background-color"] = bezInterpolator((v - gs.info.sdMin) / (gs.info.sdMax - gs.info.sdMin)).hex();
+                                        }
+
+                                        break;
+                                }                                
                             }
-
-                            break;
+                        });
+                        if (feature.isSelected) {
+                            props["border-width"] = "3px";
                         }
-                        //s.fillColor = this.getColor(feature.properties[layer.group.styleProperty], null);      
-                    }
-                });
-                if (feature.isSelected) {
-                    props["border-width"] = "3px";
-                }
 
-                html += " style='display: inline-block;vertical-align: middle;text-align: center;";
-                for (var key in props) {
-                    html += key + ":" + props[key] + ";";
-                }
+                        html += " style='display: inline-block;vertical-align: middle;text-align: center;";
+                        for (var key in props) {
+                            html += key + ":" + props[key] + ";";
+                        }
 
-                html += "'>";
-                if (ft.style.iconUri != null) {
-                    html += "<img src=" + ft.style.iconUri + " style='width:" + (ft.style.iconWidth - 2) + "px;height:" + (ft.style.iconHeight - 2) + "px' />";
-                }
-                html += "</div>";
+                        html += "'>";
+                        if (ft.style.iconUri != null) {
+                            html += "<img src=" + ft.style.iconUri + " style='width:" + (ft.style.iconWidth - 2) + "px;height:" + (ft.style.iconHeight - 2) + "px' />";
+                        }
+                        html += "</div>";
 
-                icon = new L.DivIcon({
-                    className: '',
-                    iconSize: new L.Point(ft.style.iconWidth, ft.style.iconHeight),
-                    html: html
-                });
+                        icon = new L.DivIcon({
+                            className: '',
+                            iconSize: new L.Point(ft.style.iconWidth+4, ft.style.iconHeight+4),
+                            html: html
+                        });
+                        break;
+
+                }
+                
+               
                 //icon = new L.DivIcon({
                 //    className: "style" + feature.poiTypeName,
                 //    iconSize: new L.Point(feature.fType.style.iconWidth, feature.fType.style.iconHeight)
@@ -890,8 +910,11 @@
          * Update icon for features
          */
         public updateFeatureIcon(feature: IFeature, layer: ProjectLayer): any {
-            var marker = <L.Marker>layer.group.markers[feature.id];
-            if (marker!=null) marker.setIcon(this.getPointIcon(feature,layer));
+
+            if (feature.fType != null && DrawingModeType[feature.fType.style.drawingMode] == DrawingModeType.Point) {
+                var marker = <L.Marker>layer.group.markers[feature.id];
+                if (marker != null) marker.setIcon(this.getPointIcon(feature, layer));
+            }
         }
 
         /** 
@@ -902,14 +925,10 @@
             var style = type.style;
             var marker;
             switch (feature.geometry.type) {
-            case "Point"          :
-                var icon = this.getPointIcon(feature,layer);
-                marker = new L.Marker(latlng, { icon: icon });
-                marker.on('click', () => {
-                    this.selectFeature(feature);
-                });
-                //feature.marker = m;
-                break;
+                case "Point"          :
+                    var icon = this.getPointIcon(feature,layer);
+                    marker = new L.Marker(latlng, { icon: icon });
+                    break;
                 default:
                     var polyoptions = {                        
                         fillColor: "Green",                        
@@ -917,6 +936,9 @@
                     marker = L.multiPolygon(latlng, polyoptions);
                 break;
             }
+            //marker.on('click',() => {
+            //    this.selectFeature(feature);
+            //});
             layer.group.markers[feature.id] = marker;   
                           
             return marker;
@@ -1316,15 +1338,25 @@
             $.getJSON(url, (data: Project) => {
                 this.project = Project.deserialize(data,this.dashboardService);
 
-                if (!this.project.dashboards || Object.keys(this.project.dashboards).length==0) {
-                    this.project.dashboards = [];
-                    var md = new Dashboard();
-                    md.id = "map";
-                    md.name = "map";
-                    this.project.dashboards.push(md);
+                if (!this.project.dashboardgroups || Object.keys(this.project.dashboardgroups).length==0) {
+                    this.project.dashboardgroups = [];
+                    var mdg = new DashboardGroup();
+                    mdg.id = "main";
+                    mdg.dashboards = [];
+                    var db = new Dashboard();
+                    db.id = "map";
+                    db.name = "map";
+                    mdg.dashboards.push(db);
+                    mdg.selectedDashboardId = db.id;
+                    this.project.dashboardgroups.push(mdg);
                 }
-                var first = this.project.dashboards[0];
-                this.$messageBusService.publish("dashboardSelect", "selectRequest", first);
+
+                console.log("db-" + this.project.dashboardgroups.length);
+                
+                this.mainDashboardGroup = this.project.dashboardgroups[0];
+                
+                //alert(this.project.mainDashboardGroup.id);
+                //this.$messageBusService.publish("dashboardSelect", "selectRequest", first);
 
 
                 if (!this.project.timeLine) {
@@ -1345,38 +1377,15 @@
                 if (this.project.propertyTypeData) {
                     for (var key in this.project.propertyTypeData) {
                         var propertyType: IPropertyType = this.project.propertyTypeData[key];
+                        if (!propertyType.visibleInCallOut) propertyType.visibleInCallOut = true;
+                        if (!propertyType.label) propertyType.label = key;
+                        if (!propertyType.type) propertyType.type = "text";
                         this.propertyTypeData[key] = propertyType;
+                        
                     }
                 }          
 
-                if (!this.project.dashboards) {
-                    this.project.dashboards = [];
-                    var d = new csComp.Services.Dashboard();
-                    d.id = "1";
-                    d.name = this.project.title;
-                    d.widgets = [];
-                    this.project.dashboards.push(d);
-                } else {
-
-                    this.project.dashboards.forEach((d: Dashboard) => {
-                        if (!d.widgets) {
-                            d.widgets = [];
-                        } else {
-                            d.widgets.forEach((w: IWidget) => {
-                                //if (this.$dashboardService.widgetTypes.hasOwnProperty(w.widgetType)) {
-                                //    w.init();
-                                //}
-                                //alert(w.widgetType);
-                            });
-                        }
-                        //if (!d.showMap) d.showMap = true;  
-                    });
                 
-                    
-
-
-                    
-                }
 
                 if (!this.project.dataSets)
                     this.project.dataSets = [];

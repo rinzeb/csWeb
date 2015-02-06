@@ -7,7 +7,6 @@
     export interface IDashboardScope extends ng.IScope {
         vm: DashboardCtrl;
         gridsterOptions: any;
-        dashboards: {};
         dashboard: csComp.Services.Dashboard;
         param: any;
         initDashboard: Function;
@@ -50,7 +49,7 @@
                 columns: 20,
                 rows: 20,
                 draggable: {
-                    enabled:false
+                    enabled:true
                 },
                 resizable: {
                     enabled: true,
@@ -72,9 +71,9 @@
            
             $scope.initDashboard = () => {
 
-                $scope.$watch('dashboard', () => {                    
-                    this.updateDashboard();
-                });
+                //$scope.$watch('dashboard', () => {                    
+                //    this.updateDashboard();
+                //});
                 
                 //alert($scope.param.name);
                 
@@ -105,6 +104,11 @@
             
         }
 
+        public selectDashboard(dashboard: Dashboard) {
+            this.scope.dashboard = dashboard;
+        }
+
+
         public updateWidget(w: csComp.Services.IWidget) {
             this.$dashboardService.updateWidget(w);
             //var newElement = this.$compile("<" + w.directive + " widget=" + w + "></" + w.directive + ">")(this.$scope);
@@ -113,7 +117,22 @@
             //el.append(newElement);
         }
 
+        public checkMap() {
+
+            if (this.$scope.dashboard.showMap != this.$layerService.visual.mapVisible) {
+                if (this.$scope.dashboard.showMap) {
+                    this.$layerService.visual.mapVisible = true;
+                } else {
+                    this.$layerService.visual.mapVisible = false;
+                }
+                if (this.$scope.$root.$$phase != '$apply' && this.$scope.$root.$$phase != '$digest') { this.$scope.$apply(); }
+            }
+        }
+
+
         public updateDashboard() {
+            
+
             
             var dashboard = this.$scope.dashboard;
             if (!dashboard) return;

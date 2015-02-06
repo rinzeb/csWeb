@@ -104,13 +104,14 @@
         public resize = (status: string, width : number, height : number) => {};
     }
 
+    
 
     export class Dashboard {
         widgets: IWidget[];
         editMode: boolean;
         showMap: boolean;
         showTimeline: boolean = true;
-        draggable: boolean = false;
+        draggable: boolean = true;
         resizable: boolean = true;
         background: string;
         backgroundimage: string; 

@@ -128,7 +128,8 @@
         strokeWidth?         : number;
         iconWidth?           : number;
         iconHeight?          : number;
-        iconUri?             : string;
+        iconUri?: string;
+        cornerRadius? : number;
         maxTitleResolution?  : string;
         analysispropertyType?: any;
     }

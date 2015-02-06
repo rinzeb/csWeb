@@ -8,7 +8,7 @@
         vm             : DataTableCtrl;
         //numberOfItems  : number;
         //selectedLayerId: string;
-    }
+    }                                   
 
     /**
      * Represents a field in the table. 

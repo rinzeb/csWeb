@@ -18,6 +18,7 @@
     export class DashboardService {
         public maxBounds: IBoundingBox;
         public featureDashboard: csComp.Services.Dashboard;
+        
         public mainDashboard: csComp.Services.Dashboard;        
         public editMode: boolean;
         public activeWidget: IWidget;
@@ -48,14 +49,15 @@
             private $location: ng.ILocationService,
             private $translate: ng.translate.ITranslateService,
             private $messageBusService: Services.MessageBusService,
-            
+            private $layerService : Services.LayerService,            
             private $mapService: Services.MapService) {  
             //$translate('FILTER_INFO').then((translation) => console.log(translation));
             // NOTE EV: private props in constructor automatically become fields, so mb and map are superfluous.
 
             //alert('init dashbard');
-
-            //this.dashboards["main"] = this.mainDashboard;
+            this.mainDashboard = new csComp.Services.Dashboard();
+            this.dashboards = [];
+            this.dashboards["main"] = this.mainDashboard;
             this.widgetTypes = {};
             this.widgetTypes["Title"] = new TitleWidget();
             this.widgetTypes["Text"] = new TextWidget();
@@ -72,6 +74,7 @@
                
         }
 
+        
         
 
         public addNewWidget(widget: IWidget, dashboard: Dashboard) : IWidget {
