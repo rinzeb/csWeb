@@ -6,7 +6,7 @@ module Heatmap {
     import IFeatureType  = csComp.Services.IFeatureType;
     import IPropertyType = csComp.Services.IPropertyType;
 
-    export interface IMcaScope extends ng.IScope {
+    export interface IHeatmapScope extends ng.IScope {
         vm: HeatmapCtrl;
         ratingStates: any;
     }
@@ -39,7 +39,7 @@ module Heatmap {
         ];
   
         constructor(
-          private $scope              : IMcaScope,
+          private $scope              : IHeatmapScope,
           private $modal              : any,
           private $translate          : ng.translate.ITranslateService,
           private $timeout            : ng.ITimeoutService,
@@ -145,7 +145,7 @@ module Heatmap {
                 if (i >= 0) this.heatmapModels.splice(i, 1);
                 this.heatmapModels.push(heatmap);
                 this.updateHeatmap();
-                //console.log(JSON.stringify(mca, null, 2));
+                console.log('Updated heatmap');
             }, () => {
                 //console.log('Modal dismissed at: ' + new Date());
             });
@@ -185,6 +185,7 @@ module Heatmap {
                     //custom size for this example, and autoresize because map style has a percentage width
                     this.heatmap = new L.TileLayer.WebGLHeatMap({ size: 50, autoresize: false });
                     this.$mapService.map.addLayer(this.heatmap);
+                    console.log('Added heatmap layer');
                     //// dataPoints is an array of arrays: [[lat, lng, intensity]...]
                     //this.$mapService.map.setView(new L.LatLng(44.65, -63.57), 12);
                     //var dataPoints = [[44.6674, -63.5703, 37], [44.6826, -63.7552, 34], [44.6325, -63.5852, 41], [44.6467, -63.4696, 67], [44.6804, -63.487, 64], [44.6622, -63.5364, 40], [44.603, - 63.743, 52]];

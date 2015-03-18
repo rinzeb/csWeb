@@ -119,8 +119,9 @@ module Heatmap {
             var cells        = Math.floor(maxRadius / cellSize);
             var sCellSize    = cellSize * cellSize;
             var scaledWeight = this.weight * this.intensityScale;
+            var arrayLength  = cells * cells + 1;
 
-            this.heatspots = new Array<IHeatspot>(cells * cells + 1);
+            this.heatspots = new Array<IHeatspot>(arrayLength);
             this.heatspots.push(new Heatspot(0, 0, scaledWeight * this.idealityMeasure.atLocation));
 
             for (var i = 1; i <= cells; i++) {

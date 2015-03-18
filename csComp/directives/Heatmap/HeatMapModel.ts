@@ -23,7 +23,7 @@ module Heatmap {
             heatmap.clearData();
             dataset.features.forEach((f) => {
                 this.heatmapItems.forEach((hi) => {
-                    var heatspot = hi.calculateHeatspots(f, 0.00001, 0.00001);
+                    var heatspot = hi.calculateHeatspots(f, 1, 1);
                     if (heatspot) {
                         //heatspots = heatspots.concat(heatspot);
                         //console.log('Created ' + heatspot.length + ' heatspots');

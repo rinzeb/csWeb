@@ -40,7 +40,7 @@ module Heatmap {
          * At what distance would the item no longer be of value to me.
          * @type {number}, range in meters
          */
-        lostInterestDistance = 1000;
+        lostInterestDistance = 500;
          
         computeIdealityAtDistance(distance: number): number {
             if (distance < this.idealDistance) {
