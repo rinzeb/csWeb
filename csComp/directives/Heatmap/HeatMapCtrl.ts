@@ -99,7 +99,7 @@ module Heatmap {
         }
 
         editHeatmap(heatmap: HeatmapModel) {
-
+            this.showHeatmapEditor(heatmap);
         }
 
         removeHeatmap(heatmap: HeatmapModel) {
@@ -159,7 +159,7 @@ module Heatmap {
 
         getVotingClass(hi: IHeatmapItem) {
             if (hi == null || this.heatmapModel == null || hi.userWeight === 0 || hi.userWeight < -5 || hi.userWeight > 5)
-                return 'disabledMca';
+                return 'disabledHeatmap';
             return hi.userWeight > 0 ? 'prefer' : 'avoid';
         }
 
@@ -174,6 +174,7 @@ module Heatmap {
         private updateHeatmap() {
             this.heatmapModel.updateWeights();
             this.heatmapModel.calculate(this.$layerService, this.heatmap);
+            //this.createDummyHeatmap();
         }
 
         /**
@@ -183,18 +184,25 @@ module Heatmap {
             csComp.Utils.loadJsCssfile('js/cs/webgl-heatmap.min.js', csComp.FileType.Js, (event: Event) => {
                 csComp.Utils.loadJsCssfile('js/cs/webgl-heatmap-leaflet.min.js', csComp.FileType.Js,(event: Event) => {
                     //custom size for this example, and autoresize because map style has a percentage width
-                    this.heatmap = new L.TileLayer.WebGLHeatMap({ size: 50, autoresize: false });
+                    this.heatmap = new L.TileLayer.WebGLHeatMap({ size: 200, opacity: 0.8, autoresize: false });
                     this.$mapService.map.addLayer(this.heatmap);
                     console.log('Added heatmap layer');
-                    //// dataPoints is an array of arrays: [[lat, lng, intensity]...]
-                    //this.$mapService.map.setView(new L.LatLng(44.65, -63.57), 12);
-                    //var dataPoints = [[44.6674, -63.5703, 37], [44.6826, -63.7552, 34], [44.6325, -63.5852, 41], [44.6467, -63.4696, 67], [44.6804, -63.487, 64], [44.6622, -63.5364, 40], [44.603, - 63.743, 52]];
-                    //for (var i = 0, len = dataPoints.length; i < len; i++) {
-                    //    var point = dataPoints[i];
-                    //    this.heatmap.addDataPoint(point[0], point[1], point[2]);
-                    //}
                 });
             });
+        }
+
+        /**
+         * Create a dummy heatmap
+         */
+        private createDummyHeatmap() {
+            //this.$mapService.map.setView(new L.LatLng(52.109, 4.322), 10);
+            //// dataPoints is an array of arrays: [[lat, lng, intensity]...]
+            var dataPoints = [[52.1095, 4.3275, 1], [52.10190, 4.30220, 2], [52.11390, 4.30220, 3],
+                [52.11190, 4.30220, 5], [52.10690, 4.30220, 5], [52.11890, 4.30220, 5],
+                [52.11990, 4.3020, 5], [52.10090, 4.30520, 5], [52.103150, 4.31720, 5],
+                [52.10090, 4.30820, 5], [52.10000, 4.30990, 8], [52.10000, 4.3120, 10],
+                [52.10990, 4.33920, 50]];
+            this.heatmap.setData(dataPoints);
         }
     }
 }

@@ -23,12 +23,12 @@ module Heatmap {
             heatmap.clearData();
             dataset.features.forEach((f) => {
                 this.heatmapItems.forEach((hi) => {
-                    var heatspot = hi.calculateHeatspots(f, 1, 1);
+                    var heatspot = hi.calculateHeatspots(f, 50, 0.0001);
                     if (heatspot) {
                         //heatspots = heatspots.concat(heatspot);
                         //console.log('Created ' + heatspot.length + ' heatspots');
                         heatspot.forEach((hs) => {
-                            //heatmap.addDataPoint(hs.latitude, hs.longitude, hs.intensity);
+                            heatmap.addDataPoint(hs.lat, hs.lon, hs.intensity);
                         });
                     }
                 });

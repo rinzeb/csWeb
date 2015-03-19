@@ -1,25 +1,26 @@
 module Heatmap {
     /**
-     * A heat spot represents an indexed point on the map with a certain intensity.
+     * A heat spot represents an lat-lon-point on the map with a certain intensity.
      */
     export interface IHeatspot {
-        i        : number;
-        j        : number;
-        intensity: number;
+        lat        : number;
+        lon        : number;
+        intensity  : number;
 
-        //AddLocation(lat, lon): IHeatspot;
+        AddLocation(lat, lon): IHeatspot;
     }
 
     /**
      * A heat spot represents a point on the map with a certain intensity.
      */
     export class Heatspot implements IHeatspot {
-        constructor(public i: number, public j: number, public intensity: number) { }
+        constructor(public lat: number, public lon: number, public intensity: number) { }
 
-        //AddLocation(lat, lon) {
-        //    // TODO
-        //    //return new Heatspot(this.latitude + lat, this.longitude + lon, this.intensity);
-        //}
+        AddLocation(lat, lon) {
+            // TODO
+            //return new Heatspot(this.latitude + lat, this.longitude + lon, this.intensity);
+            return new Heatspot(this.lat + lat, this.lon + lon, this.intensity / 10);
+        }
     }
 
 }

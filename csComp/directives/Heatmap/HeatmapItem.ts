@@ -124,14 +124,14 @@ module Heatmap {
             this.heatspots = new Array<IHeatspot>(arrayLength);
             this.heatspots.push(new Heatspot(0, 0, scaledWeight * this.idealityMeasure.atLocation));
 
-            for (var i = 1; i <= cells; i++) {
-                for (var j = 1; j <= cells; j++) {
+            for (var i = 0; i < cells; i++) {
+                for (var j = 0; j < cells; j++) {
                     var radius            = Math.sqrt(i * i * sCellSize + j * j * sCellSize);
                     var weightedIntensity = scaledWeight * this.idealityMeasure.computeIdealityAtDistance(radius);
-                    this.heatspots.push(new Heatspot( i,  j, weightedIntensity));
-                    this.heatspots.push(new Heatspot( i, -j, weightedIntensity));
-                    this.heatspots.push(new Heatspot(-i,  j, weightedIntensity));
-                    this.heatspots.push(new Heatspot(-i, -j, weightedIntensity));
+                    this.heatspots.push(new Heatspot( i * cellSize * HeatmapItem.meterToLatDegree,  j * cellSize *  HeatmapItem.meterToLonDegree, weightedIntensity));
+                    this.heatspots.push(new Heatspot( i * cellSize * HeatmapItem.meterToLatDegree, -j * cellSize *  HeatmapItem.meterToLonDegree, weightedIntensity));
+                    this.heatspots.push(new Heatspot(-i * cellSize * HeatmapItem.meterToLatDegree,  j * cellSize *  HeatmapItem.meterToLonDegree, weightedIntensity));
+                    this.heatspots.push(new Heatspot(-i * cellSize * HeatmapItem.meterToLatDegree, -j * cellSize *  HeatmapItem.meterToLonDegree, weightedIntensity));
                 }
             }
 
@@ -207,6 +207,7 @@ module Heatmap {
             var lon = feature.geometry.coordinates[0];
             this.heatspots.forEach((hs) => {
                 //TODO actualHeatspots.push(hs.AddLocation(lat, lon));
+                actualHeatspots.push(hs.AddLocation(lat,lon));
             });
             return actualHeatspots;
         }

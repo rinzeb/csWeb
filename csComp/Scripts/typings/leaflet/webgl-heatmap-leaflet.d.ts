@@ -37,6 +37,7 @@
             onRemove(map: Map): void;
             scale(latlng: L.LatLng, radiusInMeter?: number): number;
             addDataPoint(lat: number, lon: number, intensity: number, radius?: number): void;
+            setData(dataPoints: number[][]): void;
         }
     }
 }
