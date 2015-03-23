@@ -30,7 +30,7 @@ module Heatmap {
         * The distance with respect to my location where I would like to find the item.
         * @type {number}, in meters
         */
-        idealDistance = 100;
+        idealDistance = 200;
         /**
         * How happy would I be if the item would be at my location.
         * @type {number}, range [0..1]

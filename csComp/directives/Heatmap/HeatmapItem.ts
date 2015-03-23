@@ -40,7 +40,7 @@ module Heatmap {
 
         reset(): void;
         setScale(latitude: number, longitude: number): void;
-        calculateHeatspots(feature: csComp.Services.IFeature, deltaLatDegree: number, deltaLonDegree: number) : IHeatspot[];
+        calculateHeatspots(feature: csComp.Services.IFeature, cellWidth: number, cellHeight: number, horizCells: number, vertCells: number, mapBounds: L.LatLngBounds) : IHeatspot[];
     }
 
     export class HeatmapItem implements IHeatmapItem {
@@ -86,7 +86,7 @@ module Heatmap {
         heatspots           : IHeatspot[] = [];
         /** Represents the number of items that are needed to obtain an ideal location. */
         isSelected = false;
-        private intensityScale = 5;
+        private intensityScale = 1;
         private static twoPi: number = Math.PI * 2;
 
         constructor(public title: string, public featureType: csComp.Services.IFeatureType) {
@@ -94,18 +94,19 @@ module Heatmap {
             this.setScale(52);
         }
 
-        calculateHeatspots(feature: csComp.Services.Feature, cellSize: number) {
+        calculateHeatspots(feature: csComp.Services.Feature, cellWidth: number, cellHeight: number,
+                                    horizCells: number, vertCells: number, mapBounds: L.LatLngBounds) {
             // right type?
             if (!this.isSelected || this.featureType !== feature.fType) return null;
-            if (this.heatspots.length === 0 && this.weight > 0) this.calculateHeatspot(cellSize);
+            if (this.heatspots.length === 0 && this.weight > 0) this.calculateHeatspot(cellWidth, cellHeight);
             // create heatspot solely based on feature type?
             if (!this.propertyLabel) {
-                return this.pinHeatspotToLocation(feature);
+                return this.pinHeatspotToGrid(feature, horizCells, vertCells, mapBounds);
             }
             // create heatspot based on the preferred option?
             if (feature.properties.hasOwnProperty(this.propertyLabel)
                 && feature.properties[this.propertyLabel] === this.optionIndex) {
-                return this.pinHeatspotToLocation(feature);
+                return this.pinHeatspotToGrid(feature, horizCells, vertCells, mapBounds);
             }
             return null;
         }
@@ -114,24 +115,26 @@ module Heatmap {
         * Calculate the intensity around the location. 
         * NOTE We are performing a relative computation around location (0,0) in a rectangular grid. 
         */
-        private calculateHeatspot(cellSize: number) {
+        private calculateHeatspot(cellWidth: number, cellHeight: number) {
             var maxRadius    = this.idealityMeasure.lostInterestDistance;
-            var cells        = Math.floor(maxRadius / cellSize);
-            var sCellSize    = cellSize * cellSize;
+            var horizCells   = Math.floor(maxRadius / cellWidth);
+            var vertCells    = Math.floor(maxRadius / cellHeight);
+            var sCellSize    = cellWidth * cellHeight;
             var scaledWeight = this.weight * this.intensityScale;
-            var arrayLength  = cells * cells + 1;
+            var arrayLength  = horizCells * vertCells;
 
             this.heatspots = new Array<IHeatspot>(arrayLength);
             this.heatspots.push(new Heatspot(0, 0, scaledWeight * this.idealityMeasure.atLocation));
 
-            for (var i = 0; i < cells; i++) {
-                for (var j = 0; j < cells; j++) {
-                    var radius            = Math.sqrt(i * i * sCellSize + j * j * sCellSize);
+            for (var i = 1; i <= vertCells; i++) {
+                for (var j = 1; j <= horizCells; j++) {
+                    var radius = Math.sqrt(i * i * sCellSize + j * j * sCellSize);
                     var weightedIntensity = scaledWeight * this.idealityMeasure.computeIdealityAtDistance(radius);
-                    this.heatspots.push(new Heatspot( i * cellSize * HeatmapItem.meterToLatDegree,  j * cellSize *  HeatmapItem.meterToLonDegree, weightedIntensity));
-                    this.heatspots.push(new Heatspot( i * cellSize * HeatmapItem.meterToLatDegree, -j * cellSize *  HeatmapItem.meterToLonDegree, weightedIntensity));
-                    this.heatspots.push(new Heatspot(-i * cellSize * HeatmapItem.meterToLatDegree,  j * cellSize *  HeatmapItem.meterToLonDegree, weightedIntensity));
-                    this.heatspots.push(new Heatspot(-i * cellSize * HeatmapItem.meterToLatDegree, -j * cellSize *  HeatmapItem.meterToLonDegree, weightedIntensity));
+                    this.heatspots.push(new Heatspot(i, j, weightedIntensity));
+                    this.heatspots.push(new Heatspot(i, -j, weightedIntensity));
+                    this.heatspots.push(new Heatspot(-i, j, weightedIntensity));
+                    this.heatspots.push(new Heatspot(-i, -j, weightedIntensity));
+                    console.log('Add spot at ' + i + ', ' + j + ' with intensity ' + weightedIntensity);
                 }
             }
 
@@ -200,14 +203,17 @@ module Heatmap {
         /** 
         * Translate the heatspot (at (0,0)) to the actual location.
         */
-        private pinHeatspotToLocation(feature: csComp.Services.Feature) {
+        private pinHeatspotToGrid(feature: csComp.Services.Feature, horizCells: number, vertCells: number, mapBounds: L.LatLngBounds) {
             if (feature.geometry.type !== 'Point') return null;
+            var latlong = new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]);
+            if (!mapBounds.contains(latlong)) return null; //Only draw features that are visible in the map
             var actualHeatspots: IHeatspot[] = [];
-            var lat = feature.geometry.coordinates[1];
-            var lon = feature.geometry.coordinates[0];
+            //Find the indices of the feature in the grid
+            var hCell = Math.floor(((latlong.lng - mapBounds.getNorthWest().lng) / (mapBounds.getNorthEast().lng - mapBounds.getNorthWest().lng)) * horizCells);
+            var vCell = Math.floor(((latlong.lat - mapBounds.getSouthWest().lat) / (mapBounds.getNorthWest().lat - mapBounds.getSouthWest().lat)) * vertCells);
             this.heatspots.forEach((hs) => {
                 //TODO actualHeatspots.push(hs.AddLocation(lat, lon));
-                actualHeatspots.push(hs.AddLocation(lat,lon));
+                actualHeatspots.push(hs.AddLocation(hCell,vCell));
             });
             return actualHeatspots;
         }

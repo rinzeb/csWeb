@@ -37,4 +37,9 @@
 
     </div>
 
+    <div data-ng-if="!vm.heatmapModel">
+        <div data-ng-if="vm.expertMode" translate>HEATMAP.INFO_EXPERT</div>
+        <div data-ng-if="!vm.expertMode" translate>HEATMAP.INFO</div>
+    </div>
+
 </div>

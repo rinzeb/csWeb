@@ -36,6 +36,7 @@
             },
             HEATMAP: {
                 DESCRIPTION: '<h4>Heatmap</h4><p  style="text-align: left; margin-left:5px;">Heatmap highlights areas on the map that fulfill multiple selected criteria.',
+                INFO: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it.',
                 INFO_EXPERT: 'At the moment, no map layers are loaded that contain a heatmap. Open another map layer to use it, or create a new heatmap using the wizard.',
                 SHOW_FEATURE_MSG: 'Select a feature on the map to see the heatmap.',
                 TOTAL_RESULT: 'Combined result',

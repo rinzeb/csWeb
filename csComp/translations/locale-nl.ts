@@ -36,6 +36,7 @@
             },
             HEATMAP: {
                 DESCRIPTION: '<h4>Toelichting heatmap</h4><div style="text-align: left; margin-left:5px;"><p>Heatmap laat gebieden op de kaart oplichten die voldoen aan bepaalde criteria.',
+                INFO: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten.',
                 INFO_EXPERT: 'Momenteel zijn er geen kaartlagen geopend die heatmaps bevatten. Open een kaartlaag en maak een nieuwe heatmap aan met behulp van de wizard.',
                 SHOW_FEATURE_MSG: 'Selecteer een feature op de kaart om de heatmap resultaten in detail te bekijken.',
                 TOTAL_RESULT: 'Gecombineerd resultaat',
