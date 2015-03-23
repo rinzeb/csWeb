@@ -27,7 +27,7 @@ module Heatmap {
         userWeight     : number;
         /**
          * The weight specifies how much you like this item, relative to others.
-         * @type {number}, range [0..1].
+         * @type {number}, range [-1..1].
          */
         weight         : number;
         /**
@@ -71,10 +71,10 @@ module Heatmap {
          * The user weight specifies how much you like this item, e.g. the maximum value.
          * @type {number}, range [-5..5].
          */
-        userWeight = 5;
+        userWeight = 1;
         /**
          * The weight specifies how much you like this item, relative to others.
-         * @type {number}, range [0..1].
+         * @type {number}, range [-1..1].
          */
         weight = 0;
         /**
@@ -98,7 +98,7 @@ module Heatmap {
                                     horizCells: number, vertCells: number, mapBounds: L.LatLngBounds) {
             // right type?
             if (!this.isSelected || this.featureType !== feature.fType) return null;
-            if (this.heatspots.length === 0 && this.weight > 0) this.calculateHeatspot(cellWidth, cellHeight);
+            if (this.heatspots.length === 0) this.calculateHeatspot(cellWidth, cellHeight);
             // create heatspot solely based on feature type?
             if (!this.propertyLabel) {
                 return this.pinHeatspotToGrid(feature, horizCells, vertCells, mapBounds);
@@ -130,9 +130,9 @@ module Heatmap {
                 for (var j = -horizCells; j <= horizCells; j++) {
                     var radius = Math.sqrt(i * i * sCellSize + j * j * sCellSize);
                     var weightedIntensity = scaledWeight * this.idealityMeasure.computeIdealityAtDistance(radius);
-                    if (!(i == 0 && j == 0)) {
+                    if (!(i == 0 && j == 0) && weightedIntensity != 0) {
                         this.heatspots.push(new Heatspot(i, j, weightedIntensity));
-                        console.log('Add spot at ' + i + ', ' + j + ' with intensity ' + weightedIntensity);
+                        //console.log('Add spot at ' + i + ', ' + j + ' with intensity ' + weightedIntensity);
                     }
                 }
             }

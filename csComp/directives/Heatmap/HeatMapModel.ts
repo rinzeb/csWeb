@@ -41,15 +41,22 @@ module Heatmap {
 
             //Calculate a grid based on the maximum number of cells and the map ratio.
             var mapRatio = width / height;
-            var maxCellCount = 1000;
+            var maxCellCount = 2000;
             var horizCells = Math.floor(Math.sqrt(maxCellCount * mapRatio));
             var vertCells = Math.floor(horizCells / mapRatio);
             var cellWidth = width / horizCells;
             var cellHeight = height / vertCells;
             var dLat = (NE.lat - SW.lat) / vertCells;
             var dLng = (NE.lng - SW.lng) / horizCells;
+            var count: number = 0;
 
-            //this.drawGrid(heatmap, SW, NE, horizCells, vertCells);
+            var intensityGrid = [];
+            for (var i = 0; i < horizCells; i++) {
+                intensityGrid[i] = [];
+                for (var j = 0; j < vertCells; j++) {
+                    intensityGrid[i][j] = 0;
+                }
+            }
 
             // Iterate over all applicable features on the map and create a intensity "stamp" for each feature
             dataset.features.forEach((f) => {
@@ -61,30 +68,39 @@ module Heatmap {
                         heatspot.forEach((hs) => {
                             //heatmap.addDataPoint(hs.i, hs.j, hs.intensity);
                             if (hs.intensity != 0) {
-                                var polyCoord = [[SW.lng + dLng * hs.i, SW.lat + dLat * hs.j],
-                                    [SW.lng + dLng * (hs.i + 1), SW.lat + dLat * hs.j],
-                                    [SW.lng + dLng * (hs.i + 1), SW.lat + dLat * (hs.j + 1)],
-                                    [SW.lng + dLng * hs.i, SW.lat + dLat * (hs.j + 1)],
-                                    [SW.lng + dLng * hs.i, SW.lat + dLat * hs.j]];
-                                var feature = {
-                                    "type": "Feature",
-                                    "geometry": {
-                                        "type": "Polygon",
-                                        "coordinates": [polyCoord]
-                                    },
-                                    "properties": {
-                                        "gridX": hs.i,
-                                        "gridY": hs.j,
-                                        "intensity": hs.intensity
-                                    }
-                                };
-                                heatmap.addData(feature);
+                                intensityGrid[hs.i][hs.j] += hs.intensity;
+                                count = count + 1;
                             }
                         });
                     }
                 });
             });
-            console.log('Created ' + ' heatspots');
+            console.log('Created ' + count + ' heatspots');
+
+            heatmap.clearLayers();
+            //Draw the intensityGrid
+            for (var i = 0; i < horizCells; i++) {
+                for (var j = 0; j < vertCells; j++) {
+                    var polyCoord = [[SW.lng + dLng * i, SW.lat + dLat * j],
+                        [SW.lng + dLng * (i + 1), SW.lat + dLat * j],
+                        [SW.lng + dLng * (i + 1), SW.lat + dLat * (j + 1)],
+                        [SW.lng + dLng * i, SW.lat + dLat * (j + 1)],
+                        [SW.lng + dLng * i, SW.lat + dLat * j]];
+                    var feature = {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [polyCoord]
+                        },
+                        "properties": {
+                            "gridX": i,
+                            "gridY": j,
+                            "intensity": intensityGrid[i][j]
+                        }
+                    };
+                    heatmap.addData(feature);
+                }
+            }
         }
 
         /**
@@ -97,7 +113,11 @@ module Heatmap {
             });
             this.heatmapItems.forEach((hi) => {
                 if (hi.isSelected) {
-                    hi.weight = hi.userWeight / totalUserWeight;
+                    if (totalUserWeight != 0) {
+                        hi.weight = hi.userWeight / totalUserWeight;
+                    } else {
+                        hi.weight = 0;
+                    }
                     hi.reset();
                 }
             });
@@ -114,49 +134,6 @@ module Heatmap {
                 if (hi.featureType === ft && hi.title === title) return;
             }
             this.heatmapItems.push(heatmapItem);
-        }
-
-        /**
-         * Draw the heatmap grid using geoJSON
-         */
-        drawGrid(heatmap: L.GeoJSON, SW: L.LatLng, NE: L.LatLng, horizCells: number, vertCells: number) {
-            var dLat = (NE.lat - SW.lat) / vertCells;
-            var dLng = (NE.lng - SW.lng) / horizCells;
-            //var polyCoord = [];
-            //for (var i = 0; i <= horizCells; i++) {
-            //    for (var j = 0; j <= vertCells; j++) {
-            //        polyCoord.push([SW.lng + dLng * i, SW.lat + dLat * j]);
-            //    }
-            //}
-            //var grid = {
-            //    "type": "Feature",
-            //    "properties": { "grid": "myGrid" },
-            //    "geometry": {
-            //        "type": "Polygon",
-            //        "coordinates": [polyCoord]
-            //    }
-            //};
-            for (var i = 0; i <= horizCells; i++) {
-                for (var j = 0; j <= vertCells; j++) {
-                    var polyCoord = [[SW.lng + dLng * i, SW.lat + dLat * j],
-                                    [SW.lng + dLng * (i + 1), SW.lat + dLat * j],
-                                    [SW.lng + dLng * (i + 1), SW.lat + dLat * (j + 1)],
-                                    [SW.lng + dLng * i, SW.lat + dLat * (j + 1)]];
-                    var feature = {
-                        "type": "Feature",
-                        "properties": {
-                            "gridX": i,
-                            "gridY": j,
-                            "intensity": 0
-                        },
-                        "geometry": {
-                            "type": "Polygon",
-                            "coordinates": [polyCoord]
-                        }
-                    };
-                    heatmap.addData(feature);
-                }
-            }
         }
     }
 }

@@ -184,10 +184,10 @@ module Heatmap {
         private initializeHeatmap() {
             this.heatmap = L.geoJson([], {
                 style: function (feature) {
-                    if (feature.properties.intensity < 0.4) {
+                    if (feature.properties.intensity < -0.10) {
                         return { color: "#ff0000" };
-                    } else if (feature.properties.intensity < 0.6) {
-                        return { color: "#ff88ff" };
+                    } else if (feature.properties.intensity < 0.10) {
+                        return { color: "#ffffff" };
                     } else {
                         return { color: "#0000ff" };
                     }
@@ -195,15 +195,6 @@ module Heatmap {
             });
             this.$mapService.map.setView(new L.LatLng(52.1095, 4.3275), 14);
             this.$mapService.map.addLayer(this.heatmap);
-
-            //var myLines = [{
-            //    "type": "LineString",
-            //    "coordinates": [[4.33, 52.11], [4.33, 52.18], [4.30, 52.19]]
-            //}, {
-            //        "type": "LineString",
-            //        "coordinates": [[4.33, 52.2], [4.35, 52.18], [4.38, 52.19]]
-            //}];
-            //this.heatmap.addData(myLines);
         }
 
         //            console.log('Added heatmap layer');
