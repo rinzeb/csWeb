@@ -126,15 +126,14 @@ module Heatmap {
             this.heatspots = new Array<IHeatspot>(arrayLength);
             this.heatspots.push(new Heatspot(0, 0, scaledWeight * this.idealityMeasure.atLocation));
 
-            for (var i = 1; i <= vertCells; i++) {
-                for (var j = 1; j <= horizCells; j++) {
+            for (var i = -vertCells; i <= vertCells; i++) {
+                for (var j = -horizCells; j <= horizCells; j++) {
                     var radius = Math.sqrt(i * i * sCellSize + j * j * sCellSize);
                     var weightedIntensity = scaledWeight * this.idealityMeasure.computeIdealityAtDistance(radius);
-                    this.heatspots.push(new Heatspot(i, j, weightedIntensity));
-                    this.heatspots.push(new Heatspot(i, -j, weightedIntensity));
-                    this.heatspots.push(new Heatspot(-i, j, weightedIntensity));
-                    this.heatspots.push(new Heatspot(-i, -j, weightedIntensity));
-                    console.log('Add spot at ' + i + ', ' + j + ' with intensity ' + weightedIntensity);
+                    if (!(i == 0 && j == 0)) {
+                        this.heatspots.push(new Heatspot(i, j, weightedIntensity));
+                        console.log('Add spot at ' + i + ', ' + j + ' with intensity ' + weightedIntensity);
+                    }
                 }
             }
 

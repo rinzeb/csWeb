@@ -46,8 +46,10 @@ module Heatmap {
             var vertCells = Math.floor(horizCells / mapRatio);
             var cellWidth = width / horizCells;
             var cellHeight = height / vertCells;
+            var dLat = (NE.lat - SW.lat) / vertCells;
+            var dLng = (NE.lng - SW.lng) / horizCells;
 
-            this.drawGrid(heatmap, SW, NE, horizCells, vertCells);
+            //this.drawGrid(heatmap, SW, NE, horizCells, vertCells);
 
             // Iterate over all applicable features on the map and create a intensity "stamp" for each feature
             dataset.features.forEach((f) => {
@@ -58,6 +60,26 @@ module Heatmap {
                         //console.log('Created ' + heatspot.length + ' heatspots');
                         heatspot.forEach((hs) => {
                             //heatmap.addDataPoint(hs.i, hs.j, hs.intensity);
+                            if (hs.intensity != 0) {
+                                var polyCoord = [[SW.lng + dLng * hs.i, SW.lat + dLat * hs.j],
+                                    [SW.lng + dLng * (hs.i + 1), SW.lat + dLat * hs.j],
+                                    [SW.lng + dLng * (hs.i + 1), SW.lat + dLat * (hs.j + 1)],
+                                    [SW.lng + dLng * hs.i, SW.lat + dLat * (hs.j + 1)],
+                                    [SW.lng + dLng * hs.i, SW.lat + dLat * hs.j]];
+                                var feature = {
+                                    "type": "Feature",
+                                    "geometry": {
+                                        "type": "Polygon",
+                                        "coordinates": [polyCoord]
+                                    },
+                                    "properties": {
+                                        "gridX": hs.i,
+                                        "gridY": hs.j,
+                                        "intensity": hs.intensity
+                                    }
+                                };
+                                heatmap.addData(feature);
+                            }
                         });
                     }
                 });

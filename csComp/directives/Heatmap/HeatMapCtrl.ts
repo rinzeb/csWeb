@@ -182,7 +182,17 @@ module Heatmap {
         //* Add a WebGL heatmap layer to the map.
         //*/
         private initializeHeatmap() {
-            this.heatmap = L.geoJson();
+            this.heatmap = L.geoJson([], {
+                style: function (feature) {
+                    if (feature.properties.intensity < 0.4) {
+                        return { color: "#ff0000" };
+                    } else if (feature.properties.intensity < 0.6) {
+                        return { color: "#ff88ff" };
+                    } else {
+                        return { color: "#0000ff" };
+                    }
+                }
+            });
             this.$mapService.map.setView(new L.LatLng(52.1095, 4.3275), 14);
             this.$mapService.map.addLayer(this.heatmap);
 
