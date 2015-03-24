@@ -14,7 +14,13 @@ module Heatmap {
          * A virtual geojson file that represents all useable data for creating a heatmap.
          * @type {IGeoJsonFile}
          */
-        dataset: IGeoJsonFile;
+        dataset             : IGeoJsonFile;
+        scoringFunctions    : ScoringFunction[] = [];
+
+        showItem            : number;
+        idealDistance       : number;
+        distanceMaxValue    : number;
+        lostInterestDistance: number;
 
         static $inject = [
             '$scope',
@@ -34,6 +40,11 @@ module Heatmap {
             public heatmap?          : HeatmapModel
             ) {
             $scope.vm = this;
+
+            this.scoringFunctions.push(new ScoringFunction(ScoringFunctionType.LinearAscendingDescending));
+            $translate('HEATMAP.LINEAR_ASC_DESC').then(translation => {
+                this.scoringFunctions[0].title = translation;
+            });
 
             this.dataset = csComp.Helpers.loadMapLayers($layerService);
             if (!heatmap) heatmap = new HeatmapModel('Heatmap');
@@ -68,5 +79,9 @@ module Heatmap {
             this.$modalInstance.dismiss('cancel');
         }
 
+        toggleItemDetails(index: number) {
+            this.showItem = this.showItem == index ? -1 : index;
+            console.log("Toggle item");
+        }
     }
 }

@@ -205,7 +205,9 @@ module Heatmap {
         private pinHeatspotToGrid(feature: csComp.Services.Feature, horizCells: number, vertCells: number, mapBounds: L.LatLngBounds) {
             if (feature.geometry.type !== 'Point') return null;
             var latlong = new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]);
-            if (!mapBounds.contains(latlong)) return null; //Only draw features that are visible in the map
+            //TODO add a padding that takes the current zoom into account
+            var paddedBounds: L.LatLngBounds = mapBounds.pad(1.1);
+            if (!paddedBounds.contains(latlong)) return null; //Only draw features that are visible in the map
             var actualHeatspots: IHeatspot[] = [];
             //Find the indices of the feature in the grid
             var hCell = Math.floor(((latlong.lng - mapBounds.getNorthWest().lng) / (mapBounds.getNorthEast().lng - mapBounds.getNorthWest().lng)) * horizCells);

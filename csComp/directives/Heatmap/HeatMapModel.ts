@@ -18,8 +18,6 @@ module Heatmap {
         calculate(layerService: csComp.Services.LayerService, mapService: csComp.Services.MapService, heatmap: L.GeoJSON) { //: L.TileLayer.WebGLHeatMap) {
             console.log('Calculating heatmap');
             var mapBounds = mapService.map.getBounds();
-            //TODO add a padding that takes the current zoom into account
-            mapBounds.pad(1.25);
             var NW = mapBounds.getNorthWest();
             var NE = mapBounds.getNorthEast();
             var SW = mapBounds.getSouthWest();
@@ -41,7 +39,7 @@ module Heatmap {
 
             //Calculate a grid based on the maximum number of cells and the map ratio.
             var mapRatio = width / height;
-            var maxCellCount = 2000;
+            var maxCellCount = HeatmapCtrl.MAX_HEATMAP_CELLS;
             var horizCells = Math.floor(Math.sqrt(maxCellCount * mapRatio));
             var vertCells = Math.floor(horizCells / mapRatio);
             var cellWidth = width / horizCells;

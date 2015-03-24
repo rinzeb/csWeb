@@ -21,6 +21,10 @@ module Heatmap {
         heatmapModels : HeatmapModel[] = [];
         expertMode                     = true;
   
+        private static MIN_HEATMAP_ZOOM = 7;
+        private static MAX_HEATMAP_ZOOM = 16;
+        public static MAX_HEATMAP_CELLS = 2500;
+
         selectedFeature: IFeature;
         properties     : FeatureProps.CallOutProperty[];
         showFeature    : boolean;
@@ -120,6 +124,7 @@ module Heatmap {
             if (!heatmap) return;
             var index = this.heatmapModels.indexOf(heatmap);
             if (index >= 0) this.heatmapModels.splice(index, 1);
+            this.$mapService.map.removeLayer(this.heatmap);
             //var mcaIndex = this.getMcaIndex(mca);
             //if (mcaIndex < 0) return;
             //var mcas = this.$layerService.project.mcas;
@@ -174,9 +179,14 @@ module Heatmap {
          */
         private updateHeatmap() {
             if (this.heatmapModel) {
-                this.heatmapModel.updateWeights();
-                this.heatmapModel.calculate(this.$layerService, this.$mapService, this.heatmap);
-                //this.createDummyHeatmap();
+                var currentZoom = this.$mapService.getMap().getZoom();
+                if (currentZoom >= HeatmapCtrl.MIN_HEATMAP_ZOOM && currentZoom <= HeatmapCtrl.MAX_HEATMAP_ZOOM) {
+                    this.heatmapModel.updateWeights();
+                    this.heatmapModel.calculate(this.$layerService, this.$mapService, this.heatmap);
+                    //this.createDummyHeatmap();
+                } else {
+                    console.log("Heatmap is not supported for the current zoom level.");
+                }
             }
         }
 
@@ -206,17 +216,19 @@ module Heatmap {
             });
             this.$mapService.map.setView(new L.LatLng(52.1095, 4.3275), 14);
             this.$mapService.map.addLayer(this.heatmap);
+            //TODO: remove when deleting heatmap layer
             this.$mapService.getMap().on('moveend',  () => { this.updateHeatmap() });
         }
 
         public static intensityToHex(intensity: number): string {
+            var decreaseOverlap = 20;
             intensity = Math.floor(Math.abs(intensity) * 255);
             if (intensity < 0) {
                 intensity = 0;
-            } else if (intensity > 255) {
-                intensity = 255;
+            } else if (intensity > 255 - decreaseOverlap) {
+                intensity = 255 - decreaseOverlap;
             }
-            var hexString: string = (255-intensity).toString(16);
+            var hexString: string = (255 - decreaseOverlap - intensity).toString(16);
             if (hexString.length == 1) {
                 hexString = "0" + hexString;
             }
