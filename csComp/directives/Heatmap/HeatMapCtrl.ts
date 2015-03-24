@@ -173,28 +173,54 @@ module Heatmap {
          * Update the available pre-set heatmaps.
          */
         private updateHeatmap() {
-            this.heatmapModel.updateWeights();
-            this.heatmapModel.calculate(this.$layerService, this.$mapService, this.heatmap);
-            //this.createDummyHeatmap();
+            if (this.heatmapModel) {
+                this.heatmapModel.updateWeights();
+                this.heatmapModel.calculate(this.$layerService, this.$mapService, this.heatmap);
+                //this.createDummyHeatmap();
+            }
         }
 
         ///**
-        //* Add a WebGL heatmap layer to the map.
+        //* Add a heatmap layer to the map.
         //*/
         private initializeHeatmap() {
             this.heatmap = L.geoJson([], {
                 style: function (feature) {
-                    if (feature.properties.intensity < -0.10) {
-                        return { color: "#ff0000" };
-                    } else if (feature.properties.intensity < 0.10) {
-                        return { color: "#ffffff" };
+                    if (feature.properties.intensity <= 0) {
+                        var hexString = Heatmap.HeatmapCtrl.intensityToHex(feature.properties.intensity);
+                        return { color: "#FF"+hexString+hexString };
+                    } else if (feature.properties.intensity > 0) {
+                        var hexString = Heatmap.HeatmapCtrl.intensityToHex(feature.properties.intensity);
+                        return { color: "#" + hexString + hexString + "FF"};
                     } else {
-                        return { color: "#0000ff" };
+                        return { color: "#ffffff" };
                     }
+                    //if (feature.properties.intensity < -0.10) {
+                    //    return { color: "#ff0000" };
+                    //} else if (feature.properties.intensity < 0.10) {
+                    //    return { color: "#ffffff" };
+                    //} else {
+                    //    return { color: "#0000ff" };
+                    //}
                 }
             });
             this.$mapService.map.setView(new L.LatLng(52.1095, 4.3275), 14);
             this.$mapService.map.addLayer(this.heatmap);
+            this.$mapService.getMap().on('moveend',  () => { this.updateHeatmap() });
+        }
+
+        public static intensityToHex(intensity: number): string {
+            intensity = Math.floor(Math.abs(intensity) * 255);
+            if (intensity < 0) {
+                intensity = 0;
+            } else if (intensity > 255) {
+                intensity = 255;
+            }
+            var hexString: string = (255-intensity).toString(16);
+            if (hexString.length == 1) {
+                hexString = "0" + hexString;
+            }
+            return hexString;
         }
 
         //            console.log('Added heatmap layer');
