@@ -9,8 +9,12 @@ module Heatmap {
 
     export class HeatmapModel implements IHeatmapModel {
         heatmapItems: IHeatmapItem[] = [];
+        scaleMaxValue: number = 16;
+        scaleMinValue: number = 9;
 
-        constructor(public title: string) { }
+        constructor(public title: string) {
+            this.title = title;
+        }
 
         /**
          * Calculate the heatmap.

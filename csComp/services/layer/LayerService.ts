@@ -199,7 +199,7 @@
                     (callback) => {
                         // Open a style file
                         if (layer.styleurl) {
-                            d3.json(layer.styleurl, (err, dta) => {
+                            d3.json(layer.styleurl,(err, dta) => {
 
                                 if (err)
                                     this.$messageBusService.notify('ERROR loading' + layer.title, err);
@@ -220,7 +220,7 @@
                     (callback) => {
                         // Open a layer URL
                         layer.isLoading = true;
-                        d3.json(layer.url, (error, data) => {
+                        d3.json(layer.url,(error, data) => {
                             layer.isLoading = false;
                             if (error)
                                 this.$messageBusService.notify('ERROR loading' + layer.title, error);
@@ -278,15 +278,15 @@
                                     this.map.map.addLayer(layer.mapLayer);
 
                                     var v = L.geoJson(data, {
-                                        onEachFeature : (feature: IFeature, lay) => {
+                                        onEachFeature: (feature: IFeature, lay) => {
                                             //We do not need to init the feature here: already done in style.
                                             //this.initFeature(feature, layer);
                                             layer.group.markers[feature.id] = lay;
                                             lay.on({
-                                                mouseover : (a) => this.showFeatureTooltip(a, layer.group),
-                                                mouseout  : (s) => this.hideFeatureTooltip(s),
-                                                mousemove : (d) => this.updateFeatureTooltip(d),
-                                                click     : ()  => this.selectFeature(feature)
+                                                mouseover: (a) => this.showFeatureTooltip(a, layer.group),
+                                                mouseout: (s) => this.hideFeatureTooltip(s),
+                                                mousemove: (d) => this.updateFeatureTooltip(d),
+                                                click: () => this.selectFeature(feature)
                                             });
                                         },
                                         style: (f: IFeature, m) => {
@@ -296,7 +296,7 @@
                                             layer.group.markers[f.id] = m;
                                             return this.style(f, layer);
                                         },
-                                        pointToLayer : (feature, latlng) => this.addFeature(feature, latlng, layer)
+                                        pointToLayer: (feature, latlng) => this.addFeature(feature, latlng, layer)
                                     });
                                     this.project.features.forEach((f: IFeature) => {
                                         if (f.layerId !== layer.id) return;
@@ -305,7 +305,135 @@
                                     });
                                     layer.mapLayer.addLayer(v);
                                 }
-                          }
+                            }
+                            this.updateSensorData();
+                            this.$messageBusService.publish('layer', 'activated', layer);
+
+                            callback(null, null);
+                            this.updateFilters();
+                        });
+                    },
+                    // Callback
+                    () => {
+                        disableLayers.forEach((l) => {
+                            this.removeLayer(l);
+                            l.enabled = false;
+                        });
+                    }
+                ]);
+                break;
+            case 'heatmap':
+                console.log("TODO: implement heatmap layer");
+                async.series([
+                    (callback) => {
+                        // If oneLayerActive: close other group layer
+                        if (layer.group.oneLayerActive) {
+                            layer.group.layers.forEach((l: ProjectLayer) => {
+                                if (l !== layer && l.enabled) {
+                                    disableLayers.push(l);
+                                }
+                            });
+                        }
+                        callback(null, null);
+                    },
+                    (callback) => {
+                        // Open a style file
+                        if (layer.styleurl) {
+                            d3.json(layer.styleurl,(err, dta) => {
+
+                                if (err)
+                                    this.$messageBusService.notify('ERROR loading' + layer.title, err);
+                                else {
+                                    if (dta.featureTypes)
+                                        for (var featureTypeName in dta.featureTypes) {
+                                            if (!dta.featureTypes.hasOwnProperty(featureTypeName)) continue;
+                                            var featureType: IFeatureType = dta.featureTypes[featureTypeName];
+                                            featureTypeName = layer.id + '_' + featureTypeName;
+                                            this.featureTypes[featureTypeName] = featureType;
+                                        }
+                                }
+                                callback(null, null);
+                            });
+                        } else
+                            callback(null, null);
+                    },
+                    (callback) => {
+                        // Open a layer URL
+                        layer.isLoading = true;
+                        d3.json(layer.url,(error, data) => {
+                            layer.isLoading = false;
+                            if (error)
+                                this.$messageBusService.notify('ERROR loading' + layer.title, error);
+                            else {
+                                if (!layer.id) layer.id = Helpers.getGuid();
+                                this.loadedLayers.add(layer.id, layer);
+                                if (layer.type.toLowerCase() === 'topojson')
+                                    data = this.convertTopoToGeoJson(data);
+                                for (var featureTypeName in data.featureTypes) {
+                                    if (!data.featureTypes.hasOwnProperty(featureTypeName)) continue;
+                                    var featureType: IFeatureType = data.featureTypes[featureTypeName];
+                                    featureTypeName = layer.id + '_' + featureTypeName;
+                                    this.featureTypes[featureTypeName] = featureType;
+                                    //var pt = "." + featureTypeName;
+                                    //var icon = featureType.style.iconUri;
+                                    var t = '{".style' + featureTypeName + '":';
+                                    if (featureType.style.iconUri != null) {
+                                        t += ' { "background": "url(' + featureType.style.iconUri + ') no-repeat right center",';
+                                    };
+                                    t += ' "background-size": "100% 100%","border-style": "none"} }';
+                                    var json = $.parseJSON(t);
+                                    (<any>$).injectCSS(json);
+
+                                    //console.log(JSON.stringify(poiType, null, 2));
+                                }
+                                if (data.timestamps) layer.timestamps = data.timestamps;
+                                if (layer.group.clustering) {
+                                    var markers = L.geoJson(data, {
+                                        pointToLayer: (feature, latlng) => this.addFeature(feature, latlng, layer),
+                                        onEachFeature: (feature: IFeature, lay) => {
+                                            //We do not need to init the feature here: already done in style.
+                                            //this.initFeature(feature, layer);
+                                            layer.group.markers[feature.id] = lay;
+                                            lay.on({
+                                                mouseover: (a) => this.showFeatureTooltip(a, layer.group),
+                                                mouseout: (s) => this.hideFeatureTooltip(s)
+                                            });
+                                        }
+                                    });
+                                    layer.group.cluster.addLayer(markers);
+                                } else {
+                                    layer.mapLayer = new L.LayerGroup<L.ILayer>();
+                                    this.map.map.addLayer(layer.mapLayer);
+
+                                    var v = L.geoJson(data, {
+                                        onEachFeature: (feature: IFeature, lay) => {
+                                            //We do not need to init the feature here: already done in style.
+                                            //this.initFeature(feature, layer);
+                                            layer.group.markers[feature.id] = lay;
+                                            lay.on({
+                                                mouseover: (a) => this.showFeatureTooltip(a, layer.group),
+                                                mouseout: (s) => this.hideFeatureTooltip(s),
+                                                mousemove: (d) => this.updateFeatureTooltip(d),
+                                                click: () => this.selectFeature(feature)
+                                            });
+                                        },
+                                        style: (f: IFeature, m) => {
+
+                                            this.initFeature(f, layer);
+                                            //this.updateSensorData();
+                                            layer.group.markers[f.id] = m;
+                                            return this.style(f, layer);
+                                        },
+                                        pointToLayer: (feature, latlng) => this.addFeature(feature, latlng, layer)
+                                    });
+                                    this.project.features.forEach((f: IFeature) => {
+                                        if (f.layerId !== layer.id) return;
+                                        var ft = this.getFeatureType(f);
+                                        f.properties['Name'] = f.properties[ft.style.nameLabel];
+                                    });
+                                    layer.mapLayer.addLayer(v);
+                                }
+                            }
                             this.updateSensorData();
                             this.$messageBusService.publish('layer', 'activated', layer);
 

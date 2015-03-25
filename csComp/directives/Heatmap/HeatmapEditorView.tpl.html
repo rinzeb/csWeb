@@ -40,9 +40,9 @@
                             data-ng-options="sf as sf.title for sf in vm.scoringFunctions"></select>
                     <div class="pull-right" data-ng-class="hi.scoringFunctionType.cssClass" style="width: 40px; height: 28px; margin-top: -5px;"></div>
                     <div class="row-fluid" >
-                        <input type="text" class="col-xs-3" style="padding: 0; margin-right: 5px;" data-ng-model="hi.atLocationValue" placeholder="{{ \'HEATMAP.AT_LOCATION_VALUE\' | translate }}" />
-                        <input type="text" class="col-xs-3" style="padding: 0; margin-right: 5px;" data-ng-model="hi.distanceMaxValue" placeholder="{{ \'HEATMAP.DISTANCE_MAX_VALUE\' | translate }}" />
-                        <input type="text" class="col-xs-3" style="padding: 0;" data-ng-model="hi.lostInterestDistance" placeholder="{{ \'HEATMAP.LOST_INTEREST_VALUE\' | translate }}" />
+                        <input type="text" class="col-xs-3" style="padding: 0; margin-right: 5px;" data-ng-model="hi.idealityMeasure.atLocation" placeholder="{{ \'HEATMAP.AT_LOCATION_VALUE\' | translate }}" />
+                        <input type="text" class="col-xs-3" style="padding: 0; margin-right: 5px;" data-ng-model="hi.idealityMeasure.idealDistance" placeholder="{{ \'HEATMAP.DISTANCE_MAX_VALUE\' | translate }}" />
+                        <input type="text" class="col-xs-3" style="padding: 0;" data-ng-model="hi.idealityMeasure.lostInterestDistance" placeholder="{{ \'HEATMAP.LOST_INTEREST_VALUE\' | translate }}" />
                     </div>
                 </div>
             </li>

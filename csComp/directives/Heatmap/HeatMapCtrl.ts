@@ -20,9 +20,7 @@ module Heatmap {
         heatmapModel  : HeatmapModel;
         heatmapModels : HeatmapModel[] = [];
         expertMode                     = true;
-  
-        private static MIN_HEATMAP_ZOOM = 7;
-        private static MAX_HEATMAP_ZOOM = 16;
+
         public static MAX_HEATMAP_CELLS = 2500;
 
         selectedFeature: IFeature;
@@ -30,7 +28,7 @@ module Heatmap {
         showFeature    : boolean;
         showChart      : boolean;
         featureIcon    : string;
-  
+
         static $inject = [
           '$scope',
           '$modal',
@@ -41,7 +39,7 @@ module Heatmap {
           'mapService',
           'messageBusService'
         ];
-  
+
         constructor(
           private $scope              : IHeatmapScope,
           private $modal              : any,
@@ -53,7 +51,7 @@ module Heatmap {
           private messageBusService   : csComp.Services.MessageBusService
         ) {
           $scope.vm = this;
-  
+
           messageBusService.subscribe('layer', (title) => {//, layer: csComp.Services.ProjectLayer) => {
             switch (title) {
               case 'deactivate':
@@ -63,7 +61,7 @@ module Heatmap {
                 break;
               }
           });
-  
+
           messageBusService.subscribe('project', (title) => {//, layer: csComp.Services.ProjectLayer) => {
                   switch (title) {
                       case 'loaded':
@@ -72,7 +70,7 @@ module Heatmap {
                               && $layerService.project.userPrivileges.hasOwnProperty('mca')
                               && $layerService.project.userPrivileges.mca.hasOwnProperty('expertMode')
                               && $layerService.project.userPrivileges.mca.expertMode;*/
-  
+
                          if (typeof $layerService.project.mcas === 'undefined' || $layerService.project.mcas == null)
                               //$layerService.project.mcas = [];
                           /*var mcas = this.$localStorageService.get(McaCtrl.mcas);*/
@@ -84,9 +82,9 @@ module Heatmap {
                           break;
                   }
               });
-  
+
               /*messageBusService.subscribe('feature', this.featureMessageReceived);*/
-  
+
               $translate('HEATMAP.DELETE_MSG').then(translation => {
                   HeatmapCtrl.confirmationMsg1 = translation;
               });
@@ -180,7 +178,7 @@ module Heatmap {
         private updateHeatmap() {
             if (this.heatmapModel) {
                 var currentZoom = this.$mapService.getMap().getZoom();
-                if (currentZoom >= HeatmapCtrl.MIN_HEATMAP_ZOOM && currentZoom <= HeatmapCtrl.MAX_HEATMAP_ZOOM) {
+                if (currentZoom >= this.heatmapModel.scaleMinValue && currentZoom <= this.heatmapModel.scaleMaxValue) {
                     this.heatmapModel.updateWeights();
                     this.heatmapModel.calculate(this.$layerService, this.$mapService, this.heatmap);
                     //this.createDummyHeatmap();
@@ -235,31 +233,10 @@ module Heatmap {
             return hexString;
         }
 
-        //            console.log('Added heatmap layer');
-
-        //    csComp.Utils.loadJsCssfile('js/cs/webgl-heatmap.min.js', csComp.FileType.Js, (event: Event) => {
-        //        csComp.Utils.loadJsCssfile('js/cs/webgl-heatmap-leaflet.min.js', csComp.FileType.Js,(event: Event) => {
-        //            //custom size for this example, and autoresize because map style has a percentage width
-        //            this.heatmap = new L.TileLayer.WebGLHeatMap({
-        //                size: 50, opacity: 0.8, autoresize: false });//, gradientTexture: 'images/heat_gradient.png' });
-        //            this.$mapService.map.addLayer(this.heatmap);
-        //            console.log('Added heatmap layer');
-        //        });
-        //    });
-        //}
-
         ///**
         // * Create a dummy heatmap
         // */
         //private createDummyHeatmap() {
-        //    //this.$mapService.map.setView(new L.LatLng(52.109, 4.322), 10);
-        //    //// dataPoints is an array of arrays: [[lat, lng, intensity]...]
-        //    var dataPoints = [[52.1095, 4.3275, 0.5], [52.10190, 4.30220, 0.5], [52.11390, 4.30220, 0.5],
-        //        [52.11190, 4.30220, 0.5], [52.10690, 4.30220, 0.5], [52.11890, 4.30220, 0.5],
-        //        [52.11990, 4.3020, 0.5], [52.10090, 4.30520, 0.5], [52.103150, 4.31720, 0.5],
-        //        [52.10090, 4.30820, 0.5], [52.10000, 4.30990, 0.7], [52.10000, 4.3120, 9],
-        //        [52.10990, 4.33920, 5]];
-        //    this.heatmap.setData(dataPoints);
         //}
     }
 }
