@@ -46,7 +46,7 @@
                 EDITOR_TITLE: 'Heatmap Editor',
                 MAIN_FEATURE: 'Selecteer het type feature',
                 PROPERTIES: 'Selecteer de eigenschappen',
-                INCLUDE_RANK: '  Toon een rangorde? ',
+                INTENSITY_SCALE: 'Intensiteitsschaal',
                 RANK_TITLE: '[Titel voor de rangorde]',
                 TITLE: 'Titel... *',
                 CATEGORY_MSG: '[Categorie...]',

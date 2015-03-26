@@ -5,9 +5,9 @@
     </div>
     <div class="modal-body container-fluid">
         <div class="row-fluid">
-            <input type="text" class="pull-left" data-ng-model="vm.heatmap.title" style="margin: 0 5px" placeholder="{{ \'HEATMAP.TITLE\' | translate }}" />
+            <input type="text" data-ng-model="vm.heatmap.title" style="margin: 0 5px" placeholder="{{ \'HEATMAP.TITLE\' | translate }}" />
         </div>
-        <h4 class="row-fluid" style="margin-top: 5px;" translate>HEATMAP.MAIN_FEATURE</h4>
+        <h4 class="row-fluid" style="margin-top: 20px;" translate>HEATMAP.MAIN_FEATURE</h4>
         <!--<select data-ng-model="vm.selectedFeatureType"
                 data-ng-change="vm.loadPropertyTypes()"
                 data-ng-options="item as item.name for (key, item) in vm.dataset.featureTypes"
@@ -26,10 +26,6 @@
                         <a href="" class="pull-right"
                            style="margin-right: 5px;"
                            data-ng-click="vm.toggleItemDetails($index)"><i class="fa fa-2x fa-edit"></i></a>
-                        <input type="text" class="pull-right"
-                               style="margin: -2px 5px -2px 0;"
-                               data-ng-model="hi.category"
-                               placeholder="{{\'HEATMAP.CATEGORY_MSG\' | translate}}" />
                     </div>
                 </div>
                 <div class="row-fluid" data-ng-show="vm.showItem == {{$index}}" id="scoringFunction">

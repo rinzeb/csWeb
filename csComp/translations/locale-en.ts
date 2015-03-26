@@ -47,7 +47,7 @@
                 EDITOR_TITLE: 'Heatmap Editor',
                 MAIN_FEATURE: 'Select the main feature',
                 PROPERTIES: 'Select the properties',
-                INCLUDE_RANK: '  Show rank? ',
+                INTENSITY_SCALE: 'Intensity scale',
                 RANK_TITLE: '[Rank title...]',
                 TITLE: 'Title... *',
                 CATEGORY_MSG: '[Category...]',

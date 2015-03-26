@@ -36,7 +36,8 @@ module Heatmap {
          * @type {IIdealityMeasure}
          */
         idealityMeasure: IIdealityMeasure;
-        isSelected     : boolean;
+        isSelected    : boolean;
+        intensityScale: number 
 
         reset(): void;
         setScale(latitude: number, longitude: number): void;
@@ -86,7 +87,7 @@ module Heatmap {
         heatspots           : IHeatspot[] = [];
         /** Represents the number of items that are needed to obtain an ideal location. */
         isSelected = false;
-        private intensityScale = 1;
+        intensityScale = 1;
         private static twoPi: number = Math.PI * 2;
 
         constructor(public title: string, public featureType: csComp.Services.IFeatureType) {

@@ -19,7 +19,7 @@ module Heatmap {
         heatmap       : L.GeoJSON;
         heatmapModel  : HeatmapModel;
         heatmapModels : HeatmapModel[] = [];
-        expertMode                     = true;
+        expertMode    : boolean = false;
 
         public static MAX_HEATMAP_CELLS = 2500;
 
@@ -65,13 +65,13 @@ module Heatmap {
           messageBusService.subscribe('project', (title) => {//, layer: csComp.Services.ProjectLayer) => {
                   switch (title) {
                       case 'loaded':
-                          /*this.expertMode = $layerService.project != null
+                          this.expertMode = $layerService.project != null
                               && $layerService.project.hasOwnProperty('userPrivileges')
-                              && $layerService.project.userPrivileges.hasOwnProperty('mca')
-                              && $layerService.project.userPrivileges.mca.hasOwnProperty('expertMode')
-                              && $layerService.project.userPrivileges.mca.expertMode;*/
+                              && $layerService.project.userPrivileges.hasOwnProperty('heatmap')
+                              && $layerService.project.userPrivileges.heatmap.hasOwnProperty('expertMode')
+                              && $layerService.project.userPrivileges.heatmap.expertMode;
 
-                         if (typeof $layerService.project.mcas === 'undefined' || $layerService.project.mcas == null)
+                         //if (typeof $layerService.project.mcas === 'undefined' || $layerService.project.mcas == null)
                               //$layerService.project.mcas = [];
                           /*var mcas = this.$localStorageService.get(McaCtrl.mcas);*/
                           /*if (typeof mcas === 'undefined' || mcas === null) return;*/
@@ -172,6 +172,13 @@ module Heatmap {
             this.updateHeatmap();
         }
 
+        intensityScaleUpdated() {
+            if (!this.heatmapModel) return;
+            this.heatmapModel.updateIntensityScale();
+            this.updateHeatmap();
+        }
+
+
         /**
          * Update the available pre-set heatmaps.
          */
@@ -193,7 +200,7 @@ module Heatmap {
         //*/
         private initializeHeatmap() {
             this.heatmap = L.geoJson([], {
-                style: function (feature) {
+                style: function (feature) { 
                     if (feature.properties.intensity <= 0) {
                         var hexString = Heatmap.HeatmapCtrl.intensityToHex(feature.properties.intensity);
                         return { color: "#FF"+hexString+hexString };

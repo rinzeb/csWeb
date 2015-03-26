@@ -19,11 +19,21 @@
             <a href="" data-ng-click="vm.editHeatmap(vm.heatmapModel)" tooltip="{{\'HEATMAP.EDIT_HEATMAP\' | translate}}" tooltip-placement="right" style="margin-right:5px;"><i class="fa fa-edit"></i></a>
         </div>
     </div>
-    
+
+        <div data-ng-if="vm.heatmapModel" style="margin-bottom: 20px; margin-left: -5px">
+            <div style="display: inline; font-weight: bold" translate>HEATMAP.INTENSITY_SCALE</div>
+            <voting class="pull-right"
+                    data-ng-change="vm.intensityScaleUpdated()"
+                    min="0"
+                    max="5"
+                    ng-model="vm.heatmapModel.intensityScale"
+                    style="margin-bottom: 3px; margin-right: 5px"></voting>
+        </div>
+
     <div data-ng-if="vm.heatmapModel" style="overflow-y: auto; overflow-x: hidden; margin-left: -5px;" resize resize-y="140">
         <div data-ng-repeat="hi in vm.heatmapModel.heatmapItems" class="wide-tooltip">
             <div data-ng-if="hi.isSelected">
-                <div class="truncate" data-ng-class="{true: \'ignoredCriteria\'}[hi.userWeight == 0]" style="display: inline-block; width: 190px; font-weight: bold">{{hi.toString()}}</div>
+                <div class="truncate" data-ng-class="{true: \'ignoredCriteria\'}[hi.userWeight == 0]" style="display: inline-block; width: 180px; font-weight: bold">{{hi.toString()}}</div>
 
                 <voting class="pull-right"
                         data-ng-class="vm.getVotingClass(hi)"

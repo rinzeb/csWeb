@@ -104,6 +104,9 @@
         mca: {
             expertMode: boolean;
         }
+        heatmap: {
+            expertMode: boolean;
+        }
     }
     
     /** bouding box to specify a region. */

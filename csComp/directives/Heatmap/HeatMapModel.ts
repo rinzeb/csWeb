@@ -8,9 +8,10 @@ module Heatmap {
     }
 
     export class HeatmapModel implements IHeatmapModel {
-        heatmapItems: IHeatmapItem[] = [];
+        heatmapItems : IHeatmapItem[] = [];
         scaleMaxValue: number = 16;
         scaleMinValue: number = 9;
+        intensityScale: number = 1;
 
         constructor(public title: string) {
             this.title = title;
@@ -125,6 +126,15 @@ module Heatmap {
                     }
                     hi.reset();
                 }
+            });
+        }
+
+        /**
+        * Update the intensity scale of all heatmap items.
+        */
+        updateIntensityScale() {
+            this.heatmapItems.forEach((hi) => {
+                hi.intensityScale = this.intensityScale;
             });
         }
 
